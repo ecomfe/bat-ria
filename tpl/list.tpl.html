@@ -1,0 +1,24 @@
+<!-- target: listSearchBox -->
+<input name="keyword"
+    data-ui-type="SearchBox" data-ui-id="keyword"
+    data-ui-height="19"
+    data-ui-text="@keyword"
+    data-ui-placeholder="@keywordPlaceHolder"
+    data-ui-extension-submit-type="AutoSubmit" />
+
+<!-- target: detailTable -->
+<div data-ui-type="Table" data-ui-id="table" data-ui-datasource="@tableData"
+    data-ui-order-by="@orderBy" data-ui-order="@order">
+</div>
+
+<!-- target: detailTableWithCommand -->
+<div data-ui-type="Table" data-ui-id="table" data-ui-datasource="@tableData"
+    data-ui-order-by="@orderBy" data-ui-order="@order"
+    data-ui-extension-command-type="Command">
+</div>
+
+<!-- target: detailPager -->
+<footer data-ui-type="Pager" data-ui-id="pager" data-ui-page-type="plain"
+    data-ui-count="@totalCount" data-ui-page="@pageNo" data-ui-page-size="@pageSize" 
+    data-ui-url-template="@urlTemplate" data-ui-layout="alignRight">
+</footer>
