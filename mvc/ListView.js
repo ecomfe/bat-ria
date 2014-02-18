@@ -66,12 +66,9 @@ define(function (require) {
         return args;
     };
 
-    ListView.prototype.getFilterFields = function() {
-        var form = this.get('filter');
-        var fields = [];
-        u.each(form.getInputControls(), function(control) {
-            fields.push(control.get('name'));
-        });
+    ListView.prototype.getPageSize = function() {
+        var pager = this.get('pager');
+        return pager.get('pageSize');
     };
 
     /**

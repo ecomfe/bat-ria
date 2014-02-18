@@ -36,6 +36,7 @@ define(
         ListAction.prototype.performSearch = function (args) {
             // 去除默认参数值
             var defaultArgs = this.model.getDefaultArgs();
+            args.pageSize = this.view.getPageSize();
             args = u.purify(args, defaultArgs);
 
             var event = this.fire('search', { args: args });
@@ -122,9 +123,11 @@ define(
          * @ignore
          */
         function updatePageSize(e) {
-            var event = this.fire('pagesizechange', { pageSize: e.pageSize });
+            var args = { pageSize: e.pageSize };
+            var event = this.fire('pagesizechange', args);
             if (!event.isDefaultPrevented()) {
-                var url = this.getURLForPage({ pageSize: e.pageSize });
+                args = u.purify(args, this.model.getDefaultArgs());
+                var url = this.getURLForPage(args);
                 this.redirect(url);
             }
         };
