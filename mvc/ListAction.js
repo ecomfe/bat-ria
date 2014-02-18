@@ -65,10 +65,10 @@ define(
             var url = this.context.url;
             var path = url.getPath();
             var query = url.getQuery();
-            
-            // 第一页省去页码参数，且如果每页数量变化，回到第一页
-            // 只有pagesizechange时会有pageSize这项
-            if (page.pageNo === 1 || page.pageSize) {
+            query.pageNo = pageNo;
+
+            // 第一页省去页码参数
+            if (pageNo === 1) {
                 query = u.omit(query, 'pageNo');
             }
 

@@ -100,7 +100,10 @@ define(
             var url = this.get('url');
             var query = url.getQuery();
 
-            query = u.extend(query, this.getExtraQuery());
+            query = u.chain(query)
+                .defaults(this.getDefaultArgs())
+                .extend(this.getExtraQuery())
+                .value();
 
             return query;
         };
