@@ -71,6 +71,16 @@ define(
                 }
             ],
 
+            // 展示时间区间
+            time: function (model) {
+                var startTime = model.get('startTime');
+                var endTime = model.get('endTime');
+
+                var time = require('ecma/util')
+                    .getDisplayDuration(startTime, endTime);
+                return time;
+            },
+
             // 分页URL模板，就是当前URL中把`page`字段替换掉
             urlTemplate: function (model) {
                 var url = model.get('url');

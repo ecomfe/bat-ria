@@ -6,18 +6,35 @@
     data-ui-placeholder="@keywordPlaceHolder"
     data-ui-extension-submit-type="AutoSubmit" />
 
-<!-- target: detailTable -->
-<div data-ui-type="Table" data-ui-id="table" data-ui-datasource="@tableData"
-    data-ui-order-by="@orderBy" data-ui-order="@order">
+<!-- target: listRangeCalendar -->
+<div data-ui-type="RangeCalendar" 
+    data-ui-id="range"
+    data-ui-param-format="YYYYMMDD" data-ui-raw-value="@time"
+    data-ui-extension-submit-type="AutoSubmit">
 </div>
 
-<!-- target: detailTableWithCommand -->
+<!-- target: listTable -->
 <div data-ui-type="Table" data-ui-id="table" data-ui-datasource="@tableData"
-    data-ui-order-by="@orderBy" data-ui-order="@order"
+    data-ui-order-by="@orderBy" data-ui-order="@order" data-ui-select="@selectMode"
+    data-ui-extension-tip-type="TableTip">
+</div>
+
+<!-- target: listTableWithCommand -->
+<div data-ui-type="Table" data-ui-id="table" data-ui-datasource="@tableData"
+    data-ui-order-by="@orderBy" data-ui-order="@order" data-ui-select="@selectMode"
+    data-ui-extension-tip-type="TableTip"
     data-ui-extension-command-type="Command">
 </div>
 
-<!-- target: detailPager -->
+<!-- target: listTableWithCommandAndSubrow -->
+<div data-ui-type="Table" data-ui-id="table" data-ui-datasource="@tableData"
+    data-ui-order-by="@orderBy" data-ui-order="@order" data-ui-select="@selectMode"
+    data-ui-extension-command-type="Command"
+    data-ui-extension-tip-type="TableTip"
+    data-ui-extension-tablesubrow-type="TableSubrow">
+</div>
+
+<!-- target: listPager -->
 <footer data-ui-type="Pager" data-ui-id="pager" data-ui-page-type="plain"
     data-ui-count="@totalCount" data-ui-page="@pageNo" data-ui-page-size="@pageSize" 
     data-ui-url-template="@urlTemplate" data-ui-layout="alignRight">

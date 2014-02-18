@@ -36,7 +36,6 @@ define(
         ListAction.prototype.performSearch = function (args) {
             // 去除默认参数值
             var defaultArgs = this.model.getDefaultArgs();
-            args.pageSize = this.view.getPageSize();
             args = u.purify(args, defaultArgs);
 
             var event = this.fire('search', { args: args });
@@ -59,18 +58,14 @@ define(
         /**
          * 获取指定页码的跳转URL
          *
-         * @param {Object} page 指定的分页信息
-         * @param {Object} page.pageNo 指定的页码
-         * @param {Object} page.pageSize 指定的每页显示数
+         * @param {number} pageNo 指定的页码
          * @return {string}
          */
-        ListAction.prototype.getURLForPage = function (page) {
+        ListAction.prototype.getURLForPage = function (pageNo) {
             var url = this.context.url;
             var path = url.getPath();
             var query = url.getQuery();
             
-            query = u.extend(query, page);
-
             // 第一页省去页码参数，且如果每页数量变化，回到第一页
             // 只有pagesizechange时会有pageSize这项
             if (page.pageNo === 1 || page.pageSize) {
@@ -110,27 +105,10 @@ define(
         function forwardToPage(e) {
             var event = this.fire('pagechange', { page: e.page });
             if (!event.isDefaultPrevented()) {
-                var url = this.getURLForPage({ pageNo: e.page});
+                var url = this.getURLForPage(e.page);
                 this.redirect(url);
             }
         }
-
-        /**
-         * 更新每页显示条数
-         *
-         * @param {mini-event.Event} e 事件对象
-         * @param {number} e.pageSize 每页显示条目数
-         * @ignore
-         */
-        function updatePageSize(e) {
-            var args = { pageSize: e.pageSize };
-            var event = this.fire('pagesizechange', args);
-            if (!event.isDefaultPrevented()) {
-                args = u.purify(args, this.model.getDefaultArgs());
-                var url = this.getURLForPage(args);
-                this.redirect(url);
-            }
-        };
 
         /**
          * 初始化交互行为
@@ -141,7 +119,7 @@ define(
         ListAction.prototype.initBehavior = function () {
             BaseAction.prototype.initBehavior.apply(this, arguments);
             this.view.on('search', search, this);
-            this.view.on('pagesizechange', updatePageSize, this);
+            this.view.on('pagesizechange', search, this);
             this.view.on('pagechange', forwardToPage, this);
         };
 

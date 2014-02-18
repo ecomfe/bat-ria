@@ -9,6 +9,7 @@ define(function (require) {
 
     var BaseView = require('./BaseView');
     var u = require('underscore');
+    var moment = require('moment');
     
     /**
      * [Please Input View Description]
@@ -41,6 +42,7 @@ define(function (require) {
         // 总是带上每页显示数
         args.pageSize = this.get('pager').get('pageSize');
 
+
         this.fire('search', { args: args });
     };
 
@@ -63,24 +65,12 @@ define(function (require) {
             args.keyword = u.trim(keyword.getValue());
         }
         
+        // 日期是独立的
+        var range = this.get('range').getValue().split(',');
+        args.startTime = moment(range[0]).format('YYYYMMDDHHmmss');
+        args.endTime = moment(range[1]).format('YYYYMMDDHHmmss');
         return args;
     };
-
-    ListView.prototype.getPageSize = function() {
-        var pager = this.get('pager');
-        return pager.get('pageSize');
-    };
-
-    /**
-     * 更新每页显示数
-     *
-     * @param {mini-event.Event} e 事件对象
-     * @ignore
-     */
-    function updatePageSize(e) {
-        var pageSize = e.target.get('pageSize');
-        this.fire('pagesizechange', { pageSize: pageSize });
-    }
 
     /**
      * 更新页码
@@ -97,7 +87,7 @@ define(function (require) {
         var pager = this.get('pager');
         if (pager) {
             // 切换每页大小
-            pager.on('pagesizechange', updatePageSize, this);
+            pager.on('pagesizechange', this.submitSearch, this);
             pager.on('pagechange', updatePageIndex, this);
         }
 
