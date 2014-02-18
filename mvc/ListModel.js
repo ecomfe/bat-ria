@@ -50,7 +50,7 @@ define(
          * @protected
          */
         ListModel.prototype.getDefaultArgs = function () {
-            return this.defaultArgs || {};
+            return u.defaults(this.defaultArgs || {}, { pageNo: 1 });
         };
 
         /**
