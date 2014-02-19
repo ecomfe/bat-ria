@@ -105,11 +105,15 @@ define(
                 .extend(this.getExtraQuery())
                 .value();
 
-            return query;
+            return this.filterQuery(query);
         };
 
         ListModel.prototype.getExtraQuery = function () {
             return {};
+        };
+
+        ListModel.prototype.filterQuery = function(query) {
+            return query;
         };
 
         return ListModel;

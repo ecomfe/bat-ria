@@ -42,6 +42,29 @@ define(
             };
         };
 
+        util.toMap = function (list, key, opt_converter) {
+            var i, item, k,
+                map = {},
+                converter = opt_converter;
+
+            for (i = list.length; i--;) {
+                item = list[i];
+                k = item[key];
+                    
+                if (k != null) {
+                    if (u.isFunction(converter)) {
+                        var keyValue = converter(item);
+                        map[keyValue.key] = keyValue.value;
+                    } else if (u.isString(converter)) {
+                        map[k] = item[converter];
+                    } else {
+                        map[k] = item;
+                    }
+                }
+            }
+            return map;
+        };
+
         return util;
     }
 );

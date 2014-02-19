@@ -5,15 +5,9 @@
 
 define(
     function (require) {
-        /**
-         * 引入各业务模块的Action配置
-         * 如果期望添加action时工具自动配置，请保持requireConfigs名称不变
-         *
-         * @inner
-         */
-        function requireConfigs() {
-            require('hello/config');
-        }
+
+        var config = require('common/config');
+        var u = require('underscore');
 
         function activateExtensions() {
             require('./extension/hooks').activate();
@@ -21,13 +15,10 @@ define(
         }
 
         function initErConfigs() {
-            var config = require('er/config');
-            config.indexURL = '/hello/world';
+            var erConfig = require('er/config');
+            erConfig.indexURL = config.index;
         }
         
-        // 引入各业务模块的Action配置
-        requireConfigs();
-
         activateExtensions();
 
         initErConfigs();
@@ -35,10 +26,11 @@ define(
         function start(session, constants) {
 
             var user = require('./system/user');
-            var consts = require('./system/constants');
-
             user.init(session.result);
-            consts.init(constants.result);
+
+            var consts = require('./system/constants');
+            var clientConsts = require('common/constants');
+            consts.init(u.extend(clientConsts, constants.result));
 
             var visitor = user.visitor;
 
@@ -66,10 +58,10 @@ define(
         function init() {
             var io = require('./io/serverIO');
             var Deferred = require('er/Deferred');
-            var loading = Deferred.all(
-                io.post('/data/system/session'),
-                io.post('/data/system/constants')
-            );
+
+            var api = require('./util').genRequesters(config.api);
+
+            var loading = Deferred.all(api.user(), api.constants());
 
             loading.then(start);
         }
