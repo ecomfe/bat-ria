@@ -152,6 +152,51 @@ define(
             return html.join(config.separator || '<span class="list-operation-separator">|</span>');
         };
 
+        /**
+         * 下载文件
+         * @param {string} url 文件地址.
+         */
+        util.download = function (url) {
+            var divId = '__DownloadContainer__';
+            var formId = '__DownloadForm__';
+            var iframeId = '__DownloadIframe__';
+            var tpl = [
+                '<form action="${url}" method="post" id="${formId}" ',
+                    'name="${formId}" target="${iframeId}"></form>',
+                '<iframe src="about:blank" id="${iframeId}" name="${iframeId}">',
+                '</iframe>'
+            ].join('');
+
+            function getUrlWithAderId() {
+                var URI = require('urijs');
+                var user = require('./system/user');
+                var aderId = user.ader && user.ader.id
+                    || URI.parseQuery(document.location.search).aderId;
+                var query = aderId ? { aderId: aderId } : {};
+                return URI(url).addQuery(query).toString();
+            }
+
+            function getDownloadContainer() {
+                var div = document.getElementById(divId);
+                if (!div) {
+                    div = document.createElement('div'),
+                    div.id = divId;
+                    div.style.display = 'none';
+                    document.body.appendChild(div);
+                }
+                return div;
+            }
+
+            var ctner = getDownloadContainer();
+            var render = require('etpl').compile(tpl);
+            ctner.innerHTML = render({
+                url: getUrlWithAderId(url),
+                formId: formId,
+                iframeId: iframeId
+            });
+            document.getElementById(formId).submit();
+        };
+
         return util;
     }
 );
