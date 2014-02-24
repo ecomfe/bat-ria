@@ -8,7 +8,9 @@ define(function (require) {
 
     function getAderArgMap() {
         var user = require('../system/user');
-        return user && user.ader ? { aderId: user.ader.id } : {};
+        var aderId = user.ader && user.ader.id
+            || URI.parseQuery(document.location.search).aderId;
+        return aderId ? { aderId: aderId } : {};
     }
 
     function activate() {

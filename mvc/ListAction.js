@@ -36,7 +36,11 @@ define(
         ListAction.prototype.performSearch = function (args) {
             // 去除默认参数值
             var defaultArgs = this.model.getDefaultArgs();
-            args = u.purify(args, defaultArgs);
+            var extraArgs = this.model.getExtraQuery();
+            args = u.chain(args)
+                .purify(defaultArgs)
+                .extend(extraArgs)
+                .value();
 
             var event = this.fire('search', { args: args });
             if (!event.isDefaultPrevented()) {

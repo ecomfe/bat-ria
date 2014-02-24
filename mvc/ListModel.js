@@ -60,12 +60,13 @@ define(
             listPage: [
                 {
                     retrieve: function (model) {
-                        return model.list(model.getQuery()).then(function(data) {
-                            var page = data.page;
-                            page.tableData = page.result;
-                            delete page.result;
-                            return page;
-                        });
+                        return model.list(model.getQuery())
+                            .then(function(data) {
+                                var page = data.page;
+                                page.tableData = page.result;
+                                delete page.result;
+                                return page;
+                            });
                     },
                     dump: true
                 }
@@ -77,7 +78,7 @@ define(
                 var endTime = model.get('endTime');
 
                 var time = require('ecma/util')
-                    .getDisplayDuration(startTime, endTime);
+                    .getTimeRange(startTime, endTime);
                 return time;
             },
 

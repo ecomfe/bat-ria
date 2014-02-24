@@ -22,20 +22,45 @@ define(
             return config;
         };
 
-        util.getDisplayDuration = function (beginTime, endTime) {
-            if (beginTime && endTime) {
-                return {
-                    begin: moment(beginTime, 'YYYYMMDD').toDate(),
-                    end: moment(endTime, 'YYYYMMDD').toDate()
-                };
+        util.getTimeRange = function (beginTime, endTime, options) {
+
+            // 只有一个参数时，认为是options
+            if (arguments.length === 1) {
+                options = beginTime;
             }
 
-            var now = moment().startOf('day');
+            var defaults = {
+                inputFormat: 'YYYYMMDDHHmmss',
+                outputFormat: 'Date'
+            };
 
-            // 默认前七天
-            var begin = now.clone().subtract('days', 7).toDate();
-            var end = now.clone().subtract('day', 1).toDate();
+            options = u.defaults(options || {}, defaults);
 
+            var begin;
+            var end;
+
+            // 解析输入，没有则使用默认时间
+            if (beginTime && endTime) {
+                begin = moment(beginTime, options.inputFormat);
+                end = moment(endTime, options.inputFormat);
+            }
+            else {
+                var now = moment().startOf('day');
+
+                // 默认前七天
+                begin = now.clone().subtract('days', 7);
+                end = now.clone().subtract('day', 1).endOf('day');
+            }
+
+            // 处理输出
+            if (options.outputFormat.toLowerCase() === 'date') {
+                begin = begin.toDate();
+                end = end.toDate();
+            }
+            else {
+                begin = begin.format(options.outputFormat);
+                end = end.format(options.outputFormat);
+            }
             return {
                 begin: begin,
                 end: end
@@ -63,6 +88,68 @@ define(
                 }
             }
             return map;
+        };
+
+        util.genListLink = function (link) {
+            var defaults = {
+                className: 'list-operation'
+            };
+            link = u.defaults(link, defaults);
+            var attrs = {
+                href: link.url,
+                'class': link.className || 'list-operation'
+            }
+            if (link.target && link.target.toLowerCase() !== '_self') {
+                attrs.target = link.target;
+            }
+
+            attrs = u.map(attrs, function (val, key) {
+                return key + '="' + u.escape(val) + '"';
+            });
+
+            return '<a ' + attrs.join(' ') + '>'
+                + u.escape(link.text) + '</a>';
+        };
+
+        util.genListCommand = function (command) {
+            var defaults = {
+                tagName: 'span',
+                className: 'list-operation'
+            };
+            command = u.defaults(command, defaults);
+            var attrs = {
+                'class': command.className || 'list-operation',
+                'data-command': command.type
+            };
+
+            if (command.index != null) {
+                attrs['data-command-args'] = command.index;
+            }
+
+            attrs = u.map(attrs, function (val, key) {
+                return key + '="' + u.escape(val) + '"';
+            });
+
+            var tagName = u.escape(command.tagName);
+            return '<' + tagName + ' ' + attrs.join(' ') + '>'
+                + u.escape(command.text) + '</' + tagName + '>';
+        };
+
+        util.genListOperations = function (operations, config) {
+            config = config || {};
+            var html = u.map(
+                operations,
+                function (operation) {
+                    if (operation.url) {
+                        return util.genListLink(operation);
+                    }
+                    else {
+                        return util.genListCommand(operation);
+                    }
+                }
+            );
+
+            return html.join(config.separator || '<span class="list-operation-separator">|</span>');
         };
 
         return util;

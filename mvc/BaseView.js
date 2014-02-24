@@ -88,6 +88,53 @@ define(
             return globalToast;
         };
 
+        BaseView.prototype.popDialog = function (options) {
+            //创建main
+            var main = document.createElement('div');
+            document.body.appendChild(main);
+
+            var defaults = {
+                width: 600,
+                needFoot: true,
+                draggable: true,
+                closeOnHide: false,
+                autoClose: true,
+                main: main,
+                viewContext: this.viewContext
+            };
+            options = u.defaults({}, options, defaults);
+
+            var ui = require('esui/main');
+            var dialog = ui.create('Dialog', options);
+
+            //使用默认foot，改变显示文字
+            var okBtn = dialog.getFoot().getChild('btnOk');
+            var cancelBtn = dialog.getFoot().getChild('btnCancel');
+            var okText = u.escape(options.okText || '');
+            var cancelText = u.escape(options.cancelText || '');
+            okBtn.setContent(okText || Dialog.OK_TEXT);
+            cancelBtn.setContent(cancelText || Dialog.CANCEL_TEXT);
+
+            dialog.show();
+            return dialog;
+        };
+
+        BaseView.prototype.waitDialog = function (dialog) {
+            if (!dialog) {
+                dialog = this.popDialog.apply(this, arguments);
+            }
+            else if (!dialog.isShow) {
+                dialog.show();
+            }
+            var Deferred = require('er/Deferred');
+            var deferred = new Deferred();
+
+            dialog.on('ok', deferred.resolver.resolve);
+            dialog.on('cancel', deferred.resolver.reject);
+
+            return deferred.promise;
+        };
+
         /**
          * 等待用户确认
          *
