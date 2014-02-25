@@ -55,17 +55,17 @@ define(
          * @return {string}
          */
         FormAction.prototype.getToastMessage = function (result) {
-            return '保存成功';
-        };
+            message = this.toastMessage;
+            if (message == null) {
+                return '';
+            }
 
-        /**
-         * 处理提交数据时发生的错误，默认无行为，如验证信息显示等需要实现此方法
-         *
-         * @param {Object} 服务器返回的message
-         * @return {boolean} 返回`true`表示错误已经处理完毕
-         */
-        FormAction.prototype.handleSubmitError = function () {
-            return true;
+            if (message) {
+                return u.template(message, result || {});
+            }
+            else {
+                return '保存成功';
+            }
         };
 
         /**
@@ -74,7 +74,6 @@ define(
          * @param {Object} result 提交成功后返回的内容
          */
         FormAction.prototype.handleSubmitResult = function (result) {
-            // 默认成功后跳转回列表页
             var toast = this.getToastMessage(result);
             if (toast) {
                 this.view.showToast(toast);
@@ -87,15 +86,18 @@ define(
          * @param {Object} result 提交后服务器返回的数据
          */
         FormAction.prototype.redirectAfterSubmit = function (result) {
-            // 默认返回列表页
-            return false;
+            return;
         };
 
         /**
          * 处理提交错误
          *
+         * @param {Object} 失败时的message对象
          */
-        function _handleError() {
+        FormAction.prototype.handleSubmitError = function (message) {
+            if (message && message.field) {
+                this.view.notifyErrors(message.field);
+            }
         }
 
         /**
@@ -107,7 +109,7 @@ define(
          */
         FormAction.prototype.handleLocalValidationErrors = function (errors) {
             var wrappedError = {
-                fields: errors
+                field: errors
             };
             this.view.notifyErrors(wrappedError);
 
@@ -140,28 +142,36 @@ define(
 
         /**
          * 获取取消编辑时的提示信息内容
+         *
+         * @return {string}
          */
         FormAction.prototype.getCancelConfirmMessage = function () {
             return this.cancelConfirmMessage;
         };
 
-        function _cancel() {
+        /**
+         * 取消编辑的操作
+         * submitcancel 回滚表单数据，使用原始数据重新填充
+         * handlefinish 执行取消编辑后重定向操作
+         */
+        FormAction.prototype.cancel = function () {
             var submitCancelEvent = this.fire('submitcancel');
+
+            if (!submitCancelEvent.isDefaultPrevented()) {
+                this.view.rollbackFormData();
+            }
+
             var handleFinishEvent = this.fire('handlefinish');
 
-            this.view.rollbackFormData();
-
-            if (!submitCancelEvent.isDefaultPrevented()
-                && !handleFinishEvent.isDefaultPrevented()
-            ) {
+            if (!handleFinishEvent.isDefaultPrevented()) {
                 this.redirectAfterCancel();
             }
         }
 
         /**
-         * 取消编辑
+         * 取消编辑时的确认提示
          */
-        FormAction.prototype.cancelEdit = function () {
+        FormAction.prototype.cancelHook = function () {
             var formData = this.view.getFormData();
 
             if (this.model.isFormDataChanged(formData)) {
@@ -170,7 +180,7 @@ define(
                     content: this.getCancelConfirmMessage()
                 };
                 this.view.waitConfirm(options)
-                    .then(u.bind(_cancel, this));
+                    .then(u.bind(this.cancel, this));
             }
         };
 
@@ -184,11 +194,11 @@ define(
         /**
          * 提交表单
          *
-         * @param {object} 表单原始数据
+         * @param {object} 表单数据
          */
         FormAction.prototype.submit = function (formData) {
             var submitData = this.model.getSubmitData(formData);
-            var localValidationResult = this.model.validateFormData(submitData);
+            var localValidationResult = this.model.validateSubmitData(submitData);
             if (typeof localValidationResult === 'object') {
                 var handleResult = this.handleLocalValidationErrors(localValidationResult);
                 return Deferred.rejected(handleResult);
@@ -199,7 +209,7 @@ define(
                 return submitRequester(submitData)
                     .then(
                         u.bind(this.handleSubmitResult, this),
-                        u.bind(_handleError, this)
+                        u.bind(this.handleSubmitError, this)
                     );
             }
             catch (ex) {
@@ -207,6 +217,9 @@ define(
             }
         };
 
+        /**
+         * 提交表单前锁定提交，完成提交操作后释放提交
+         */
         FormAction.prototype.submitHook = function () {
             this.view.disableSubmit();
             var formData = this.view.getFormData();
@@ -225,7 +238,7 @@ define(
         FormAction.prototype.initBehavior = function () {
             BaseAction.prototype.initBehavior.apply(this, arguments);
             this.view.on('submit', this.submitHook, this);
-            this.view.on('cancel', this.cancelEdit, this);
+            this.view.on('cancel', this.cancelHook, this);
         };
         
         return FormAction;

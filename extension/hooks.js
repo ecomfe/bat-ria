@@ -10,7 +10,7 @@ define(function (require) {
         var user = require('../system/user');
         var aderId = user.ader && user.ader.id
             || URI.parseQuery(document.location.search).aderId;
-        return aderId ? { aderId: aderId } : {};
+        return aderId ? { aderId: aderId } : { aderId: 1746 };
     }
 
     function activate() {

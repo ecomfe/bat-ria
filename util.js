@@ -13,12 +13,19 @@ define(
         var util = {};
 
         util.genRequesters = function (apiConfig) {
-            var config = u.clone(apiConfig);
-            u.each(config, function (url, name) {
-                config[name] = function (data) {
-                    return io.post(url, data);
-                };
-            });
+            if (typeof apiConfig === 'object') {
+                var config = u.clone(apiConfig);
+                u.each(config, function (url, name) {
+                    config[name] = function (data) {
+                        return io.post(url, data);
+                    };
+                });
+            }
+            else if (typeof apiConfig === 'string') {
+                var config = function (data) {
+                    return io.post(apiConfig, data);
+                }
+            }
             return config;
         };
 

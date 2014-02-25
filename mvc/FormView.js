@@ -72,25 +72,23 @@ define(
          * 向用户通知提交错误信息，默认根据`field`字段查找对应`name`的控件并显示错误信息
          *
          * @param {Object} errors 错误信息
-         * @param {meta.FieldError[]} errors.fields 出现错误的字段集合
+         * @param {meta.FieldError[]} errors.field 出现错误的字段集合
          */
         FormView.prototype.notifyErrors = function (errors) {
             var Validity = require('esui/validator/Validity');
             var ValidityState = require('esui/validator/ValidityState');
             var form = this.get('form');
 
-            for (var i = 0; i < errors.fields.length; i++) {
-                var fail = errors.fields[i];
-
-                var state = new ValidityState(false, fail.message);
+            u.each(errors, function (field, message){
+                var state = new ValidityState(false, message);
                 var validity = new Validity();
                 validity.addState('server', state);
 
-                var input = form.getInputControls(fail.field)[0];
+                var input = form.getInputControls(field)[0];
                 if (input && typeof input.showValidity === 'function') {
                     input.showValidity(validity);
                 }
-            }
+            });
         };
 
         /**
