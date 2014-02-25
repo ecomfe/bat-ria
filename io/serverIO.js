@@ -31,12 +31,12 @@ define(function (require) {
     }
     
     function requestSuccessHandler(data) {
-        var isSuccess = false;
         if (data.success !== 'true') {
             var message = data.message;
             var title;
             var content;
             var onok;
+            var needAlert = true;
 
             if (message.global) {
                 title = '系统提示';
@@ -66,28 +66,24 @@ define(function (require) {
             }
             // field error
             else {
-                isSuccess = true;
+                needAlert = false;
             }
+
+            if (needAlert) {
+                Dialog.alert({
+                    title: title,
+                    content: content,
+                    onok: onok
+                });
+            }
+            return Deferred.rejected(message);
         }
+        // success
         else {
-            isSuccess = true;
-        }
-
-        if (isSuccess) {
-
             if (typeof io.hooks.afterSuccess === 'function') {
                 io.hooks.afterSuccess(data);
             }
-
-            return Deferred.resolved(data);
-        }
-        else {
-            Dialog.alert({
-                title: title,
-                content: content,
-                onok: onok
-            });
-            return Deferred.rejected();
+            return Deferred.resolved(data.page || data.result);
         }
     }
 

@@ -28,12 +28,12 @@ require(['ecma/main'] , function (main) {
 
 ## 用户信息和常量接口
 
-*待优化*
-
     ecma/system/user
     ecma/system/constants
 
 分别用来提供用户信息和系统常量相关功能，目前只是简单的从对应接口读取数据来覆盖。
+
+两个接口的 URL 需要在 `common/config` 模块下的 `api.user` 和 `api.constants` 中进行配置。
 
 `user.visitor` 提供正在访问系统的用户的信息，`user.ader` 用来在管理员以他人身份登录系统时提供被登录用户的信息。
 

@@ -62,7 +62,7 @@ define(
                     retrieve: function (model) {
                         return model.list(model.getQuery())
                             .then(function(data) {
-                                var page = data.page;
+                                var page = data;
                                 page.tableData = page.result;
                                 delete page.result;
                                 return page;

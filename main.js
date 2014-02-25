@@ -26,11 +26,11 @@ define(
         function start(session, constants) {
 
             var user = require('./system/user');
-            user.init(session.result);
+            user.init(session);
 
             var consts = require('./system/constants');
             var clientConsts = require('common/constants');
-            consts.init(u.extend(clientConsts, constants.result));
+            consts.init(u.extend(clientConsts, constants));
 
             var visitor = user.visitor;
 
