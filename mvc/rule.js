@@ -1,21 +1,18 @@
 /**
- * UB RIA Base
- * Copyright 2013 Baidu Inc. All rights reserved.
- * 
- * @ignore
- * @file 常用校验规则
- * @author otakustay
+ * @file 常用的校验规则
+ * @author chestnutchen(chenli11@baidu.com)
  */
+
 define(
     function (require) {
         return {
-            maxLength: 100,
+            maxLength: 20,
 
             mail: {
                 /**
                  * 默认的mail字段最大长度
                  */
-                maxLength: 64,
+                maxLength: 100,
 
                 /**
                  * 电子邮件地址正则
@@ -49,7 +46,7 @@ define(
                 /**
                  * url网址最大长度
                  */
-                maxLength: 1000,
+                maxLength: 1024,
 
                 /**
                  * url网址正则

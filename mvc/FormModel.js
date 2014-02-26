@@ -29,9 +29,9 @@ define(
 
         /**
          * 表单缺省数据处理函数
-         * 提供给需要转换key或者value换算的情况
+         * 提供给需要转换key或者value换算、数据间依赖计算的情况
          *
-         * @param {Object} 服务器成功响应的result对象
+         * @param {Object} 服务器成功响应的result对象，多个请求数据则为config为key的map
          * @return {Object} 处理完成的数据
          */
         FormModel.prototype.manageDefaultData = function (data) {
@@ -39,66 +39,56 @@ define(
         }
 
         /**
-         * 其他数据处理函数
-         * 提供给需要转换key或者value换算的情况
-         *
-         * @param {Object} 服务器成功响应的result对象
-         * @return {Object} 处理完成的数据
-         */
-        FormModel.prototype.manageOtherData = function (data) {
-            return data;
-        }
-
-        /**
-         * 其他数据的补丁函数
+         * 缺省数据的补丁函数
          * 多个请求发送会丢失key值，暂时这么打补丁把key补回来
          *
          * @param {arguments} Promise传入回调提供的参数
          * @return {arguments} Promise传入回调提供的参数
          */
-        function _patchData () {
+        function _patchData() {
             return arguments;
         }
 
         /**
          * 表单默认数据配置
-         * rule 常用的校验规则
-         * defaultFormData 常规的缺省表单数据
-         * otherData 其他补充数据(支持多接口获取)
+         *
+         * @rule 常用的校验规则
+         *
+         * @defaultFormData 常规的缺省表单数据 (支持多接口并发) (可选)
+         * 配置要求 model.formRequester {function | Object} 
+         *
+         * 格式：
+         * function: 
+         *      function () { io.request() }
+         * Object:
+         *      { 
+         *          defaultFormData: function () { 
+         *              io.request() 
+         *          }, 
+         *          ...
+         *      }
+         *
+         * 若formRequester为Object，则必须（MUST）有一个key为defaultFormData
          */
         FormModel.prototype.defaultDatasource = {
             rule: datasource.constant(require('./rule')),
-            defaultFormData: {
-                retrieve: function (model) {
-                    var formRequester = model.formRequester;
-                    if (formRequester) {
-                        //var defaultParam = model.defaultParam;
-                        return formRequester()
-                        .then( model.manageDefaultData );
-                    }
-                    else {
-                        return datasource.constant('');
-                    }
-                },
-                dump: false
-            },
             indirectData: [
                 {
-                    otherData: {
+                    defaultFormData: {
                         retrieve: function (model) {
-                            var extraRequester = model.extraRequester;
-                            if (extraRequester) {
-                                if (typeof extraRequester == 'object') {
-                                    var temp = [];
-                                    u.each(extraRequester, function (api, key) {
-                                        temp.push(api());
+                            var formRequester = model.formRequester;
+                            if (formRequester) {
+                                if (typeof formRequester == 'object') {
+                                    var requests = [];
+                                    u.each(formRequester, function (api, key) {
+                                        requests.push(api());
                                     });
                                     return require('er/Deferred').all(
-                                        temp
+                                        requests
                                     ).then( _patchData );
                                 }
                                 else {
-                                    return extraRequester().then( model._patchData );
+                                    return formRequester().then( model.manageDefaultData );
                                 }
                             }
                             else {
@@ -109,16 +99,18 @@ define(
                     }
                 },
                 {
-                    patchData: {
+                    patch: {
                         retrieve: function (model) {
-                            var extraRequester = model.extraRequester;
-                            if (extraRequester && typeof extraRequester == 'object') {
-                                var keys = u.keys(extraRequester);
-                                var indirectData = model.get('otherData');
+                            var formRequester = model.formRequester;
+                            if (formRequester && typeof formRequester == 'object') {
+                                var keys = u.keys(formRequester);
+                                var indirectData = model.get('defaultFormData');
                                 patchData = u.object(keys, indirectData);
 
-                                var otherData = model.manageOtherData(patchData);
-                                model.set('otherData', otherData, {'slient': true});
+                                var defaultData = model.manageDefaultData(patchData);
+                                u.each(defaultData, function (data, key) {
+                                    model.set( key, data, {'silent': true} );
+                                })
                             }
                             return datasource.constant('');
                         },
