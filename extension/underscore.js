@@ -62,8 +62,11 @@ define(function(require) {
      * @param {string} s 输入的字符串
      * @return {string}
      */
-    util.pascalise = function(s) {
+    util.pascalize = function(s) {
         s = s + '';
+        if (/^[A-Z\-_]+$/.test(s)) {
+            s = s.toLowerCase();
+        }
         s = s.replace(
             /[\s-_]+(.)/g,
             function(w, c) {
@@ -83,7 +86,7 @@ define(function(require) {
      * @return {string}
      */
     util.camelize = function(s) {
-        s = pascalize(s);
+        s = util.pascalize(s);
         return s[0].toLowerCase() + s.slice(1);
     };
 
@@ -101,7 +104,7 @@ define(function(require) {
      * @return {string}
      */
     util.dasherize = function(s) {
-        s = pascalize(s);
+        s = util.pascalize(s);
         // 这里把ABCD这种连续的大写，转成AbcD这种形式。
         // 如果`encodeURIComponent`，会变成`encodeUriComponent`，
         // 然后加横线后就是`encode-uri-component`得到正确的结果
@@ -133,7 +136,7 @@ define(function(require) {
      * @return {string}
      */
     util.constanize = function(s) {
-        s = pascalize(s);
+        s = util.pascalize(s);
         return s.toUpperCase();
     };
 

@@ -10,8 +10,15 @@ define(function (require) {
      */
     var exports = {
         init: function(session) {
-            this.visitor = session.visitor;
-            this.ader = session.adOwner;
+
+            if (session.visitor && session.adOwner) {
+                this.visitor = session.visitor;
+                this.ader = session.adOwner;
+            }
+            else {
+                this.visitor = session;
+            }
+
         }
     };
 

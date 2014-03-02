@@ -55,7 +55,7 @@ define(
             // 默认数据源可能是对象或者数组，当前的数据源也可能是对象或数组，按以下规则：
             //
             // - 默认数组 + 当前数组：将当前数组连接到默认的最后
-            // - 默认数组 + 当前对象：将当前对象和数组中最后一个是对象的东西合并
+            // - 默认数组 + 当前对象：将当前对象加到默认的最后
             // - 默认对象 + 当前数组：将默认放在数组第1个
             // - 默认对象 + 当前对象：做对象的合并
             if (u.isArray(defaultDatasource)) {
@@ -65,8 +65,7 @@ define(
                 }
                 // 默认数组 + 当前对象
                 else {
-                    extendLastObjectTypeValue(defaultDatasource, datasource);
-                    datasource = defaultDatasource;
+                    datasource = defaultDatasource.push(datasource);
                 }
             }
             else {

@@ -12,6 +12,7 @@ define(
         var util = require('er/util');
         var BaseModel = require('./BaseModel');
         var io = require('../io/serverIO');
+        var ecmaUtil = require('ecma/util');
 
         /**
          * 业务`Model`基类
@@ -77,8 +78,7 @@ define(
                 var startTime = model.get('startTime');
                 var endTime = model.get('endTime');
 
-                var time = require('ecma/util')
-                    .getTimeRange(startTime, endTime);
+                var time = ecmaUtil.getTimeRange(startTime, endTime);
                 return time;
             },
 
@@ -101,8 +101,16 @@ define(
             var url = this.get('url');
             var query = url.getQuery();
 
+            var defaultRange = ecmaUtil.getTimeRange({
+                outputFormat: 'YYYYMMDDHHmmss'
+            });
+
             query = u.chain(query)
                 .defaults(this.getDefaultArgs())
+                .defaults({
+                    startTime: defaultRange.begin,
+                    endTime: defaultRange.end
+                })
                 .extend(this.getExtraQuery())
                 .value();
 
