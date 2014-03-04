@@ -17,28 +17,46 @@
 
 ## 启动入口
 
-修改为：
-```
-<script>
-require(['ecma/main'] , function (main) {
-    main.init();
+在 `common/main` 中如此通过 MA-RIA 来启动系统：
+```javascript
+require('ecma/main').start().then(function () {
+    // custom system initialization
 });
-</script>
 ```
+`ecma/main` 会请求用户、常量数据后启动 ER，完成后可以进行额外的系统初始化（导航栏、用户信息区域的渲染等）。
 
 ## 用户信息和常量接口
 
-    ecma/system/user
-    ecma/system/constants
-
-分别用来提供用户信息和系统常量相关功能，目前只是简单的从对应接口读取数据来覆盖。
+`ecma/main` 负责请求后端用户和系统常量接口数据。
 
 两个接口的 URL 需要在 `common/config` 模块下的 `api.user` 和 `api.constants` 中进行配置。
 
-`user.visitor` 提供正在访问系统的用户的信息，`user.ader` 用来在管理员以他人身份登录系统时提供被登录用户的信息。
+用户数据接口有如下两种情况：
+
+1. 对于可能以他人身份登录系统的情况，`result` 需要符合如下格式：
+
+    ```javascript
+    {
+        visitor: {
+            // 当前登录用户自身信息
+        },
+
+        adOwner: {
+            // 被登录的广告主的信息
+        }
+    }
+
+2. 只会有一种身份登录的系统，直接在 `result` 中展开用户信息字段即可（非 1. 中所述情况时自动视作此情况）。
+
+读取完毕后，会在下面两个模块封装对应的数据：
+
+* `ecma/system/user`
+* `ecma/system/constants`
+
+`user.visitor` 提供正在访问系统的用户的信息，`user.ader` 用来在管理员以他人身份登录系统时提供被登录用户的信息（可能不存在）。
 
 
 ## util
 
 常用的单纯的数据操作工具被扩展到了 `underscore` 中，参见 `ecma/extension/underscore`。
-其他工具方法请添加到 `ecma/util` 中，目前提供 `genRequesters` 来通过配置生成远程数据读取的 `promise`。
+其他工具方法请添加到 `ecma/util` 中。
