@@ -78,6 +78,9 @@ define(
             if (toast) {
                 this.view.showToast(toast);
             }
+            if (typeof this.redirectAfterSubmit === 'function') {
+                this.redirectAfterSubmit(result);
+            }
         };
 
         /**
@@ -98,7 +101,7 @@ define(
             if (message && message.field) {
                 this.view.notifyErrors(message.field);
             }
-        }
+        };
 
         /**
          * 处理本地的验证错误
@@ -166,7 +169,7 @@ define(
             if (!handleFinishEvent.isDefaultPrevented()) {
                 this.redirectAfterCancel();
             }
-        }
+        };
 
         /**
          * 取消编辑时的确认提示
@@ -227,7 +230,7 @@ define(
             require('er/Deferred')
                 .when(this.submit(formData))
                 .ensure(this.view.enableSubmit());
-        }
+        };
 
         /**
          * 初始化交互行为

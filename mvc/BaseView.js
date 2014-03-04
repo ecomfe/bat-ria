@@ -40,7 +40,7 @@ define(
 
             // 作为子Action嵌入页面时，模板使用`xxxMain`这个target
             if (this.model && this.model.get('isChildAction')) {
-                templateName += 'Main';
+                templateName += '_child';
             }
 
             return templateName;

@@ -25,8 +25,6 @@ define(
 
         util.inherits(FormModel, BaseModel);
 
-        var datasource = require('er/datasource');
-
         /**
          * 表单缺省数据处理函数
          * 提供给需要转换key或者value换算、数据间依赖计算的情况
@@ -34,9 +32,9 @@ define(
          * @param {Object} 服务器成功响应的result对象，多个请求数据则为config为key的map
          * @return {Object} 处理完成的数据
          */
-        FormModel.prototype.manageDefaultData = function (data) {
+        FormModel.prototype.prepare = function (data) {
             return data;
-        }
+        };
 
         /**
          * 缺省数据的补丁函数
@@ -45,7 +43,7 @@ define(
          * @param {arguments} Promise传入回调提供的参数
          * @return {arguments} Promise传入回调提供的参数
          */
-        function _patchData() {
+        function _patchData () {
             return arguments;
         }
 
@@ -70,6 +68,14 @@ define(
          *
          * 若formRequester为Object，则必须（MUST）有一个key为defaultFormData
          */
+        FormModel.prototype.formRequester = null;
+        
+        // 提交接口的promise的生成函数
+        FormModel.prototype.sumbitRequester = null;
+
+        // 默认请求参数，针对defaultFormData的请求发送
+        FormModel.prototype.defaultArgs = {};
+
         FormModel.prototype.defaultDatasource = {
             rule: datasource.constant(require('./rule')),
             indirectData: [
@@ -77,18 +83,24 @@ define(
                     defaultFormData: {
                         retrieve: function (model) {
                             var formRequester = model.formRequester;
+                            var defaultArgs = model.defaultArgs;
                             if (formRequester) {
                                 if (typeof formRequester == 'object') {
                                     var requests = [];
                                     u.each(formRequester, function (api, key) {
-                                        requests.push(api());
+                                        if (key == 'defaultFormData' && defaultArgs) {
+                                            requests.push(api(defaultArgs));
+                                        }
+                                        else {
+                                            requests.push(api());
+                                        }
                                     });
                                     return require('er/Deferred').all(
                                         requests
                                     ).then( _patchData );
                                 }
                                 else {
-                                    return formRequester().then( model.manageDefaultData );
+                                    return formRequester(defaultArgs).then( model.prepare );
                                 }
                             }
                             else {
@@ -107,10 +119,10 @@ define(
                                 var indirectData = model.get('defaultFormData');
                                 patchData = u.object(keys, indirectData);
 
-                                var defaultData = model.manageDefaultData(patchData);
+                                var defaultData = model.prepare(patchData);
                                 u.each(defaultData, function (data, key) {
                                     model.set( key, data, {'silent': true} );
-                                })
+                                });
                             }
                             return datasource.constant('');
                         },
@@ -136,6 +148,7 @@ define(
          */
         FormModel.prototype.getSubmitData = function (formData) {
             var data = u.extend(formData, this.getExtraData());
+            data = this.filterData(data);
             return data;
         };
 
@@ -150,6 +163,7 @@ define(
 
         /**
          * 过滤提交数据
+         * 提交前可对所有数据进行操作，比如转换数据格式
          *
          * @param {Object} 
          */
@@ -166,10 +180,10 @@ define(
         FormModel.prototype.isFormDataChanged = function (formData) {
             var original = this.get('defaultFormData');
             return !u.isEqual( u.purify(formData, null, true), original);
-        }
+        };
 
         /**
-         * 检验表单数据有效性
+         * 检验表单数据有效性，除了控件自动检测之外的逻辑可以在这里扩展
          *
          * @param {Object} submitData 提交的数据，包含extraData
          * @return {meta.FieldError[] | true} 返回`true`则验证通过，否则返回错误集合

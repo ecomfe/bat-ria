@@ -18,8 +18,8 @@ define(
          */
         function initializeValidationRules() {
             // 加载所有验证规则
-            require('esui/validator/MaxLengthRule');
-            require('esui/validator/MinLengthRule');
+            var MaxLengthRule = require('esui/validator/MaxLengthRule');
+            var MinLengthRule = require('esui/validator/MinLengthRule');
             //require('ui/validator/OrientUrlRule');
             //require('ui/validator/CompareRule');
             var RequiredRule = require('esui/validator/RequiredRule');
@@ -69,6 +69,30 @@ define(
             }
 
             var Rule = require('esui/validator/Rule');
+
+            MaxLengthRule.prototype.getErrorMessage = function (control) {
+                if (control.get('maxErrorMessage')) {
+                    var getErrorMessage = Rule.prototype.getErrorMessage;
+                    getErrorMessage.apply(this, arguments);
+                }
+                var rangeErrorMessage = getRangeErrorMessage(control);
+                if (rangeErrorMessage) {
+                    return rangeErrorMessage;
+                }
+                return Rule.prototype.getErrorMessage.apply(this, arguments);
+            };
+
+            MinLengthRule.prototype.getErrorMessage = function (control) {
+                if (control.get('maxErrorMessage')) {
+                    var getErrorMessage = Rule.prototype.getErrorMessage;
+                    getErrorMessage.apply(this, arguments);
+                }
+                var rangeErrorMessage = getRangeErrorMessage(control);
+                if (rangeErrorMessage) {
+                    return rangeErrorMessage;
+                }
+                return Rule.prototype.getErrorMessage.apply(this, arguments);
+            };
             
             MaxRule.prototype.getErrorMessage = function (control) {
                 if (control.get('maxErrorMessage')) {
