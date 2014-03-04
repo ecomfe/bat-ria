@@ -45,7 +45,7 @@ define(function (require) {
                 loadingTimer = setTimeout(function () {
                     // 略微等待一段时间再真正隐藏，以免频繁串行请求带来过多闪烁
                     globalLoading.hide();
-                }, 1000);
+                }, 500);
             }
         }
     }
