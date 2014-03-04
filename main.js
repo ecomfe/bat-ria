@@ -43,7 +43,6 @@ define(
         }
 
         function erStart() {
-            activateExtensions();
             initErConfigs();
 
             // 启动er
@@ -51,6 +50,9 @@ define(
         }
 
         function start() {
+            // 先激活插件，后面的功能会使用
+            activateExtensions();
+
             return loadData()
                 .then(initData)
                 .then(erStart);
