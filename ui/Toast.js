@@ -12,6 +12,8 @@ define(
         var helper = require('esui/controlHelper');
         var Control = require('esui/Control');
 
+        var maskIdPrefix = 'ctrl-mask';
+
         /**
          * Toast控件
          *
@@ -27,20 +29,11 @@ define(
         Toast.defaultProperties = {
             duration: 3000,
             autoShow: true,
-            disposeOnHide: true
+            disposeOnHide: true,
+            mask: false
         };
 
         Toast.prototype.type = 'Toast';
-
-        /**
-         * 创建主元素
-         *
-         * @override
-         * @protected
-         */
-        Toast.prototype.createMain = function () {
-            return document.createElement('aside');
-        };
 
         /**
          * 初始化参数
@@ -132,6 +125,11 @@ define(
                 document.body.appendChild(this.main);
             }
 
+            if (this.mask) {
+                var zIndex = lib.getComputedStyle(this.main, 'z-index');
+                showMask(this, zIndex - 1);
+            }
+
             Control.prototype.show.apply(this, arguments);
             this.fire('show');
             clearTimeout(this.timer);
@@ -150,6 +148,9 @@ define(
          * @public
          */
         Toast.prototype.hide = function () {
+            if (this.mask) {
+                hideMask(this);
+            }
             Control.prototype.hide.apply(this, arguments);
             clearTimeout(this.timer);
             this.fire('hide');
@@ -181,6 +182,66 @@ define(
             Control.prototype.dispose.apply(this, arguments);
             this.detach();
         };
+
+        /**
+         * 显示遮盖层
+         * @param {ui.Toast} Toast 控件对象
+         */
+        function showMask(toast, zIndex) {
+            var mask = getMask(toast);
+            var clazz = [];
+            var maskClass = helper.getPartClasses(toast, 'mask').join(' ');
+
+            clazz.push(maskClass);
+
+            mask.className = clazz.join(' ');
+            mask.style.display = 'block';
+            mask.style.zIndex = zIndex;
+        }
+
+
+        /**
+         * 隐藏遮盖层
+         * @param {ui.Toast} Toast 控件对象
+         */
+        function hideMask(toast) {
+            var mask = getMask(toast);
+            if ('undefined' != typeof mask) {
+                lib.removeNode(mask);
+            }
+        }
+
+        /**
+         * 遮盖层初始化
+         * 
+         * @param {string} maskId 遮盖层domId
+         * @inner
+         */
+        function initMask(maskId) {
+            var el = document.createElement('div');
+            el.id = maskId;
+            document.body.appendChild(el);
+        }
+
+
+        /**
+         * 获取遮盖层dom元素
+         *
+         * @param {ui.Toast} 控件对象
+         * @inner
+         * @return {HTMLElement} 获取到的Mask元素节点.
+         */
+        function getMask(control) {
+            var dialogId = helper.getId(control);
+            var id = maskIdPrefix + '-' + dialogId;
+            var mask = lib.g(id);
+
+            if (!mask) {
+                initMask(id);
+            }
+
+            return lib.g(id);
+        }
 
         /**
          * 快捷显示信息的方法
