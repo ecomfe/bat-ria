@@ -34,6 +34,11 @@ define(function (require) {
         io.hooks.afterComplete = function() {
             loading.hide();
         };
+
+        var ajax = require('er/ajax');
+        ajax.hooks.beforeSend = function(xhr) {
+            xhr.setRequestHeader('X-Request-By', 'ERApplication');
+        };
     }
 
     return {
