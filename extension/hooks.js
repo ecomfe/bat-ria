@@ -5,6 +5,7 @@
 
 define(function (require) {
     var URI = require('urijs');
+    var loading = require('../ui/loading');
 
     function getAderArgMap() {
         var user = require('../system/user');
@@ -26,7 +27,18 @@ define(function (require) {
             if (argMap) {
                 options.url = URI(url).addQuery(argMap).toString();
             }
+
+            loading.show();
         }
+
+        io.hooks.afterComplete = function() {
+            loading.hide();
+        };
+
+        var ajax = require('er/ajax');
+        ajax.hooks.beforeSend = function(xhr) {
+            xhr.setRequestHeader('X-Request-By', 'ERApplication');
+        };
     }
 
     return {

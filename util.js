@@ -12,21 +12,26 @@ define(
         var io = require('./io/serverIO');
         var util = {};
 
-        util.genRequesters = function (apiConfig) {
-            if (typeof apiConfig === 'object') {
-                var config = u.clone(apiConfig);
-                u.each(config, function (url, name) {
-                    config[name] = function (data) {
-                        return io.post(url, data);
-                    };
+        util.genRequesters = function (url) {
+            if (u.isString(url)) {
+                // 只有一个URL，直接返回封装过的请求方法
+                return function (data) {
+                    return io.post(url, data);
+                };
+            }
+            else if (u.isObject(url)) {
+                // 是一个集合，那么每个项目都封装一下
+                var map = u.clone(url);
+                u.each(map, function (url, name) {
+                    if (u.isString(url)) {
+                        map[name] = function (data) {
+                            return io.post(url, data);
+                        };
+                    }
+                    // 如果不是string那可能封装过了
                 });
+                return map;
             }
-            else if (typeof apiConfig === 'string') {
-                var config = function (data) {
-                    return io.post(apiConfig, data);
-                }
-            }
-            return config;
         };
 
         util.getTimeRange = function (beginTime, endTime, options) {
@@ -186,7 +191,7 @@ define(
             function getDownloadContainer() {
                 var div = document.getElementById(divId);
                 if (!div) {
-                    div = document.createElement('div'),
+                    div = document.createElement('div');
                     div.id = divId;
                     div.style.display = 'none';
                     document.body.appendChild(div);

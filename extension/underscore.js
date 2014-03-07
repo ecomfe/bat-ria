@@ -44,6 +44,15 @@ define(function(require) {
         return purifiedObject;
     };
 
+    util.filterObject = function(obj, predicate, context) {
+        var result = {};
+        if (obj == null) return results;
+        u.each(obj, function(value, key) {
+            if (predicate.call(context, value, key, obj)) result[key] = value;
+        });
+        return result;
+    };
+
     /**
      * 去除字符串首尾空格
      *

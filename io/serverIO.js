@@ -8,7 +8,6 @@ define(function (require) {
     var Deferred = require('er/Deferred');
     var Dialog = require('esui/Dialog');
     var u = require('underscore');
-    var loading = require('../ui/loading');
 
     var io = {};
 
@@ -80,6 +79,7 @@ define(function (require) {
             if (typeof io.hooks.afterFailure === 'function') {
                 io.hooks.afterFailure(message);
             }
+            requestCompleteHandler(message);
             return Deferred.rejected(message);
         }
         // success
@@ -87,11 +87,14 @@ define(function (require) {
             if (typeof io.hooks.afterSuccess === 'function') {
                 io.hooks.afterSuccess(data);
             }
-            return Deferred.resolved(data.page || data.result);
+            var result = data.page || data.result;
+            requestCompleteHandler(result);
+            return Deferred.resolved(result);
         }
     }
 
-    function requestFailureHandler() {
+    function requestFailureHandler(data) {
+        requestCompleteHandler(data);
         return requestSuccessHandler(DEFAULT_SERVER_ERROR);
     }
 
@@ -99,7 +102,6 @@ define(function (require) {
         if (typeof io.hooks.afterComplete === 'function') {
             io.hooks.afterComplete(data);
         }
-        loading.hide();
         return data;
     }
 
@@ -118,15 +120,10 @@ define(function (require) {
             io.hooks.beforeRequest(options);
         }
 
-        loading.show();
-
         return ajax.request(options)
             .then(
                 requestSuccessHandler,
                 requestFailureHandler
-            )
-            .ensure(
-                requestCompleteHandler
             );
     };
 

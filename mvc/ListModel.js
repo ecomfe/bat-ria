@@ -61,7 +61,7 @@ define(
             listPage: [
                 {
                     retrieve: function (model) {
-                        return model.list(model.getQuery())
+                        return model.listRequester(model.getQuery())
                             .then(function(data) {
                                 var page = data;
                                 page.tableData = page.result;
