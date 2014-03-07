@@ -55,7 +55,7 @@ define(
          * @return {string}
          */
         FormAction.prototype.getToastMessage = function (result) {
-            message = this.toastMessage;
+            var message = this.toastMessage;
             if (message == null) {
                 return '';
             }
@@ -93,7 +93,7 @@ define(
         };
 
         /**
-         * 处理提交错误
+         * 处理提交错误(这个地方好像不是这么理解的)
          *
          * @param {Object} 失败时的message对象
          */
@@ -101,6 +101,7 @@ define(
             if (message && message.field) {
                 this.view.notifyErrors(message.field);
             }
+            this.view.showToast('保存失败');
         };
 
         /**
@@ -199,8 +200,7 @@ define(
          *
          * @param {object} 表单数据
          */
-        FormAction.prototype.submit = function (formData) {
-            var submitData = this.model.getSubmitData(formData);
+        FormAction.prototype.submit = function (submitData) {
             var localValidationResult = this.model.validateSubmitData(submitData);
             if (typeof localValidationResult === 'object') {
                 var handleResult = this.handleLocalValidationErrors(localValidationResult);
@@ -226,9 +226,10 @@ define(
         FormAction.prototype.submitHook = function () {
             this.view.disableSubmit();
             var formData = this.view.getFormData();
+            var submitData = this.model.getSubmitData(formData);
 
             require('er/Deferred')
-                .when(this.submit(formData))
+                .when(this.submit(submitData))
                 .ensure(this.view.enableSubmit());
         };
 

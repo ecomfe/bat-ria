@@ -78,9 +78,9 @@ define(
 
         FormModel.prototype.defaultDatasource = {
             rule: datasource.constant(require('./rule')),
-            indirectData: [
+            data: [
                 {
-                    defaultFormData: {
+                    __indirectData__: {
                         retrieve: function (model) {
                             var formRequester = model.formRequester;
                             var defaultArgs = model.defaultArgs;
@@ -104,7 +104,7 @@ define(
                                 }
                             }
                             else {
-                                return datasource.constant('');
+                                return datasource.constant({});
                             }
                         },
                         dump: false
@@ -114,17 +114,27 @@ define(
                     patch: {
                         retrieve: function (model) {
                             var formRequester = model.formRequester;
-                            if (formRequester && typeof formRequester == 'object') {
-                                var keys = u.keys(formRequester);
-                                var indirectData = model.get('defaultFormData');
-                                patchData = u.object(keys, indirectData);
+                            var indirectData = model.get('__indirectData__');
+                            var defaultData = null;
+                            if (formRequester) {
+                                if (typeof formRequester == 'object') {
+                                    var keys = u.keys(formRequester);
+                                    patchData = u.object(keys, indirectData);
 
-                                var defaultData = model.prepare(patchData);
-                                u.each(defaultData, function (data, key) {
-                                    model.set( key, data, {'silent': true} );
-                                });
+                                    defaultData = model.prepare(patchData);
+                                    u.each(defaultData, function (data, key) {
+                                        if (data) {
+                                            model.set( key, data, {'silent': true} );
+                                        }
+                                    });
+                                }
+                                else if (indirectData) {
+                                    defaultData = model.prepare(indirectData);
+                                    model.set( 'defaultFormData', defaultData, {'silent': true} );
+                                }
                             }
-                            return datasource.constant('');
+                            model.remove('__indirectData__');
+                            return datasource.constant({});
                         },
                         dump: true
                     }
@@ -188,7 +198,7 @@ define(
          * @param {Object} submitData 提交的数据，包含extraData
          * @return {meta.FieldError[] | true} 返回`true`则验证通过，否则返回错误集合
          */
-        FormModel.prototype.validateSubmitData = function (formData) {
+        FormModel.prototype.validateSubmitData = function (submitData) {
             return true;
         };
 

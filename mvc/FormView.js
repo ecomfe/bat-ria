@@ -62,10 +62,24 @@ define(
             inputs = form.getInputControls();
             u.each(inputs, function (input, index) {
                 var key = input.name;
-                if (u.has(formData, key)) {
-                    input.setValue(formData[key]);
+                if (formData) {
+                    if (u.has(formData, key)) {
+                        input.setValue(formData[key]);
+                    }
                 }
             });
+            this.setExtraFormData(formData);
+        };
+
+        /**
+         * 设置表单额外数据
+         * 这个接口提供给不是input的控件去扩展，自个玩去
+         * 不知道是不是又是可以砍掉的接口
+         *
+         * @param {Object} key：value形式的数据 key和input的name一一对应
+         */
+        FormView.prototype.setExtraFormData = function (formData) {
+            return;
         };
 
         /**
