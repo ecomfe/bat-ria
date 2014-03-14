@@ -1,4 +1,4 @@
-# MA-RIA 扩展
+# BAT-RIA 扩展
 
 ## 额外依赖的 edp 包
 
