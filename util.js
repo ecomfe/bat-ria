@@ -12,6 +12,12 @@ define(
         var io = require('./io/serverIO');
         var util = {};
 
+        /**
+         * 根据URL字符串生成请求发送器
+         *
+         * @param {string | Array.<string> | Object.<string, string>} url 请求路径或多个请求路径的集合
+         * @return {Function | Array.<Function> | Object.<string, Function>} 将对应的路径转换为发送器后返回
+         */
         util.genRequesters = function (url) {
             if (u.isString(url)) {
                 // 只有一个URL，直接返回封装过的请求方法
@@ -34,11 +40,11 @@ define(
             }
         };
 
-        util.getTimeRange = function (beginTime, endTime, options) {
+        util.getTimeRange = function (begin, end, options) {
 
             // 只有一个参数时，认为是options
             if (arguments.length === 1) {
-                options = beginTime;
+                options = begin;
             }
 
             var defaults = {
@@ -46,15 +52,16 @@ define(
                 outputFormat: 'Date'
             };
 
-            options = u.defaults(options || {}, defaults);
-
-            var begin;
-            var end;
+            options = u.defaults({}, options, defaults);
 
             // 解析输入，没有则使用默认时间
-            if (beginTime && endTime) {
-                begin = moment(beginTime, options.inputFormat);
-                end = moment(endTime, options.inputFormat);
+            if (begin && end) {
+                begin = u.isString(begin)
+                    ? moment(begin, options.inputFormat)
+                    : moment(begin);
+                end = u.isString(end)
+                    ? moment(end, options.inputFormat)
+                    : moment(end);
             }
             else {
                 var now = moment().startOf('day');
@@ -73,10 +80,22 @@ define(
                 begin = begin.format(options.outputFormat);
                 end = end.format(options.outputFormat);
             }
-            return {
-                begin: begin,
-                end: end
+
+            var keys = {
+                begin: options.beginKey || 'begin',
+                end: options.endKey || 'end'
             };
+
+            return u.mapKey(
+                {
+                    begin: begin,
+                    end: end
+                },
+                {
+                    begin: keys.begin,
+                    end: keys.end
+                }
+            );
         };
 
         util.toMap = function (list, key, opt_converter) {

@@ -53,6 +53,15 @@ define(function(require) {
         return result;
     };
 
+    util.mapKey = function(obj, map) {
+        var result = {};
+        if (obj == null) return results;
+        u.each(obj, function(value, key) {
+            result[map[key]] = value;
+        });
+        return result;
+    };
+
     /**
      * 去除字符串首尾空格
      *

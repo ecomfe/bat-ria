@@ -58,28 +58,44 @@ define(
         * 默认数据源
         */
         ListModel.prototype.defaultDatasource = {
-            listPage: [
-                {
-                    retrieve: function (model) {
-                        return model.listRequester(model.getQuery())
-                            .then(function(data) {
-                                var page = data;
-                                page.tableData = page.result;
-                                delete page.result;
-                                return page;
-                            });
-                    },
-                    dump: true
-                }
-            ],
+            listPage: {
+                retrieve: function (model) {
+                    return model.listRequester(model.getQuery())
+                        .then(function(data) {
+                            var page = data;
+                            page.tableData = page.result;
+                            delete page.result;
+                            return page;
+                        });
+                },
+                dump: true
+            },
 
             // 展示时间区间
-            time: function (model) {
-                var startTime = model.get('startTime');
-                var endTime = model.get('endTime');
+            time: {
+                retrieve: function (model) {
+                    var startTime = model.get('startTime');
+                    var endTime = model.get('endTime');
 
-                var time = ecmaUtil.getTimeRange(startTime, endTime);
-                return time;
+                    // 有输入参数
+                    if (startTime && endTime) {
+                        return {
+                            time: ecmaUtil.getTimeRange(startTime, endTime)
+                        };
+                    }
+
+                    // 无输入参数，取默认配置，若无则不需要输出
+                    var range = model.defaultTimeRange;
+                    if (range) {
+                        return {
+                            time: range
+                        };
+                    }
+                    else {
+                        return {};
+                    }
+                },
+                dump: true
             },
 
             // 分页URL模板，就是当前URL中把`page`字段替换掉
@@ -97,30 +113,64 @@ define(
             }
         };
 
+        /**
+         * 默认选择的时间范围
+         *
+         * @type {?{begin: Date, end: Date}}
+         * @protected
+         */
+        ListModel.prototype.defaultTimeRange = null;
+
+        /**
+         * 默认选择的时间范围
+         *
+         * @return {Object}
+         * @protected
+         */
         ListModel.prototype.getQuery = function () {
             var url = this.get('url');
             var query = url.getQuery();
 
-            var defaultRange = ecmaUtil.getTimeRange({
-                outputFormat: 'YYYYMMDDHHmmss'
-            });
+            // 取一下默认时间配置
+            var range = this.defaultTimeRange;
+            if (range) {
+                range = ecmaUtil.getTimeRange(range.begin, range.end, {
+                    outputFormat: 'YYYYMMDDHHmmss',
+                    beginKey: 'startTime',
+                    endKey: 'endTime'
+                });
+            }
+            else {
+                range = {};
+            }
 
+            // 合并默认参数、附加参数，最后再统一处理一下输出
             query = u.chain(query)
                 .defaults(this.getDefaultArgs())
-                .defaults({
-                    startTime: defaultRange.begin,
-                    endTime: defaultRange.end
-                })
+                .defaults(range)
                 .extend(this.getExtraQuery())
                 .value();
 
             return this.filterQuery(query);
         };
 
+        /**
+         * 获取附加的请求参数
+         *
+         * @return {Object}
+         * @protected
+         */
         ListModel.prototype.getExtraQuery = function () {
             return {};
         };
 
+        /**
+         * 对合并好的请求参数进行统一的后续处理
+         *
+         * @param {Object} query 需要处理的参数对象
+         * @return {Object}
+         * @protected
+         */
         ListModel.prototype.filterQuery = function(query) {
             return query;
         };
