@@ -12,6 +12,7 @@ define(
         var u = require('underscore');
         var Deferred = require('er/Deferred');
         var BaseAction = require('./BaseAction');
+        var locator = require('er/locator');
 
         /**
          * 表单Action基类
@@ -85,10 +86,15 @@ define(
 
         /**
          * 执行提交成功后的跳转操作
+         * 在有referrer的情况下跳转至referrer
+         * 在没有referrer的情况下history.back()
+         *
+         * 可在业务action里边重写
          *
          * @param {Object} result 提交后服务器返回的数据
          */
         FormAction.prototype.redirectAfterSubmit = function (result) {
+            this.back(true);
             return;
         };
 
@@ -106,18 +112,16 @@ define(
 
         /**
          * 处理本地的验证错误
+         * 没有name的controls请自行扩展处理
          *
          * @param {meta.FieldError[]} errors 本地验证得到的错误集合
-         * @return {Mixed} 处理完后的返回值，返回对象的情况下将显示错误，
-         * 其它情况认为没有本地的验证错误，将进入正常的提交流程
+         * @return {Mixed} 处理完后的返回值，返回对象的情况下将显示错误
          */
         FormAction.prototype.handleLocalValidationErrors = function (errors) {
-            var wrappedError = {
-                field: errors
-            };
-            this.view.notifyErrors(wrappedError);
-
-            return wrappedError;
+            if (typeof errors === 'object') {
+                this.view.notifyErrors(errors);
+                return errors;
+            }
         };
 
         /**
@@ -155,8 +159,9 @@ define(
 
         /**
          * 取消编辑的操作
+         * TODO: 把回滚表单数据放到reset按钮的逻辑里边
          * submitcancel 回滚表单数据，使用原始数据重新填充
-         * handlefinish 执行取消编辑后重定向操作
+         * aftercancel 执行取消编辑后重定向操作
          */
         FormAction.prototype.cancel = function () {
             var submitCancelEvent = this.fire('submitcancel');
@@ -165,7 +170,7 @@ define(
                 this.view.rollbackFormData();
             }
 
-            var handleFinishEvent = this.fire('handlefinish');
+            var handleFinishEvent = this.fire('aftercancel');
 
             if (!handleFinishEvent.isDefaultPrevented()) {
                 this.redirectAfterCancel();
@@ -186,12 +191,20 @@ define(
                 this.view.waitConfirm(options)
                     .then(u.bind(this.cancel, this));
             }
+            else {
+                this.cancel();
+            }
         };
 
         /**
          * 在取消编辑后重定向
+         * 在有referrer的情况下跳转至referrer
+         * 在没有referrer的情况下history.back()
+         *
+         * 可在业务action里边重写
          */
         FormAction.prototype.redirectAfterCancel = function () {
+            this.back(true);
             return;
         };
 
@@ -202,21 +215,25 @@ define(
          */
         FormAction.prototype.submit = function (submitData) {
             var localValidationResult = this.model.validateSubmitData(submitData);
-            if (typeof localValidationResult === 'object') {
+            if (localValidationResult !== true) {
                 var handleResult = this.handleLocalValidationErrors(localValidationResult);
                 return Deferred.rejected(handleResult);
             }
 
-            try {
-                var submitRequester = this.model.submitRequester;
-                return submitRequester(submitData)
-                    .then(
-                        u.bind(this.handleSubmitResult, this),
-                        u.bind(this.handleSubmitError, this)
-                    );
-            }
-            catch (ex) {
-                return Deferred.rejected(ex);
+            var handleBeforeSubmit = this.fire('beforesubmit');
+
+            if (!handleBeforeSubmit.isDefaultPrevented()) {
+                try {
+                    var submitRequester = this.model.submitRequester;
+                    return submitRequester(submitData)
+                        .then(
+                            u.bind(this.handleSubmitResult, this),
+                            u.bind(this.handleSubmitError, this)
+                        );
+                }
+                catch (ex) {
+                    return Deferred.rejected(ex);
+                }
             }
         };
 

@@ -89,6 +89,10 @@ define(
          * @param {meta.FieldError[]} errors.field 出现错误的字段集合
          */
         FormView.prototype.notifyErrors = function (errors) {
+            if (typeof errors !== 'object') {
+                return;
+            }
+
             var Validity = require('esui/validator/Validity');
             var ValidityState = require('esui/validator/ValidityState');
             var form = this.get('form');
@@ -96,7 +100,7 @@ define(
             u.each(errors, function (field, message){
                 var state = new ValidityState(false, message);
                 var validity = new Validity();
-                validity.addState('server', state);
+                validity.addState('invalid', state);
 
                 var input = form.getInputControls(field)[0];
                 if (input && typeof input.showValidity === 'function') {

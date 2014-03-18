@@ -26,47 +26,11 @@ define(
         util.inherits(FormModel, BaseModel);
 
         /**
-         * 表单缺省数据处理函数
-         * 提供给需要转换key或者value换算、数据间依赖计算的情况
-         *
-         * @param {Object} 服务器成功响应的result对象，多个请求数据则为config为key的map
-         * @return {Object} 处理完成的数据
-         */
-        FormModel.prototype.prepare = function (data) {
-            return data;
-        };
-
-        /**
-         * 缺省数据的补丁函数
-         * 多个请求发送会丢失key值，暂时这么打补丁把key补回来
-         *
-         * @param {arguments} Promise传入回调提供的参数
-         * @return {arguments} Promise传入回调提供的参数
-         */
-        function _patchData () {
-            return arguments;
-        }
-
-        /**
          * 表单默认数据配置
          *
          * @rule 常用的校验规则
+         * @formRequester 常规的缺省表单数据promise (可选)
          *
-         * @defaultFormData 常规的缺省表单数据 (支持多接口并发) (可选)
-         * 配置要求 model.formRequester {function | Object} 
-         *
-         * 格式：
-         * function: 
-         *      function () { io.request() }
-         * Object:
-         *      { 
-         *          defaultFormData: function () { 
-         *              io.request() 
-         *          }, 
-         *          ...
-         *      }
-         *
-         * 若formRequester为Object，则必须（MUST）有一个key为defaultFormData
          */
         FormModel.prototype.formRequester = null;
         
@@ -78,68 +42,24 @@ define(
 
         FormModel.prototype.defaultDatasource = {
             rule: datasource.constant(require('./rule')),
-            data: [
-                {
-                    __indirectData__: {
-                        retrieve: function (model) {
-                            var formRequester = model.formRequester;
-                            var defaultArgs = model.defaultArgs;
-                            if (formRequester) {
-                                if (typeof formRequester == 'object') {
-                                    var requests = [];
-                                    u.each(formRequester, function (api, key) {
-                                        if (key == 'defaultFormData' && defaultArgs) {
-                                            requests.push(api(defaultArgs));
-                                        }
-                                        else {
-                                            requests.push(api());
-                                        }
-                                    });
-                                    return require('er/Deferred').all(
-                                        requests
-                                    ).then( _patchData );
-                                }
-                                else {
-                                    return formRequester(defaultArgs).then( model.prepare );
-                                }
-                            }
-                            else {
-                                return datasource.constant({});
-                            }
-                        },
-                        dump: false
+            defaultFormData: {
+                retrieve: function (model) {
+                    if (model.get('defaultFormData')) {
+                        return model.get('defaultFormData');
+                    }
+                    else {
+                        var formRequester = model.formRequester;
+                        var defaultArgs = model.defaultArgs;
+                        if (formRequester) {
+                            return formRequester(defaultArgs);
+                        }
+                        else {
+                            return {};
+                        }
                     }
                 },
-                {
-                    patch: {
-                        retrieve: function (model) {
-                            var formRequester = model.formRequester;
-                            var indirectData = model.get('__indirectData__');
-                            var defaultData = null;
-                            if (formRequester) {
-                                if (typeof formRequester == 'object') {
-                                    var keys = u.keys(formRequester);
-                                    patchData = u.object(keys, indirectData);
-
-                                    defaultData = model.prepare(patchData);
-                                    u.each(defaultData, function (data, key) {
-                                        if (data) {
-                                            model.set( key, data, {'silent': true} );
-                                        }
-                                    });
-                                }
-                                else if (indirectData) {
-                                    defaultData = model.prepare(indirectData);
-                                    model.set( 'defaultFormData', defaultData, {'silent': true} );
-                                }
-                            }
-                            model.remove('__indirectData__');
-                            return datasource.constant({});
-                        },
-                        dump: true
-                    }
-                }
-            ]
+                dump: false
+            }
         };
 
         /**
@@ -189,14 +109,16 @@ define(
          */
         FormModel.prototype.isFormDataChanged = function (formData) {
             var original = this.get('defaultFormData');
-            return !u.isEqual( u.purify(formData, null, true), original);
+            return !u.isEqual( u.purify(formData, null, true), u.purify(original, null, true));
         };
 
         /**
          * 检验表单数据有效性，除了控件自动检测之外的逻辑可以在这里扩展
          *
          * @param {Object} submitData 提交的数据，包含extraData
-         * @return {meta.FieldError[] | true} 返回`true`则验证通过，否则返回错误集合
+         * @return {meta.FieldError[] | true} 
+         *         {field: {name: message}}
+         *         返回`true`则验证通过
          */
         FormModel.prototype.validateSubmitData = function (submitData) {
             return true;
