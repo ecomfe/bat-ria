@@ -12,6 +12,7 @@ define(
         var u = require('underscore');
         var Deferred = require('er/Deferred');
         var BaseAction = require('./BaseAction');
+        var locator = require('er/locator');
 
         /**
          * 表单Action基类
@@ -55,17 +56,17 @@ define(
          * @return {string}
          */
         FormAction.prototype.getToastMessage = function (result) {
-            return '保存成功';
-        };
+            var message = this.toastMessage;
+            if (message == null) {
+                return '';
+            }
 
-        /**
-         * 处理提交数据时发生的错误，默认无行为，如验证信息显示等需要实现此方法
-         *
-         * @param {Object} 服务器返回的message
-         * @return {boolean} 返回`true`表示错误已经处理完毕
-         */
-        FormAction.prototype.handleSubmitError = function () {
-            return true;
+            if (message) {
+                return u.template(message, result || {});
+            }
+            else {
+                return '保存成功';
+            }
         };
 
         /**
@@ -74,44 +75,53 @@ define(
          * @param {Object} result 提交成功后返回的内容
          */
         FormAction.prototype.handleSubmitResult = function (result) {
-            // 默认成功后跳转回列表页
             var toast = this.getToastMessage(result);
             if (toast) {
                 this.view.showToast(toast);
+            }
+            if (typeof this.redirectAfterSubmit === 'function') {
+                this.redirectAfterSubmit(result);
             }
         };
 
         /**
          * 执行提交成功后的跳转操作
+         * 在有referrer的情况下跳转至referrer
+         * 在没有referrer的情况下history.back()
+         *
+         * 可在业务action里边重写
          *
          * @param {Object} result 提交后服务器返回的数据
          */
         FormAction.prototype.redirectAfterSubmit = function (result) {
-            // 默认返回列表页
-            return false;
+            this.back(true);
+            return;
         };
 
         /**
          * 处理提交错误
          *
+         * @param {Object} 失败时的message对象
          */
-        function _handleError() {
-        }
+        FormAction.prototype.handleSubmitError = function (message) {
+            if (message && message.field) {
+                this.view.notifyErrors(message.field);
+            }
+            this.view.showToast('保存失败');
+        };
 
         /**
          * 处理本地的验证错误
+         * 没有name的controls请自行扩展处理
          *
          * @param {meta.FieldError[]} errors 本地验证得到的错误集合
-         * @return {Mixed} 处理完后的返回值，返回对象的情况下将显示错误，
-         * 其它情况认为没有本地的验证错误，将进入正常的提交流程
+         * @return {Mixed} 处理完后的返回值，返回对象的情况下将显示错误
          */
         FormAction.prototype.handleLocalValidationErrors = function (errors) {
-            var wrappedError = {
-                fields: errors
-            };
-            this.view.notifyErrors(wrappedError);
-
-            return wrappedError;
+            if (typeof errors === 'object') {
+                this.view.notifyErrors(errors);
+                return errors;
+            }
         };
 
         /**
@@ -140,28 +150,37 @@ define(
 
         /**
          * 获取取消编辑时的提示信息内容
+         *
+         * @return {string}
          */
         FormAction.prototype.getCancelConfirmMessage = function () {
             return this.cancelConfirmMessage;
         };
 
-        function _cancel() {
+        /**
+         * 取消编辑的操作
+         * TODO: 把回滚表单数据放到reset按钮的逻辑里边
+         * submitcancel 回滚表单数据，使用原始数据重新填充
+         * aftercancel 执行取消编辑后重定向操作
+         */
+        FormAction.prototype.cancel = function () {
             var submitCancelEvent = this.fire('submitcancel');
-            var handleFinishEvent = this.fire('handlefinish');
 
-            this.view.rollbackFormData();
+            if (!submitCancelEvent.isDefaultPrevented()) {
+                this.view.rollbackFormData();
+            }
 
-            if (!submitCancelEvent.isDefaultPrevented()
-                && !handleFinishEvent.isDefaultPrevented()
-            ) {
+            var handleFinishEvent = this.fire('aftercancel');
+
+            if (!handleFinishEvent.isDefaultPrevented()) {
                 this.redirectAfterCancel();
             }
-        }
+        };
 
         /**
-         * 取消编辑
+         * 取消编辑时的确认提示
          */
-        FormAction.prototype.cancelEdit = function () {
+        FormAction.prototype.cancelHook = function () {
             var formData = this.view.getFormData();
 
             if (this.model.isFormDataChanged(formData)) {
@@ -170,51 +189,66 @@ define(
                     content: this.getCancelConfirmMessage()
                 };
                 this.view.waitConfirm(options)
-                    .then(u.bind(_cancel, this));
+                    .then(u.bind(this.cancel, this));
+            }
+            else {
+                this.cancel();
             }
         };
 
         /**
          * 在取消编辑后重定向
+         * 在有referrer的情况下跳转至referrer
+         * 在没有referrer的情况下history.back()
+         *
+         * 可在业务action里边重写
          */
         FormAction.prototype.redirectAfterCancel = function () {
+            this.back(true);
             return;
         };
 
         /**
          * 提交表单
          *
-         * @param {object} 表单原始数据
+         * @param {object} 表单数据
          */
-        FormAction.prototype.submit = function (formData) {
-            var submitData = this.model.getSubmitData(formData);
-            var localValidationResult = this.model.validateFormData(submitData);
-            if (typeof localValidationResult === 'object') {
+        FormAction.prototype.submit = function (submitData) {
+            var localValidationResult = this.model.validateSubmitData(submitData);
+            if (localValidationResult !== true) {
                 var handleResult = this.handleLocalValidationErrors(localValidationResult);
                 return Deferred.rejected(handleResult);
             }
 
-            try {
-                var submitRequester = this.model.submitRequester;
-                return submitRequester(submitData)
-                    .then(
-                        u.bind(this.handleSubmitResult, this),
-                        u.bind(_handleError, this)
-                    );
-            }
-            catch (ex) {
-                return Deferred.rejected(ex);
+            var handleBeforeSubmit = this.fire('beforesubmit');
+
+            if (!handleBeforeSubmit.isDefaultPrevented()) {
+                try {
+                    var submitRequester = this.model.submitRequester;
+                    return submitRequester(submitData)
+                        .then(
+                            u.bind(this.handleSubmitResult, this),
+                            u.bind(this.handleSubmitError, this)
+                        );
+                }
+                catch (ex) {
+                    return Deferred.rejected(ex);
+                }
             }
         };
 
+        /**
+         * 提交表单前锁定提交，完成提交操作后释放提交
+         */
         FormAction.prototype.submitHook = function () {
             this.view.disableSubmit();
             var formData = this.view.getFormData();
+            var submitData = this.model.getSubmitData(formData);
 
             require('er/Deferred')
-                .when(this.submit(formData))
+                .when(this.submit(submitData))
                 .ensure(this.view.enableSubmit());
-        }
+        };
 
         /**
          * 初始化交互行为
@@ -225,7 +259,7 @@ define(
         FormAction.prototype.initBehavior = function () {
             BaseAction.prototype.initBehavior.apply(this, arguments);
             this.view.on('submit', this.submitHook, this);
-            this.view.on('cancel', this.cancelEdit, this);
+            this.view.on('cancel', this.cancelHook, this);
         };
         
         return FormAction;

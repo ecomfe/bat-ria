@@ -48,7 +48,29 @@ define(
 
             return model;
         };
+
+        /**
+         * 返回来源URL，无来源URL时可指定一个默认地址
+         *
+         * @param {string | URL} [defaultURL] 无来源URL时的跳转地址，
+         * @param {boolean} [isForce] 强制跳转至历史记录
+         * @protected
+         * @override
+         */
+        BaseAction.prototype.back = function (defaultURL, isForce) {
+            if (arguments.length < 2) {
+                isForce = (typeof arguments[0] === 'boolean' ? arguments[0] : false);
+            }
+            var referrer = this.context && this.context.referrer;
+            var url = referrer || (typeof defaultURL === 'string' ? defaultURL : '');
+            if (url) {
+                this.redirect(url);
+            }
+            else if (isForce) {
+                window.history.back();
+            }
+        };
         
         return BaseAction;
     }
-);        
+);
