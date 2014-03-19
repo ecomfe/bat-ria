@@ -62,35 +62,50 @@ define(
             inputs = form.getInputControls();
             u.each(inputs, function (input, index) {
                 var key = input.name;
-                if (u.has(formData, key)) {
-                    input.setValue(formData[key]);
+                if (formData) {
+                    if (u.has(formData, key)) {
+                        input.setValue(formData[key]);
+                    }
                 }
             });
+            this.setExtraFormData(formData);
+        };
+
+        /**
+         * 设置表单额外数据
+         * 这个接口提供给不是input的控件去扩展，自个玩去
+         * 不知道是不是又是可以砍掉的接口
+         *
+         * @param {Object} key：value形式的数据 key和input的name一一对应
+         */
+        FormView.prototype.setExtraFormData = function (formData) {
+            return;
         };
 
         /**
          * 向用户通知提交错误信息，默认根据`field`字段查找对应`name`的控件并显示错误信息
          *
-         * @param {Object} errors 错误信息
-         * @param {meta.FieldError[]} errors.fields 出现错误的字段集合
+         * @param {Object} errors 错误信息，每个key为控件`name`，value为`errorMessage`
          */
         FormView.prototype.notifyErrors = function (errors) {
+            if (typeof errors !== 'object') {
+                return;
+            }
+
             var Validity = require('esui/validator/Validity');
             var ValidityState = require('esui/validator/ValidityState');
             var form = this.get('form');
 
-            for (var i = 0; i < errors.fields.length; i++) {
-                var fail = errors.fields[i];
-
-                var state = new ValidityState(false, fail.message);
+            u.each(errors, function (field, message){
+                var state = new ValidityState(false, message);
                 var validity = new Validity();
-                validity.addState('server', state);
+                validity.addState('invalid', state);
 
-                var input = form.getInputControls(fail.field)[0];
+                var input = form.getInputControls(field)[0];
                 if (input && typeof input.showValidity === 'function') {
                     input.showValidity(validity);
                 }
-            }
+            });
         };
 
         /**

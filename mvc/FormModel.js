@@ -25,21 +25,37 @@ define(
 
         util.inherits(FormModel, BaseModel);
 
-        var datasource = require('er/datasource');
+        /**
+         * 表单默认数据配置
+         *
+         * @rule 常用的校验规则
+         * @formRequester 常规的缺省表单数据promise (可选)
+         *
+         */
+        FormModel.prototype.formRequester = null;
+        
+        // 提交接口的promise的生成函数
+        FormModel.prototype.sumbitRequester = null;
+
+        // 默认请求参数，针对defaultFormData的请求发送
+        FormModel.prototype.defaultArgs = {};
+
         FormModel.prototype.defaultDatasource = {
             rule: datasource.constant(require('./rule')),
             defaultFormData: {
                 retrieve: function (model) {
-                    var formRequester = model.formRequester;
-                    if (formRequester) {
-                        //var defaultParam = model.defaultParam;
-                        return formRequester().then(function(data){
-                            var res = data.result;
-                            return res;
-                        });
+                    if (model.get('defaultFormData')) {
+                        return model.get('defaultFormData');
                     }
                     else {
-                        return datasource.constant({});
+                        var formRequester = model.formRequester;
+                        var defaultArgs = model.defaultArgs;
+                        if (formRequester) {
+                            return formRequester(defaultArgs);
+                        }
+                        else {
+                            return {};
+                        }
                     }
                 },
                 dump: false
@@ -47,7 +63,7 @@ define(
         };
 
         /**
-         * 获取缺省获取数据
+         * 获取缺省数据
          *
          * @return {Object}
          */
@@ -62,11 +78,12 @@ define(
          */
         FormModel.prototype.getSubmitData = function (formData) {
             var data = u.extend(formData, this.getExtraData());
+            data = this.filterData(data);
             return data;
         };
 
         /**
-         * 为表单数据附加数据
+         * 为表单数据附加数据(比如上传文件的url)
          *
          * @param {Object} 附加数据
          */
@@ -76,6 +93,7 @@ define(
 
         /**
          * 过滤提交数据
+         * 提交前可对所有数据进行操作，比如转换数据格式
          *
          * @param {Object} 
          */
@@ -91,16 +109,18 @@ define(
          */
         FormModel.prototype.isFormDataChanged = function (formData) {
             var original = this.get('defaultFormData');
-            return !u.isEqual(formData, original);
-        }
+            return !u.isEqual( u.purify(formData, null, true), u.purify(original, null, true));
+        };
 
         /**
-         * 检验表单数据有效性
+         * 检验表单数据有效性，除了控件自动检测之外的逻辑可以在这里扩展
          *
-         * @param {Object} formData 提交的数据
-         * @return {meta.FieldError[] | true} 返回`true`则验证通过，否则返回错误集合
+         * @param {Object} submitData 提交的数据，包含extraData
+         * @return {meta.FieldError[] | true} 
+         *         {field: {name: message}}
+         *         返回`true`则验证通过
          */
-        FormModel.prototype.validateFormData = function (formData) {
+        FormModel.prototype.validateSubmitData = function (submitData) {
             return true;
         };
 
