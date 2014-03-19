@@ -95,7 +95,6 @@ define(
          */
         FormAction.prototype.redirectAfterSubmit = function (result) {
             this.back(true);
-            return;
         };
 
         /**
@@ -180,7 +179,7 @@ define(
         /**
          * 取消编辑时的确认提示
          */
-        FormAction.prototype.cancelHook = function () {
+        FormAction.prototype.cancelEdit = function () {
             var formData = this.view.getFormData();
 
             if (this.model.isFormDataChanged(formData)) {
@@ -205,7 +204,6 @@ define(
          */
         FormAction.prototype.redirectAfterCancel = function () {
             this.back(true);
-            return;
         };
 
         /**
@@ -240,7 +238,7 @@ define(
         /**
          * 提交表单前锁定提交，完成提交操作后释放提交
          */
-        FormAction.prototype.submitHook = function () {
+        FormAction.prototype.submitEdit = function () {
             this.view.disableSubmit();
             var formData = this.view.getFormData();
             var submitData = this.model.getSubmitData(formData);
@@ -258,8 +256,8 @@ define(
          */
         FormAction.prototype.initBehavior = function () {
             BaseAction.prototype.initBehavior.apply(this, arguments);
-            this.view.on('submit', this.submitHook, this);
-            this.view.on('cancel', this.cancelHook, this);
+            this.view.on('submit', this.submitEdit, this);
+            this.view.on('cancel', this.cancelEdit, this);
         };
         
         return FormAction;

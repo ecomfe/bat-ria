@@ -20,8 +20,6 @@ define(
             // 加载所有验证规则
             var MaxLengthRule = require('esui/validator/MaxLengthRule');
             var MinLengthRule = require('esui/validator/MinLengthRule');
-            //require('ui/validator/OrientUrlRule');
-            //require('ui/validator/CompareRule');
             var RequiredRule = require('esui/validator/RequiredRule');
             var PatternRule = require('esui/validator/PatternRule');
             var MaxRule = require('esui/validator/MaxRule');
@@ -135,102 +133,6 @@ define(
         }
 
         /**
-         * 添加通用的表格单元格内容输出方法
-         *
-         * @ignore
-         */
-        function addTableCellRenderers() {
-            var Table = require('esui/Table');
-
-            /**
-             * 创建一个带命令的元素
-             *
-             * 具体参考`esui.extension.Command`扩展的说明
-             *
-             * @param {Object} config 配置项
-             * @param {string} config.command 命令名称
-             * @param {string} config.args 命令参数
-             * @param {string} [config.text=""] 显示的文本内容
-             * @param {string} [config.tagName="span"] 使用的元素名称
-             * @return {string}
-             */
-            Table.command = function (config) {
-                var data = {
-                    tagName: 'span',
-                    text: ''
-                };
-                u.extend(data, config);
-
-                var tagName = u.escape(data.tagName);
-                var html = '<' + tagName;
-                if (data.className) {
-                    html += ' class="' + u.escape(data.className) + '"';
-                }
-                html += ' data-command="' + u.escape(data.command) + '"';
-                if (data.args) {
-                    html += ' data-command-args="' + u.escape(data.args) + '"';
-                }
-                html += '>' + u.escape(data.text) + '</' + tagName + '>';
-                return html;
-            };
-
-            /**
-             * 创建操作列的HTML
-             *
-             * @param {Object[]} config 操作配置
-             * @return {string}
-             */
-            Table.operations = function (config) {
-                var html = u.map(
-                    config,
-                    function (item) {
-                        // 如果没有权限就不显示了
-                        if (item.auth === false) {
-                            return '';
-                        }
-
-                        // 操作分为链接式或命令式2类
-                        if (item.url) {
-                            return '<a href="' + u.escape(item.url) + '"'
-                                + ' class="table-operation table-operation-'
-                                    + u.escape(item.type) + '"'
-                                + ' data-redirect="global">'
-                                + u.escape(item.text)
-                                + '</a>';
-                        }
-                        else {
-                            var className = 'table-operation '
-                                + 'table-operation-' + u.escape(item.type);
-                            var options = {
-                                className: className,
-                                text: item.text,
-                                command: item.command,
-                                args: item.args,
-                                tagName: config.tagName
-                            };
-                            return Table.command(options);
-                        }
-                    }
-                );
-
-                return html.join('');
-            };
-
-            /**
-             * 生成状态列HTML
-             *
-             * @param {Object} status 状态配置项
-             * @param {string} status.type 类型名称
-             * @param {string} status.text 类型中文
-             * @return {string}
-             */
-            Table.status = function (status) {
-                return '<span class="table-status-' + u.escape(status.type)
-                    + '">' + status.text + '</span>';
-            };
-        }
-
-        /**
          * 为几个控件添加链接模式的内容模板
          *
          * @ignore
@@ -238,7 +140,7 @@ define(
         function addControlLinkMode() {
             var CommandMenu = require('esui/CommandMenu');
 
-            CommandMenu.prototype.linkTemplate = 
+            CommandMenu.prototype.linkTemplate =
                 '<a target="${target}" href="${href}">${text}</a>';
 
             CommandMenu.prototype.getItemHTML = function (item) {
@@ -271,7 +173,6 @@ define(
 
         function activate() {
             initializeValidationRules();
-            addTableCellRenderers();
             addControlLinkMode();
         }
 

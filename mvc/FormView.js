@@ -85,8 +85,7 @@ define(
         /**
          * 向用户通知提交错误信息，默认根据`field`字段查找对应`name`的控件并显示错误信息
          *
-         * @param {Object} errors 错误信息
-         * @param {meta.FieldError[]} errors.field 出现错误的字段集合
+         * @param {Object} errors 错误信息，每个key为控件`name`，value为`errorMessage`
          */
         FormView.prototype.notifyErrors = function (errors) {
             if (typeof errors !== 'object') {
