@@ -6,7 +6,7 @@
  * @date $DATE$
  */
 define(
-    function() {
+    function(require) {
         var ajax = require('er/ajax');
         var etpl = require('etpl');
         var template = etpl;
@@ -153,7 +153,7 @@ define(
                     var extensions = getExtensionDependencies(text);
                     var dependencies = controls.concat(extensions);
 
-                    window.require(dependencies, function () { load(text); });
+                    require(dependencies, function () { load(text); });
                 }
 
                 var options = {
