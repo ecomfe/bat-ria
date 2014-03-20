@@ -118,6 +118,7 @@ define(
                     zIndex = 0;
                 }
             }
+            return zIndex;
         }
 
         /**
