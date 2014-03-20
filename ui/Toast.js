@@ -109,6 +109,17 @@ define(
             }
         );
 
+        function getZIndex(elem) {
+            var zIndex = lib.getComputedStyle(elem, 'z-index');
+            if (zIndex === '' || zIndex == null) {
+                if (elem.currentStyle) {
+                    zIndex = elem.currentStyle.zIndex; //zIndex总是绝对值，所以可以从这里取
+                } else {
+                    zIndex = 0;
+                }
+            }
+        }
+
         /**
          * 显示提示信息
          *
@@ -126,7 +137,7 @@ define(
             }
 
             if (this.mask) {
-                var zIndex = lib.getComputedStyle(this.main, 'z-index');
+                var zIndex = getZIndex(this.main);
                 showMask(this, zIndex - 1);
             }
 
