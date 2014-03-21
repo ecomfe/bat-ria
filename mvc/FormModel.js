@@ -37,15 +37,15 @@ define(
         // 提交接口的promise的生成函数
         FormModel.prototype.sumbitRequester = null;
 
-        // 默认请求参数，针对defaultFormData的请求发送
+        // 默认请求参数，针对formData的请求发送
         FormModel.prototype.defaultArgs = {};
 
         FormModel.prototype.defaultDatasource = {
             rule: datasource.constant(require('./rule')),
-            defaultFormData: {
+            formData: {
                 retrieve: function (model) {
-                    if (model.get('defaultFormData')) {
-                        return model.get('defaultFormData');
+                    if (model.get('formData')) {
+                        return model.get('formData');
                     }
                     else {
                         var formRequester = model.formRequester;
@@ -68,7 +68,7 @@ define(
          * @return {Object}
          */
         FormModel.prototype.getDefaultData = function () {
-            return this.get('defaultFormData');
+            return this.get('formData');
         };
 
         /**
@@ -108,7 +108,7 @@ define(
          * @return {Boolean}
          */
         FormModel.prototype.isFormDataChanged = function (formData) {
-            var original = this.get('defaultFormData');
+            var original = this.get('formData');
             return !u.isEqual( u.purify(formData, null, true), u.purify(original, null, true));
         };
 
