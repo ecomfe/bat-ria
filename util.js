@@ -9,8 +9,18 @@ define(
     function (require) {
         var u = require('underscore');
         var moment = require('moment');
+        var Deferred = require('er/Deferred');
         var io = require('./io/serverIO');
         var util = {};
+
+        /**
+         * 对于有些特殊请求，可以自定义请求函数
+         */
+        function wrapRequester(requester) {
+            return function(data) {
+                return Deferred.when(requester(data));
+            };
+        }
 
         /**
          * 根据URL字符串生成请求发送器
@@ -34,9 +44,14 @@ define(
                             return io.post(url, data);
                         };
                     }
-                    // 如果不是string那可能封装过了
+                    else if (u.isFunction(url)) {
+                        map[name] = wrapRequester(url);
+                    }
                 });
                 return map;
+            }
+            else if (u.isFunction(url)) {
+                return wrapRequester(url);
             }
         };
 

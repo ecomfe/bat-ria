@@ -7,7 +7,11 @@ define(function (require) {
     var URI = require('urijs');
     var loading = require('../ui/loading');
 
+    var isAderRequired = true;
     function getAderArgMap() {
+        if (!isAderRequired) {
+            return {};
+        }
         var user = require('../system/user');
         var aderId = user.ader && user.ader.id
             || URI.parseQuery(document.location.search).aderId
@@ -15,8 +19,9 @@ define(function (require) {
         return aderId ? { aderId: aderId } : {};
     }
 
-    function activate() {
+    function activate(opt_isAderRequired) {
         var io = require('../io/serverIO');
+        isAderRequired = opt_isAderRequired !== false;
 
         io.hooks.filterIndexUrl = function(url) {
             return URI(url).addQuery(getAderArgMap()).toString();

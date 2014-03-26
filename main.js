@@ -11,7 +11,7 @@ define(
         var util = require('ecma/util');
 
         function activateExtensions() {
-            require('./extension/hooks').activate();
+            require('./extension/hooks').activate(config.isAderRequired);
             require('./extension/underscore').activate();
             require('./extension/ui').activate();
         }
