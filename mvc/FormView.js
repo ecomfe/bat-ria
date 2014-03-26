@@ -96,7 +96,7 @@ define(
             var ValidityState = require('esui/validator/ValidityState');
             var form = this.get('form');
 
-            u.each(errors, function (field, message){
+            u.each(errors, function (message, field){
                 var state = new ValidityState(false, message);
                 var validity = new Validity();
                 validity.addState('invalid', state);
