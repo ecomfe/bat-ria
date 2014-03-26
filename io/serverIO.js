@@ -29,8 +29,12 @@ define(function (require) {
 
         document.location.href = url;
     }
-    
+
     function requestSuccessHandler(data) {
+        if (typeof io.hooks.adaptResponse === 'function') {
+            data = io.hooks.adaptResponse(data);
+        }
+
         if (data.success !== 'true') {
             var message = data.message;
             var title;

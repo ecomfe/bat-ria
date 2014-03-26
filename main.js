@@ -13,6 +13,7 @@ define(
         function activateExtensions() {
             require('./extension/hooks').activate();
             require('./extension/underscore').activate();
+            require('./extension/ui').activate();
         }
 
         function initApiConfig() {
