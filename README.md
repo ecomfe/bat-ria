@@ -6,28 +6,19 @@
 
 ## ESL config
 
-需要增加 `path` 配置：
-
-```
-'paths': {
-    'tpl': 'common/ecma/tpl',
-    'ecma': 'common/ecma'
-}
-```
-
 ## 启动入口
 
 在 `common/main` 中如此通过 MA-RIA 来启动系统：
 ```javascript
-require('ecma/main').start().then(function () {
+require('bat-ria/main').start().then(function () {
     // custom system initialization
 });
 ```
-`ecma/main` 会请求用户、常量数据后启动 ER，完成后可以进行额外的系统初始化（导航栏、用户信息区域的渲染等）。
+`bat-ria/main` 会请求用户、常量数据后启动 ER，完成后可以进行额外的系统初始化（导航栏、用户信息区域的渲染等）。
 
 ## 用户信息和常量接口
 
-`ecma/main` 负责请求后端用户和系统常量接口数据。
+`bat-ria/main` 负责请求后端用户和系统常量接口数据。
 
 两个接口的 URL 需要在 `common/config` 模块下的 `api.user` 和 `api.constants` 中进行配置。
 
@@ -50,13 +41,13 @@ require('ecma/main').start().then(function () {
 
 读取完毕后，会在下面两个模块封装对应的数据：
 
-* `ecma/system/user`
-* `ecma/system/constants`
+* `bat-ria/system/user`
+* `bat-ria/system/constants`
 
 `user.visitor` 提供正在访问系统的用户的信息，`user.ader` 用来在管理员以他人身份登录系统时提供被登录用户的信息（可能不存在）。
 
 
 ## util
 
-常用的单纯的数据操作工具被扩展到了 `underscore` 中，参见 `ecma/extension/underscore`。
-其他和 ER/ESUI/EF 相关的辅助方法在 `ecma/util` 中。
+常用的单纯的数据操作工具被扩展到了 `underscore` 中，参见 `bat-ria/extension/underscore`。
+其他和 ER/ESUI/EF 相关的辅助方法在 `bat-ria/util` 中。
