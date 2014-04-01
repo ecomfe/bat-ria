@@ -30,7 +30,7 @@ define(function (require) {
             }
 
             loading.show();
-        }
+        };
 
         io.hooks.afterComplete = function() {
             loading.hide();

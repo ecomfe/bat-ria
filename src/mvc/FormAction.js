@@ -12,7 +12,6 @@ define(
         var u = require('../extension/underscore');
         var Deferred = require('er/Deferred');
         var BaseAction = require('./BaseAction');
-        var locator = require('er/locator');
 
         /**
          * 表单Action基类

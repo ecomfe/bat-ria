@@ -46,16 +46,16 @@ define(function(require) {
 
     util.filterObject = function(obj, predicate, context) {
         var result = {};
-        if (obj == null) return results;
+        if (obj == null) { return results; }
         u.each(obj, function(value, key) {
-            if (predicate.call(context, value, key, obj)) result[key] = value;
+            if (predicate.call(context, value, key, obj)) { result[key] = value; }
         });
         return result;
     };
 
     util.mapKey = function(obj, map) {
         var result = {};
-        if (obj == null) return results;
+        if (obj == null) { return results; }
         u.each(obj, function(value, key) {
             result[map[key]] = value;
         });
@@ -70,7 +70,7 @@ define(function(require) {
      */
     util.trim = function(s) {
         return s.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
-    }
+    };
 
     /**
      * 将一个符合一定规则的字符串转成`PascalCase`形式

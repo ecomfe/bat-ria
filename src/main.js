@@ -38,7 +38,6 @@ define(
          * @inner
          */
         function loadData() {
-            var io = require('./io/serverIO');
             var Deferred = require('er/Deferred');
 
             return Deferred.all(

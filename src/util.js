@@ -129,7 +129,7 @@ define(
             var attrs = {
                 href: link.url,
                 'class': link.className
-            }
+            };
             if (link.target && link.target.toLowerCase() !== '_self') {
                 attrs.target = link.target;
             }

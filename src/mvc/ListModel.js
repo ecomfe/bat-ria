@@ -11,7 +11,6 @@ define(
         var u = require('../extension/underscore');
         var util = require('er/util');
         var BaseModel = require('./BaseModel');
-        var io = require('../io/serverIO');
         var batUtil = require('../util');
 
         /**

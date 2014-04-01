@@ -90,16 +90,6 @@ define(
         }
 
         /**
-         * 带上查询参数重新加载第1页
-         *
-         * @param {this} {ListAction} Action实例
-         */
-        function reloadWithSearchArgs() {
-            var args = this.view.getSearchArgs();
-            this.performSearch(args);
-        }
-
-        /**
          * 前往指定页
          *
          * @param {mini-event.Event} e 事件对象

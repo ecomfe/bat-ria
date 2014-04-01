@@ -43,7 +43,7 @@ define(
             Validity: 'esui',
             Wizard: 'esui',
             ActionPanel: 'ef',
-            ActionDialog: 'ef',
+            ActionDialog: 'ef'
         };
 
         var extensionModulePrefix = {

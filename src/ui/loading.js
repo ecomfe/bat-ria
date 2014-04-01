@@ -35,7 +35,7 @@ define(function (require) {
         globalLoading.show();
         loadingCount++;
         return globalLoading;
-    };
+    }
     function hideLoading() {
         if (globalLoading) {
             loadingCount--;

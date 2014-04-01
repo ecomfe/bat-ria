@@ -11,7 +11,6 @@ define(
         var u = require('../extension/underscore');
         var util = require('er/util');
         var UIModel = require('ef/UIModel');
-        var io = require('../io/serverIO');
 
         /**
          * 业务`Model`基类
@@ -24,19 +23,7 @@ define(
         function BaseModel(context) {
             UIModel.call(this, context);
         }
-
         util.inherits(BaseModel, UIModel);
-
-        function extendLastObjectTypeValue(array, extension) {
-            var lastObject = array[array.length - 1];
-            if (u.isArray(lastObject)) {
-                extendLastObjectTypeValue(lastObject, extension);
-            }
-            else {
-                // 这里也一样，必须变成一个新对象，以避免多次覆盖过来的影响
-                array[array.length - 1] = u.defaults({}, extension, lastObject);
-            }
-        }
 
         /**
         * 合并默认数据源
