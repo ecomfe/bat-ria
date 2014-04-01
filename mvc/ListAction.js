@@ -23,7 +23,6 @@ define(
         function ListAction(entityName) {
             BaseAction.apply(this, arguments);
         }
-
         util.inherits(ListAction, BaseAction);
 
         ListAction.prototype.modelType = './ListModel';
@@ -87,16 +86,6 @@ define(
          */
         function search(e) {
             this.performSearch(e.args);
-        }
-
-        /**
-         * 带上查询参数重新加载第1页
-         *
-         * @param {this} {ListAction} Action实例
-         */
-        function reloadWithSearchArgs() {
-            var args = this.view.getSearchArgs();
-            this.performSearch(args);
         }
 
         /**

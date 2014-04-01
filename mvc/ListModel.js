@@ -11,7 +11,6 @@ define(
         var u = require('underscore');
         var util = require('er/util');
         var BaseModel = require('./BaseModel');
-        var io = require('../io/serverIO');
         var ecmaUtil = require('ecma/util');
 
         /**
