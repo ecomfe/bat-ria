@@ -9,7 +9,7 @@
  */
 define(
     function (require) {
-        var u = require('bat-ria/extension/underscore');
+        var u = require('underscore');
         var lib = require('esui/lib');
         var ui = require('esui');
         var Form = require('esui/Form');

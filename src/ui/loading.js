@@ -1,5 +1,5 @@
 define(function (require) {
-    var u = require('bat-ria/extension/underscore');
+    var u = require('underscore');
 
     var globalLoading;
     var loadingCount = 0;
@@ -10,7 +10,7 @@ define(function (require) {
             // 此处直接new控件出来，
             // 因为这个控件不能属于任何一个业务模块的ViewContext，
             // 不然会随着跳转被销毁，造成下次用不了
-            var Toast = require('bat-ria/ui/Toast');
+            var Toast = require('./Toast');
             var toastOptions = {
                 disposeOnHide: false,
                 autoShow: false,

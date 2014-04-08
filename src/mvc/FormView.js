@@ -10,7 +10,7 @@ define(
     function (require) {
         var util = require('er/util');
         var BaseView = require('./BaseView');
-        var u = require('../extension/underscore');
+        var u = require('underscore');
 
         // 使用表单视图，有以下要求：
         //

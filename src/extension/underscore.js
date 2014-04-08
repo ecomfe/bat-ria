@@ -283,7 +283,11 @@ define(function(require) {
         return clone;
     };
 
-    u.mixin(util);
+    function activate() {
+        u.mixin(util);
+    }
 
-    return u;
+    return {
+        activate: u.once(activate)
+    };
 });

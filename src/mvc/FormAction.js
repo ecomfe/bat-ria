@@ -9,7 +9,7 @@
 define(
     function (require) {
         var util = require('er/util');
-        var u = require('../extension/underscore');
+        var u = require('underscore');
         var Deferred = require('er/Deferred');
         var BaseAction = require('./BaseAction');
 

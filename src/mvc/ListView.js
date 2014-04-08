@@ -8,7 +8,7 @@ define(function (require) {
     require('../tpl!../tpl/list.tpl.html');
 
     var BaseView = require('./BaseView');
-    var u = require('../extension/underscore');
+    var u = require('underscore');
     var moment = require('moment');
     
     /**

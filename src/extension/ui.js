@@ -8,7 +8,7 @@
  */
 define(
     function (require) {
-        var u = require('./underscore');
+        var u = require('underscore');
         var lib = require('esui/lib');
 
         /**

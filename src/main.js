@@ -6,14 +6,12 @@
 define(
     function (require) {
 
-        var config = require('common/config');
+        var config;
         var u = require('underscore');
         var util = require('./util');
 
-        function activateExtensions() {
-            require('./extension/hooks');
-            require('./extension/underscore');
-        }
+        require('./extension/hooks').activate();
+        require('./extension/underscore').activate();
 
         function initApiConfig() {
             // init api requesters
@@ -64,9 +62,9 @@ define(
             require('er').start();
         }
 
-        function start() {
-            // 先激活插件，后面的功能会使用
-            activateExtensions();
+        function start(riaConfig) {
+
+            config = riaConfig;
 
             // 对API配置进行一下封装
             initApiConfig();

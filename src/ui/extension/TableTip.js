@@ -11,7 +11,7 @@ define(
     function (require) {
         var lib = require('esui/lib');
         var ui = require('esui');
-        var u = require('bat-ria/extension/underscore');
+        var u = require('underscore');
         var Extension = require('esui/Extension');
 
         require('esui/TipLayer');

@@ -10,7 +10,7 @@
 define(
     function (require) {
         var util = require('er/util');
-        var u = require('../extension/underscore');
+        var u = require('underscore');
         var Action = require('er/Action');
 
         /**

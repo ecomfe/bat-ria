@@ -4,7 +4,7 @@
  */
 
 define(function (require) {
-    var u = require('../extension/underscore');
+    var u = require('underscore');
 
     var map = {};
     /**

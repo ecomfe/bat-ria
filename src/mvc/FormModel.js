@@ -9,7 +9,7 @@
 define(
     function (require) {
         var BaseModel = require('./BaseModel');
-        var u = require('../extension/underscore');
+        var u = require('underscore');
         var util = require('er/util');
         var datasource = require('er/datasource');
 

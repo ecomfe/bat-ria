@@ -7,7 +7,7 @@ define(function (require) {
     var ajax = require('er/ajax');
     var Deferred = require('er/Deferred');
     var Dialog = require('esui/Dialog');
-    var u = require('../extension/underscore');
+    var u = require('underscore');
 
     var io = {};
 

@@ -4,6 +4,7 @@
  */
 
 define(function (require) {
+    var u = require('underscore');
     var URI = require('urijs');
     var loading = require('../ui/loading');
 
@@ -42,7 +43,7 @@ define(function (require) {
         };
     }
 
-    activate();
-
-    return {};
+    return {
+        activate: u.once(activate)
+    };
 });

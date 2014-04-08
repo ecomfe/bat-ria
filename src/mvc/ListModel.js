@@ -8,7 +8,7 @@
 
 define(
     function (require) {
-        var u = require('../extension/underscore');
+        var u = require('underscore');
         var util = require('er/util');
         var BaseModel = require('./BaseModel');
         var batUtil = require('../util');

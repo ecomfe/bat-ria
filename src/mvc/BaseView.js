@@ -10,7 +10,7 @@
 define(
     function (require) {
         var util = require('er/util');
-        var u = require('../extension/underscore');
+        var u = require('underscore');
         var UIView = require('ef/UIView');
 
         /**
@@ -107,25 +107,48 @@ define(
             var ui = require('esui');
             var dialog = ui.create('Dialog', options);
 
-            //使用默认foot，改变显示文字
-            var okBtn = dialog.getFoot().getChild('btnOk');
-            var cancelBtn = dialog.getFoot().getChild('btnCancel');
-            var okText = u.escape(options.okText || '');
-            var cancelText = u.escape(options.cancelText || '');
-            okBtn.setContent(okText || Dialog.OK_TEXT);
-            cancelBtn.setContent(cancelText || Dialog.CANCEL_TEXT);
+            //使用默认foot时，改变显示文字
+            if (options.needFoot) {
+                var okBtn = dialog.getFoot().getChild('btnOk');
+                var cancelBtn = dialog.getFoot().getChild('btnCancel');
+                var okText = u.escape(options.okText || '');
+                var cancelText = u.escape(options.cancelText || '');
+                okBtn.setContent(okText || Dialog.OK_TEXT);
+                cancelBtn.setContent(cancelText || Dialog.CANCEL_TEXT);
+            }
 
             dialog.show();
             return dialog;
         };
 
-        BaseView.prototype.waitDialog = function (dialog) {
-            if (!dialog) {
-                dialog = this.popDialog.apply(this, arguments);
+        BaseView.prototype.waitDialog = function (dialog, options) {
+            if (!dialog instanceof require('esui/Dialog')) {
+                options = dialog;
+                dialog = this.popDialog.apply(this, options);
             }
             else if (!dialog.isShow) {
                 dialog.show();
             }
+
+            function btnClickHandler(dialog, type, args) {
+                // 如果在参数里设置了处理函数，会在fire时执行
+                dialog.fire(type, args);
+                dialog.hide();
+            }
+
+            //使用默认foot时，改变显示文字
+            if (options.needFoot || dialog.getFoot()) {
+                var okBtn = dialog.getFoot().getChild('btnOk');
+                var cancelBtn = dialog.getFoot().getChild('btnCancel');
+                var okText = u.escape(options.okText || '');
+                var cancelText = u.escape(options.cancelText || '');
+                okBtn.setContent(okText || Dialog.OK_TEXT);
+                cancelBtn.setContent(cancelText || Dialog.CANCEL_TEXT);
+
+                okBtn.on('click', lib.curry(btnClickHandler, dialog, 'ok'));
+                cancelBtn.on('click', lib.curry(btnClickHandler, dialog, 'cancel'));
+            }
+
             var Deferred = require('er/Deferred');
             var deferred = new Deferred();
 

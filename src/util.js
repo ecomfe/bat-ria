@@ -7,7 +7,7 @@
  */
 define(
     function (require) {
-        var u = require('bat-ria/extension/underscore');
+        var u = require('underscore');
         var moment = require('moment');
         var io = require('./io/serverIO');
         var util = {};
