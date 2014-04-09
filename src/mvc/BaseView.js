@@ -40,7 +40,10 @@ define(
 
             // 作为子Action嵌入页面时，模板使用`xxxMain`这个target
             if (this.model && this.model.get('isChildAction')) {
-                templateName += '_child';
+                var childTemplateName = templateName + '_child';
+                if (require('etpl').get(childTemplateName)) {
+                    templateName = childTemplateName;
+                }
             }
 
             return templateName;

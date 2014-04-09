@@ -35,7 +35,7 @@ define(
         FormModel.prototype.formRequester = null;
         
         // 提交接口的promise的生成函数
-        FormModel.prototype.sumbitRequester = null;
+        FormModel.prototype.submitRequester = null;
 
         // 默认请求参数，针对formData的请求发送
         FormModel.prototype.defaultArgs = {};
