@@ -12,8 +12,9 @@ define(
         var util = require('er/util');
         var u = require('underscore');
         var UIView = require('ef/UIView');
-        var Dialog = require('esui/Dialog');
         var Deferred = require('er/Deferred');
+        var Dialog = require('esui/Dialog');
+        var lib = require('esui/lib');
 
         /**
          * 视图基类
@@ -138,7 +139,6 @@ define(
             function btnClickHandler(dialog, type, args) {
                 // 如果在参数里设置了处理函数，会在fire时执行
                 dialog.fire(type, args);
-                dialog.hide();
             }
 
             //使用默认foot时，改变显示文字
