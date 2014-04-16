@@ -14,7 +14,6 @@ define(
         var UIView = require('ef/UIView');
         var Deferred = require('er/Deferred');
         var Dialog = require('esui/Dialog');
-        var lib = require('esui/lib');
 
         /**
          * 视图基类
@@ -94,6 +93,13 @@ define(
             return globalToast;
         };
 
+        /**
+         * 显示Dialog
+         *
+         * @param {Object} options 参数
+         * @return {esui/Dialog}
+         * @protected
+         */
         BaseView.prototype.popDialog = function (options) {
             //创建main
             var main = document.createElement('div');
@@ -127,6 +133,19 @@ define(
             return dialog;
         };
 
+        /**
+         * 等待一个`Dialog`触发`ok`或`cancel`事件，触发后一定会自动关闭
+         *
+         * @param {esui.Dialog=} dialog 指定的对话框控件，未指定则通过`popDialog`创建新对话框
+         * @param {Object} options 参数
+         * @return {er.Promise} 一个`Promise`对象，
+         * 默认为点击确定按钮时进入`resolved`状态，
+         * 点击取消按钮则进入`rejected`状态
+         *
+         * 有两种重载：
+         * 1. waitDialog(options)
+         * 2. waitDialog(dialog, options)
+         */
         BaseView.prototype.waitDialog = function (dialog, options) {
             if (!dialog instanceof Dialog) {
                 options = dialog;
@@ -138,7 +157,8 @@ define(
 
             function btnClickHandler(dialog, type, args) {
                 // 如果在参数里设置了处理函数，会在fire时执行
-                dialog.fire(type, args);
+                dialog.fire(type);
+                dialog.hide();
             }
 
             //使用默认foot时，改变显示文字
@@ -150,14 +170,99 @@ define(
                 okBtn.setContent(okText || Dialog.OK_TEXT);
                 cancelBtn.setContent(cancelText || Dialog.CANCEL_TEXT);
 
-                okBtn.on('click', lib.curry(btnClickHandler, dialog, 'ok'));
-                cancelBtn.on('click', lib.curry(btnClickHandler, dialog, 'cancel'));
+                okBtn.on('click', u.partial(btnClickHandler, dialog, 'ok'));
+                cancelBtn.on('click', u.partial(btnClickHandler, dialog, 'cancel'));
             }
 
             var deferred = new Deferred();
 
             dialog.on('ok', deferred.resolver.resolve);
             dialog.on('cancel', deferred.resolver.reject);
+
+            return deferred.promise;
+        };
+
+        /**
+         * 显示一个`Dialog`，并指定触发`ok`与`cancel`事件（默认状态下为点击确定、取消按钮后触发）
+         * 后的处理函数，可以手动指定阻止自动关闭
+         *
+         * @param {esui.Dialog=} dialog 指定的对话框控件，未指定则通过`popDialog`创建新对话框
+         * @param {Object} options 参数
+         * @param {function=} onok `ok`事件处理函数
+         * @param {function=} oncancel `cancel`事件处理函数
+         * @return {esui.Dialog} 显示的`Dialog`对象
+         *
+         * `onok`或`oncancel`的返回值如果为`false`，则不执行默认的关闭动作；
+         * 如果返回值是一个`Event`对象，则在调用过`preventDefault()`后不执行默认动作；
+         * 如果返回一个`Promise`对象，则在`resolve`时执行默认关闭动作，在`reject`时不执行
+         *
+         * 有两种重载：
+         * 1. showDialog(options, onok, oncancel)
+         * 2. showDialog(dialog, options, onok, oncancel)
+         */
+        BaseView.prototype.showDialog = function (dialog, options, onok, oncancel) {
+            if (!dialog instanceof Dialog) {
+                oncancel = onok;
+                onok = options;
+                options = dialog;
+                dialog = this.popDialog.apply(this, options);
+            }
+            else if (!dialog.isShow) {
+                dialog.show();
+            }
+
+            function btnClickHandler(dialog, type, args) {
+                // 如果在参数里设置了处理函数，会在fire时执行
+                dialog.fire(type);
+            }
+
+            //使用默认foot时，改变显示文字
+            if (options.needFoot || dialog.getFoot()) {
+                var okBtn = dialog.getFoot().getChild('btnOk');
+                var cancelBtn = dialog.getFoot().getChild('btnCancel');
+                var okText = u.escape(options.okText || '');
+                var cancelText = u.escape(options.cancelText || '');
+                okBtn.setContent(okText || Dialog.OK_TEXT);
+                cancelBtn.setContent(cancelText || Dialog.CANCEL_TEXT);
+
+                okBtn.on('click', u.partial(btnClickHandler, dialog, 'ok'));
+                cancelBtn.on('click', u.partial(btnClickHandler, dialog, 'cancel'));
+            }
+
+            function checkHide(useDefault) {
+                // 返回值为
+                if (useDefault === false
+                    || useDefault instanceof require('mini-event/Event')
+                    && useDefault.isDefaultPrevented()) {
+                    return;
+                }
+                dialog && dialog.hide();
+            }
+
+            var onok = onok || function () {};
+            var oncancel = oncancel || function () {};
+            dialog.on('ok', function () {
+                Deferred.when(onok()).then(checkHide, u.partial(checkHide, false));
+            });
+            dialog.on('cancel', function () {
+                Deferred.when(oncancel()).then(checkHide, u.partial(checkHide, false));
+            });
+
+            return dialog;
+        };
+
+        /**
+         * 等待用户确认提示
+         *
+         * 参数同`ef.UIView.prototype.alert`，但返回一个`Promise`对象
+         *
+         * @return {er.Promise} 一个`Promise`对象，用户确认则进入`resolved`状态
+         */
+        BaseView.prototype.waitAlert = function () {
+            var dialog = this.alert.apply(this, arguments);
+            var deferred = new Deferred();
+
+            dialog.on('ok', deferred.resolver.resolve);
 
             return deferred.promise;
         };

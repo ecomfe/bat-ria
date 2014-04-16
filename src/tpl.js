@@ -12,7 +12,6 @@ define(
         var template = etpl;
 
         var controlModulePrefix = {
-            // Sidebar不使用esui的，那个不大符合要求
             BoxGroup: 'esui',
             Button: 'esui',
             Calendar: 'esui',
@@ -33,6 +32,7 @@ define(
             Schedule: 'esui',
             SearchBox: 'esui',
             Select: 'esui',
+            Sidebar: 'esui',
             Tab: 'esui',
             Table: 'esui',
             TextBox: 'esui',
