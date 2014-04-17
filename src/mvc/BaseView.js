@@ -42,10 +42,7 @@ define(
 
             // 作为子Action嵌入页面时，模板使用`xxxMain`这个target
             if (this.model && this.model.get('isChildAction')) {
-                var childTemplateName = templateName + '_child';
-                if (require('etpl').get(childTemplateName)) {
-                    templateName = childTemplateName;
-                }
+                templateName += '_child';
             }
 
             return templateName;
@@ -170,12 +167,16 @@ define(
                 okBtn.setContent(okText || Dialog.OK_TEXT);
                 cancelBtn.setContent(cancelText || Dialog.CANCEL_TEXT);
 
+                okBtn.un('click');
+                cancelBtn.un('click');
                 okBtn.on('click', u.partial(btnClickHandler, dialog, 'ok'));
                 cancelBtn.on('click', u.partial(btnClickHandler, dialog, 'cancel'));
             }
 
             var deferred = new Deferred();
 
+            dialog.un('ok');
+            dialog.un('cancel');
             dialog.on('ok', deferred.resolver.resolve);
             dialog.on('cancel', deferred.resolver.reject);
 
@@ -188,22 +189,20 @@ define(
          *
          * @param {esui.Dialog=} dialog 指定的对话框控件，未指定则通过`popDialog`创建新对话框
          * @param {Object} options 参数
-         * @param {function=} onok `ok`事件处理函数
-         * @param {function=} oncancel `cancel`事件处理函数
+         * @param {function=} options.onOk `ok`事件处理函数，`this`指向对应的`Dialog`对象
+         * @param {function=} options.onCancel `cancel`事件处理函数，`this`指向对应的`Dialog`对象
          * @return {esui.Dialog} 显示的`Dialog`对象
          *
-         * `onok`或`oncancel`的返回值如果为`false`，则不执行默认的关闭动作；
+         * `onOk`或`onCancel`的返回值如果为`false`，则不执行默认的关闭动作；
          * 如果返回值是一个`Event`对象，则在调用过`preventDefault()`后不执行默认动作；
          * 如果返回一个`Promise`对象，则在`resolve`时执行默认关闭动作，在`reject`时不执行
          *
          * 有两种重载：
-         * 1. showDialog(options, onok, oncancel)
-         * 2. showDialog(dialog, options, onok, oncancel)
+         * 1. showDialog(options, onOk, onCancel)
+         * 2. showDialog(dialog, options, onOk, onCancel)
          */
-        BaseView.prototype.showDialog = function (dialog, options, onok, oncancel) {
+        BaseView.prototype.showDialog = function (dialog, options) {
             if (!dialog instanceof Dialog) {
-                oncancel = onok;
-                onok = options;
                 options = dialog;
                 dialog = this.popDialog.apply(this, options);
             }
@@ -225,6 +224,8 @@ define(
                 okBtn.setContent(okText || Dialog.OK_TEXT);
                 cancelBtn.setContent(cancelText || Dialog.CANCEL_TEXT);
 
+                okBtn.un('click');
+                cancelBtn.un('click');
                 okBtn.on('click', u.partial(btnClickHandler, dialog, 'ok'));
                 cancelBtn.on('click', u.partial(btnClickHandler, dialog, 'cancel'));
             }
@@ -239,13 +240,18 @@ define(
                 dialog && dialog.hide();
             }
 
-            var onok = onok || function () {};
-            var oncancel = oncancel || function () {};
+            var blank = function () {};
+
+            var onOk = u.bind(options.onOk || blank, dialog);
+            var onCancel = u.bind(options.onCancel || blank, dialog);
+
+            dialog.un('ok');
+            dialog.un('cancel');
             dialog.on('ok', function () {
-                Deferred.when(onok()).then(checkHide, u.partial(checkHide, false));
+                Deferred.when(onOk()).then(checkHide, u.partial(checkHide, false));
             });
             dialog.on('cancel', function () {
-                Deferred.when(oncancel()).then(checkHide, u.partial(checkHide, false));
+                Deferred.when(onCancel()).then(checkHide, u.partial(checkHide, false));
             });
 
             return dialog;
