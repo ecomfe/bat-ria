@@ -107,9 +107,11 @@ define(
          * @param {Object} 新表单数据
          * @return {Boolean}
          */
-        FormModel.prototype.isFormDataChanged = function (formData) {
+        FormModel.prototype.isFormDataChanged = function (present) {
             var original = this.get('formData');
-            return !u.isEqual( u.purify(formData, null, true), u.purify(original, null, true));
+            u.defaults(present, original);
+            u.defaults(original, present);
+            return !u.isEqual(present, original);
         };
 
         /**

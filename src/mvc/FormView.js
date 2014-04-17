@@ -20,6 +20,7 @@ define(
         // 可选：
         // 
         // - 可以有一个id为`cancel`的按钮，点击后会触发`cancel`事件
+        // - 可以有一个id为`reset`的按钮，点击后会触发`reset`事件
 
         /**
          * 表单视图基类
@@ -96,7 +97,7 @@ define(
             var ValidityState = require('esui/validator/ValidityState');
             var form = this.get('form');
 
-            u.each(errors, function (field, message){
+            u.each(errors, function (message, field){
                 var state = new ValidityState(false, message);
                 var validity = new Validity();
                 validity.addState('invalid', state);
@@ -107,6 +108,13 @@ define(
                 }
             });
         };
+
+        /**
+         * 重置表单
+         */
+        function reset() {
+            this.fire('reset');
+        }
 
         /**
          * 取消编辑
@@ -131,6 +139,11 @@ define(
             var form = this.get('form');
             if (form) {
                 form.on('submit', submit, this);
+            }
+
+            var resetButton = this.get('reset');
+            if (resetButton) {
+                resetButton.on('click', reset, this);
             }
 
             var cancelButton = this.get('cancel');
