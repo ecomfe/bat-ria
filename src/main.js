@@ -15,10 +15,13 @@ define(
 
         function initApiConfig() {
             // init api requesters
-            var requesters = u.filterObject(config.api, function (path) {
-                // 跳过以`/download`结尾的路径 
-                return !/\/download$/.test(path);
-            });
+            var requesters = u.filterObject(
+                config.api,
+                config.isRequester || function (path) {
+                    // 默认跳过以`/download`结尾的路径 
+                    return !/\/download$/.test(path);
+                }
+            );
             config.api = u.extend(
                 config.api,
                 util.genRequesters(requesters)
