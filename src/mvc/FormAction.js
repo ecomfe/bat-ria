@@ -123,6 +123,16 @@ define(
         };
 
         /**
+         * 重置的操作
+         */
+        FormAction.prototype.reset = function () {
+            var reset = this.fire('reset');
+            if (!reset.isDefaultPrevented()) {
+                this.view.rollbackFormData();
+            }
+        }
+
+        /**
          * 设置取消编辑时的提示信息标题
          *
          * @type {string}
@@ -157,20 +167,12 @@ define(
 
         /**
          * 取消编辑的操作
-         * TODO: 把回滚表单数据放到reset按钮的逻辑里边
-         * submitcancel 回滚表单数据，使用原始数据重新填充
-         * aftercancel 执行取消编辑后重定向操作
          */
         FormAction.prototype.cancel = function () {
             var submitCancelEvent = this.fire('submitcancel');
-
-            if (!submitCancelEvent.isDefaultPrevented()) {
-                this.view.rollbackFormData();
-            }
-
             var handleFinishEvent = this.fire('aftercancel');
 
-            if (!handleFinishEvent.isDefaultPrevented()) {
+            if (!handleFinishEvent.isDefaultPrevented() && !submitCancelEvent.isDefaultPrevented()) {
                 this.redirectAfterCancel();
             }
         };
@@ -257,6 +259,7 @@ define(
             BaseAction.prototype.initBehavior.apply(this, arguments);
             this.view.on('submit', this.submitEdit, this);
             this.view.on('cancel', this.cancelEdit, this);
+            this.view.on('reset', this.reset, this);
         };
         
         return FormAction;
