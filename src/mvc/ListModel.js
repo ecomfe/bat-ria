@@ -27,7 +27,12 @@ define(
 
         util.inherits(ListModel, BaseModel);
 
-        ListModel.prototype.list;
+        /**
+         * 列表数据请求器
+         *
+         * @type {function}
+         */
+        ListModel.prototype.listRequester;
 
         /**
          * 配置默认查询参数
