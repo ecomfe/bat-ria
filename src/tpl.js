@@ -156,13 +156,18 @@ define(
                     require(dependencies, function () { load(text); });
                 }
 
-                var options = {
-                    method: 'GET',
-                    url: parentRequire.toUrl(resourceId),
-                    cache: true,
-                    dataType: 'text'
-                };
-                ajax.request(options).then(addTemplate);
+                if (/\.html?$/.test(resourceId)) {
+                    var options = {
+                        method: 'GET',
+                        url: parentRequire.toUrl(resourceId),
+                        cache: true,
+                        dataType: 'text'
+                    };
+                    ajax.request(options).then(addTemplate);
+                }
+                else {
+                    require([resourceId], addTemplate);
+                }
             },
 
             /**
