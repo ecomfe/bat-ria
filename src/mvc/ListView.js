@@ -1,5 +1,5 @@
 /**
- * @file [Please Input File Description]
+ * @file 列表类型`View`基类
  * @author Justineo(justice360@gmail.com)
  */
 
@@ -12,16 +12,23 @@ define(function (require) {
     var moment = require('moment');
     
     /**
-     * [Please Input View Description]
-     * 
+     * 列表`View`基类
+     *
      * @constructor
+     * @extends ef/BaseView
      */
     function ListView() {
         BaseView.apply(this, arguments);
     }
     
+    /**
+     * @inheritDoc
+     */
     ListView.prototype.uiProperties = {};
 
+    /**
+     * @inheritDoc
+     */
     ListView.prototype.uiEvents = {};
 
     /**
@@ -83,6 +90,20 @@ define(function (require) {
         this.fire('pagechange', { page: page });
     }
 
+
+    /**
+     * 获取table已经选择的列的数据
+     *
+     * @return {Object[]} 当前table的已选择列对应的数据
+     */
+    ListView.prototype.getSelectedItems = function () {
+        var table = this.get('table');
+        return table ? table.getSelectedItems() : [];
+    };
+
+    /**
+     * @inheritDoc
+     */
     ListView.prototype.bindEvents = function() {
         var pager = this.get('pager');
         if (pager) {
