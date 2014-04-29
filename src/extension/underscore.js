@@ -44,6 +44,14 @@ define(function(require) {
         return purifiedObject;
     };
 
+    /**
+     * 根据指定条件过滤对象中的键值对
+     *
+     * @param {Object} obj 输入的对象
+     * @param {Function(Object, string):boolean} predicate 判断是否要保留某键值对，返回falsy value则过滤
+     * @param {*} context 判断函数的`this`
+     * @return {Object} 过滤的结果
+     */
     util.filterObject = function(obj, predicate, context) {
         var result = {};
         if (obj == null) { return results; }
@@ -53,11 +61,25 @@ define(function(require) {
         return result;
     };
 
+    /**
+     * 根据指定的映射关系修改对象的键名
+     *
+     * 如果键名不在给定的映射关系中，保留原名
+     *
+     * @param {Object} obj 输入的对象
+     * @param {Object.<string, string>} map 键名的映射关系
+     * @return {Object} 转换过的新对象
+     */
     util.mapKey = function(obj, map) {
         var result = {};
         if (obj == null) { return results; }
         u.each(obj, function(value, key) {
-            result[map[key]] = value;
+            if (map[key]) {
+                result[map[key]] = value;
+            }
+            else {
+                result[key] = value;
+            }
         });
         return result;
     };

@@ -15,8 +15,10 @@ define(
         /**
          * 根据URL字符串生成请求发送器
          *
-         * @param {string | Array.<string> | Object.<string, string>} url 请求路径或多个请求路径的集合
-         * @return {Function | Array.<Function> | Object.<string, Function>} 将对应的路径转换为发送器后返回
+         * 传入一个字符串时，只返回一个发送器函数；传入数组或对象时，返回值也为相应的类型
+         *
+         * @param {string|Array.<string>|Object.<string, string>} url 请求路径或多个请求路径的集合
+         * @return {Function|Array.<Function>|Object.<string, Function>} 将对应的路径转换为发送器后返回
          */
         util.genRequesters = function (url) {
             if (u.isString(url)) {
@@ -40,6 +42,24 @@ define(
             }
         };
 
+        /**
+         * 生成时间段数据
+         *
+         * 未指定`begin`及`end`时默认取最近7天
+         *
+         * 有两种重载：
+         * 1. getTimeRange(options)
+         * 2. getTimeRange(begin, end, options)
+         *
+         * @param {(Date|string)=} begin 开始日期
+         * @param {(Date|string)=} end 结束日期
+         * @param {Object=} options 生成选项
+         * @param {string} options.inputFormat 输入参数的格式，为`'Date'`时会当作`Date`对象，否则为格式字符串
+         * @param {string} options.outputFormat 输出参数的格式，参见`inputFormat`
+         * @param {string} options.beginKey 结果对象开始时间的键名
+         * @param {string} options.endKey 结果对象结束时间的键名
+         * @return {Object} 时间段的数据，格式由`options`参数决定
+         */
         util.getTimeRange = function (begin, end, options) {
 
             // 只有一个参数时，认为是options
@@ -98,6 +118,34 @@ define(
             );
         };
 
+        /**
+         * 将同构对象的数组转换为按对象中某个键值为键名的对象
+         *
+         * 可以定义转换器，来转换输出对象的内容
+         * `opt_converter`为函数时，接受的参数为输入数组的元素，返回值必须为`{ key: ..., value: ... }`格式，即结果对象的键值对
+         * `opt_converter`为字符串时，结果对象键值为数组元素对应键名的键值
+         * `opt_converter`缺失时，结果对象键值为数组元素
+         *
+         * 例如：
+         * `list`为`[ { id: 1, name: 'Thor' }, { id: 2, name: 'Hulk' } ]，
+         * `key`为`id`时，
+         *
+         * util.toMap(list, key, function(item) {
+         *     return {
+         *         key: '#' + item.id,
+         *         value: item.name.toUpperCase()
+         *     };
+         * }) → { '#1': 'THOR', '#2': 'HULK' }
+         *
+         * util.toMap(list, key, 'name') → { '1': 'Thor', '2': 'Hulk' }
+         *
+         * util.toMap(list, key) → { '1': { id: 1, name: 'Thor' }, '2': { id: 2, name: 'Hulk' } }
+         *
+         * @param {Array.<Object>} list 同构对象的数组
+         * @param {string} key 取对应键值为结果对象的键名
+         * @param {(Function|string)=} opt_converter 转换器
+         * @return {Object} 转换完毕的对象
+         */
         util.toMap = function (list, key, opt_converter) {
             var i, item, k,
                 map = {},
@@ -121,6 +169,16 @@ define(
             return map;
         };
 
+        /**
+         * 根据生成在列表页中操作列中的链接HTML
+         *
+         * @param {Object} link 链接配置
+         * @param {string} [link.className="list-operation"] 链接的className
+         * @param {string} link.url 链接的目标URL
+         * @param {string} link.target 链接的target属性
+         * @param {string} link.text 链接文本
+         * @return {string} 生成的HTML内容
+         */
         util.genListLink = function (link) {
             var defaults = {
                 className: 'list-operation'
@@ -142,6 +200,17 @@ define(
                 + u.escape(link.text) + '</a>';
         };
 
+        /**
+         * 根据生成在列表页中操作列中的操作按钮HTML
+         *
+         * @param {Object} command 操作配置
+         * @param {string} [command.className="list-operation"] 操作按钮的className
+         * @param {string} [command.tagName="span"] 操作按钮的HTML元素类型
+         * @param {string} command.type 操作按钮点击时触发的事件类型
+         * @param {string} command.args 操作按钮点击后触发事件所带的参数
+         * @param {string} command.text 操作按钮显示的文本
+         * @return {string} 生成的HTML内容
+         */
         util.genListCommand = function (command) {
             var defaults = {
                 tagName: 'span',
@@ -166,6 +235,14 @@ define(
                 + u.escape(command.text) + '</' + tagName + '>';
         };
 
+        /**
+         * 生成列表页操作/链接列表的HTML
+         *
+         * @param {Array.<Object>} operations 操作/链接配置的数组
+         * @param {Object} config 列表配置
+         * @param {string} [config.separator="<span class=\"list-operation-separator\">|</span>"] 列表分隔符
+         * @return {string} 生成的HTML内容
+         */
         util.genListOperations = function (operations, config) {
             config = config || {};
             var html = u.map(
