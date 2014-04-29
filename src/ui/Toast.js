@@ -1,10 +1,6 @@
 /**
- * ADM 2.0
- * Copyright 2013 Baidu Inc. All rights reserved.
- * 
  * @file 简易信息提示控件
  * @author zhanglili(otakustay@gmail.com)
- * @date $DATE$
  */
 define(
     function (require) {
@@ -17,10 +13,9 @@ define(
         /**
          * Toast控件
          *
-         * @param {Object=} options 初始化参数
+         * @param {Object} [options] 初始化参数
          * @extends esui/Control
          * @constructor
-         * @public
          */
         function Toast(options) {
             Control.apply(this, arguments);
@@ -38,7 +33,7 @@ define(
         /**
          * 初始化参数
          *
-         * @param {Object=} options 构造函数传入的参数
+         * @param {Object} [options] 构造函数传入的参数
          * @override
          * @protected
          */
@@ -109,6 +104,12 @@ define(
             }
         );
 
+        /**
+         * 计算元素当前`z-index`值
+         * @private
+         * @param {HTMLElement} elem 输入元素
+         * @return {number} `z-index`值
+         */
         function getZIndex(elem) {
             var zIndex = lib.getComputedStyle(elem, 'z-index');
             if (zIndex === '' || zIndex == null) {
@@ -125,7 +126,6 @@ define(
          * 显示提示信息
          *
          * @override
-         * @public
          */
         Toast.prototype.show = function () {
             if (helper.isInStage(this, 'DISPOSED')) {
@@ -157,7 +157,6 @@ define(
          * 隐藏提示信息
          *
          * @override
-         * @public
          */
         Toast.prototype.hide = function () {
             if (this.mask) {
@@ -174,7 +173,6 @@ define(
         /**
          * 让当前控件和DOM脱离但暂不销毁，可以单例时用
          *
-         * @public
          */
         Toast.prototype.detach = function () {
             lib.removeNode(this.main);
@@ -197,6 +195,7 @@ define(
 
         /**
          * 显示遮盖层
+         * @private
          * @param {ui.Toast} Toast 控件对象
          */
         function showMask(toast, zIndex) {
@@ -214,6 +213,7 @@ define(
 
         /**
          * 隐藏遮盖层
+         * @private
          * @param {ui.Toast} Toast 控件对象
          */
         function hideMask(toast) {
@@ -226,8 +226,8 @@ define(
         /**
          * 遮盖层初始化
          * 
+         * @private
          * @param {string} maskId 遮盖层domId
-         * @inner
          */
         function initMask(maskId) {
             var el = document.createElement('div');
@@ -239,8 +239,8 @@ define(
         /**
          * 获取遮盖层dom元素
          *
+         * @private
          * @param {ui.Toast} 控件对象
-         * @inner
          * @return {HTMLElement} 获取到的Mask元素节点.
          */
         function getMask(control) {
@@ -258,10 +258,8 @@ define(
         /**
          * 快捷显示信息的方法
          *
-         * @parma {string} content 显示的内容
-         * @param {Object} options 其它配置项
-         *
-         * @public
+         * @param {string} content 显示的内容
+         * @param {Object} [options] 其它配置项
          */
         Toast.show = function (content, options) {
             options = lib.extend({ content: content, autoShow: true }, options);

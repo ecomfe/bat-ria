@@ -12,8 +12,8 @@ define(function (require) {
     /**
      * 列表`Action`基类
      *
-     * @constructor
      * @extends BaseAction
+     * @constructor
      */
     function ListAction() {
         BaseAction.apply(this, arguments);

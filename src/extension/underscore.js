@@ -6,6 +6,12 @@
 define(function(require) {
     var u = require('underscore');
 
+    /**
+     * underscore扩展模块
+     *
+     * @class underscore
+     * @singleton
+     */
     var util = {};
 
     /**
@@ -49,7 +55,7 @@ define(function(require) {
      *
      * @param {Object} obj 输入的对象
      * @param {Function(Object, string):boolean} predicate 判断是否要保留某键值对，返回falsy value则过滤
-     * @param {*} context 判断函数的`this`
+     * @param {*} [context] 判断函数的`this`
      * @return {Object} 过滤的结果
      */
     util.filterObject = function(obj, predicate, context) {

@@ -21,7 +21,7 @@ define(function (require) {
     util.inherits(BaseAction, Action);
 
     /**
-     * inheritDoc
+     * @inheritDoc
      */
     BaseAction.prototype.createModel = function (args) {
         var model = Action.prototype.createModel.apply(this, arguments);
@@ -40,7 +40,7 @@ define(function (require) {
     /**
      * 返回来源URL，无来源URL时可指定一个默认地址
      *
-     * @param {string | URL} [defaultURL](optional) 无来源URL时的跳转地址
+     * @param {string|URL} [defaultURL] 无来源URL时的跳转地址
      * @param {boolean} [isForce] 强制跳转至历史记录
      * @protected
      * @override

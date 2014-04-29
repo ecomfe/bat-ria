@@ -1,9 +1,6 @@
 /**
- * Copyright 2013 Baidu Inc. All rights reserved.
- * 
  * @file tpl加载插件
  * @author otakustay
- * @date $DATE$
  */
 define(
     function(require) {

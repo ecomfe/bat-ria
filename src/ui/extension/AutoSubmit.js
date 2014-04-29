@@ -1,11 +1,6 @@
 /**
- * ADM 2.0
- * Copyright 2013 Baidu Inc. All rights reserved.
- *
- * @ignore
  * @file 让输入控件在特定事件下自动提交表单的扩展
  * @author otakustay
- * @date $DATE$
  */
 define(
     function (require) {
