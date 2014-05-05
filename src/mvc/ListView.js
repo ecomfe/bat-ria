@@ -73,9 +73,12 @@ define(function (require) {
         }
         
         // 日期是独立的
-        var range = this.get('range').getValue().split(',');
-        args.startTime = moment(range[0]).format('YYYYMMDDHHmmss');
-        args.endTime = moment(range[1]).format('YYYYMMDDHHmmss');
+        var range = this.get('range');
+        if (range) {
+            range = range.getValue().split(',');
+            args.startTime = moment(range[0]).format('YYYYMMDDHHmmss');
+            args.endTime = moment(range[1]).format('YYYYMMDDHHmmss');
+        }
         return args;
     };
 

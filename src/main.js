@@ -31,6 +31,7 @@ define(
         function initErConfigs() {
             var erConfig = require('er/config');
             erConfig.indexURL = config.index;
+            erConfig.systemName = config.systemName;
         }
 
         /**
