@@ -10,16 +10,21 @@ define(
         var u = require('underscore');
         var util = require('./util');
 
-        require('./extension/hooks').activate();
         require('./extension/underscore').activate();
+        require('./extension/hooks').activate();
+        require('./extension/ui').activate();
 
+        /**
+         * 初始化API请求器
+         *
+         * @ignore
+         */
         function initApiConfig() {
-            // init api requesters
             var requesters = u.filterObject(
                 config.api,
                 config.isRequester || function (path) {
-                    // 默认跳过以`/download`结尾的路径 
-                    return !/\/download$/.test(path);
+                    // 默认跳过以`/download`和`/upload`结尾的路径 
+                    return !/\/(?:up|down)load$/.test(path);
                 }
             );
             config.api = u.extend(
@@ -37,7 +42,7 @@ define(
         /**
          * 初始化系统启动
          *
-         * @inner
+         * @ignore
          */
         function loadData() {
             var Deferred = require('er/Deferred');
@@ -48,17 +53,27 @@ define(
             );
         }
 
+        /**
+         * 默认读取用户信息和系统常量后初始化对应模块
+         *
+         * @ignore
+         */
         function initData(session, constants) {
-            // init user
+            // 初始化用户信息
             var user = require('./system/user');
             user.init(session);
 
-            // init constants
+            // 初始化系统常量
             var consts = require('./system/constants');
             var localConstants = require('common/constants');
             consts.init(u.extend(localConstants, constants));
         }
 
+        /**
+         * 启动ER
+         *
+         * @ignore
+         */
         function erStart() {
             initErConfigs();
 
@@ -66,6 +81,11 @@ define(
             require('er').start();
         }
 
+        /**
+         * RIA启动入口
+         *
+         * @ignore
+         */
         function start(riaConfig) {
 
             config = riaConfig;
@@ -73,6 +93,7 @@ define(
             // 对API配置进行一下封装
             initApiConfig();
 
+            // 读取必要信息后初始化系统
             return loadData()
                 .then(initData)
                 .then(erStart);

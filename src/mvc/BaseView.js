@@ -76,8 +76,7 @@ define(function (require) {
         // 所以要先`detach`一次，让`animation`生效
         globalToast.detach();
         var properties = {
-            content: content,
-            status: undefined
+            content: content
         };
         properties = u.extend(properties, options);
         globalToast.setProperties(properties);

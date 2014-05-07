@@ -19,16 +19,11 @@ define(function (require) {
                 skin: 'loading'
             };
             globalLoading = new Toast(toastOptions);
-            globalLoading.on(
-                'hide', 
-                u.bind(globalLoading.detach, globalLoading)
-            );
             globalLoading.render();
         }
 
         var properties = {
-            content: content || '正在读取数据，请稍候...',
-            status: undefined
+            content: content || '正在读取数据，请稍候...'
         };
         properties = u.extend(properties, options);
         globalLoading.setProperties(properties);
