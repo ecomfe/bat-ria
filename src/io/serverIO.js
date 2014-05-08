@@ -31,7 +31,7 @@ define(function (require) {
     }
     
     function requestSuccessHandler(data) {
-        if (data.success !== 'true') {
+        if (data.success !== 'true' && data.success !== true) {
             var message = data.message;
             var title;
             var content;

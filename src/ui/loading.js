@@ -10,16 +10,26 @@ define(function (require) {
             // 此处直接new控件出来，
             // 因为这个控件不能属于任何一个业务模块的ViewContext，
             // 不然会随着跳转被销毁，造成下次用不了
-            var Toast = require('./Toast');
-            var toastOptions = {
+            var ui = require('esui');
+            require('esui/Dialog');
+
+            var main = document.createElement('div');
+            document.body.appendChild(main);
+
+            var dialgOptions = {
+                main: main,
+                title: '系统提示',
                 disposeOnHide: false,
-                autoShow: false,
                 mask: true,
-                duration: Infinity,
+                top: 180,
+                width: 'auto',
+                needFoot: false,
                 skin: 'loading'
             };
-            globalLoading = new Toast(toastOptions);
-            globalLoading.render();
+
+            globalLoading = ui.create('Dialog', dialgOptions);
+
+            globalLoading.show();
         }
 
         var properties = {
