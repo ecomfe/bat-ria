@@ -511,7 +511,7 @@ define(
             //    }
             // }
 
-            if (options.success == 'false') {
+            if (!options.success || options.success == "false") {
                 this.notifyFail(options.message);
             }
             else if (options.result){

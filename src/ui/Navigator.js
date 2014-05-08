@@ -8,47 +8,59 @@
 define(function (require) {
     var u = require('underscore');
     var locator = require('er/locator');
+    var permission = require('er/permission');
     var URL = require('er/URL');
     var lib = require('esui/lib');
-    var commonNavigator;
-
-    function CommonNavigator () {}
-
-    CommonNavigator.prototype.config = null;
-    CommonNavigator.prototype.activedIndex = null;
-    CommonNavigator.prototype.navItems = [];
 
     /**
-     * 初始化导航
+     * @class Navigator
      *
-     * @param domId {String} dom元素id 
-     * @param config {Array} 
-     * 
-     * [{
-     *      text: '主页',
-     *      location: {
-     *          redirectUrl: '/',
-     *          pattern: /\/validation/,          //(可选)
-     *          include: [
-     *              '/validation/check/create',
-     *              '/validation/check/edit'
-     *          ],
-     *          exclude: [
-     *              '/validation/check/update'
-     *          ]
-     *      }
-     * }]
-     *
-     * 使用当前er path来进行匹配确定是否高亮
-     * 先检查include里边的内容，如有匹配则高亮该nav item
-     * 如果没有填写include，使用pattern匹配，并检查exclude
-     * 如果不在exclude中则高亮该nav item
+     * 导航单例
+     * 使用当前er action path来进行匹配确定是否高亮
+     * include规则进行匹配
+     * exclude规则进行过滤
      *
      * @usage
      * req('bat-ria/ui/Navigator').init('nav', globalConfig.nav);
      *
+     * @singleton
      */
-    CommonNavigator.prototype.init = function (domId, config) {
+     function Navigator () {}
+
+     Navigator.prototype.config = null;
+     Navigator.prototype.activeIndex = null;
+     Navigator.prototype.navItems = [];
+
+    /**
+     * 初始化导航
+     *
+     * @param {String} domId  dom元素id 
+     * @param {Array} config  配置数组
+     *
+     * @cfg {String} [config.text]  导航文本
+     * @cfg {String} [config.url]  er内部hash路径
+     * @cfg {String} [config.externalUrl]  外部路径，优先跳转
+     * @cfg {Array} [config.include]  需要高亮该导航的action路径规则
+     * @cfg {Array} [config.exclude]  不需要高亮该导航的action路径规则 
+     * @cfg {Array} [config.children]  子导航，结构和config中每一项保持一致
+     * 
+     * @sample:
+     * [{
+     *      text: '主页',
+     *      url: '/',                           // redirect using er/locator
+     *      externalUrl: '',                    // redirect using url navigation
+     *      include: [
+     *          /\/validation\/check\/create/,  // can be a regexp
+     *          '/validation/check/edit'        // string of url either
+     *      ],
+     *      exclude: [
+     *          '/validation/check/update'
+     *      ],
+     *      auth: 'auth.promotion',             // authority to display nav item
+     *      children: []                        // TODO: add it
+     * }]
+     */
+     Navigator.prototype.init = function (domId, config) {
         if (!config) {
             unexceptedError('Navigator config is null!');
             return;
@@ -64,13 +76,14 @@ define(function (require) {
         this.config = config;
 
         var nav = document.createElement('ul');
-        nav.className = 'ui-nav-navigator';
+        nav.className = 'nav';
 
         u.each(config, function (item, index) {
-            var location = item.location || {};
-            var element = createNavElement(index, item.text)
-            nav.appendChild(element);
-            me.navItems.push(element);
+            if (!item.auth || permission.isAllow(item.auth)) {
+                var element = createNavElement(index, item.text);
+                nav.appendChild(element);
+                me.navItems.push(element);
+            }
         });
 
         main.appendChild(nav);
@@ -84,66 +97,71 @@ define(function (require) {
 
     };
 
-    CommonNavigator.prototype.handleRedirect = function (e) {
+    Navigator.prototype.handleRedirect = function (e) {
         var me = this;
         u.each(this.config, function (item, index) {
-            var location = item.location || {};
-            var include = location.include;
-            var exclude = location.exclude;
-            var pattern = location.pattern;
-            if (include && include.length) {
-                u.each(include, function (url, index) {
-                    if (e.url == url) {
-                        me.activeTab(index);
-                    }
-                });
-            }
-            else if (pattern && pattern.test(e.url)) {
-                var ignore = false;
-                if (exclude && exclude.length) {
-                    u.each(exclude, function (url, index) {
-                        if (e.url == url) {
-                            ignore = true;
-                        }
-                    });
-                }
-                if (!ignore) {
+            var include = item.include || [];
+            var exclude = item.exclude || [];
+            if (include.length > exclude.length && exclude.length) {
+                if ( !testUrlIn(e.url, exclude) && testUrlIn(e.url, include) ) {
                     me.activeTab(index);
                 }
+            }
+            else if ( testUrlIn(e.url, include) ) {
+                me.activeTab(index);
             }
         });
     };
 
-    CommonNavigator.prototype.activeTab = function (index) {
-        var item = this.navItems[index];
-        if (this.activedIndex == null) {
-            this.activedIndex = index;
-        }
-        else {
-            lib.removeClass(this.navItems[this.activedIndex], 'ui-nav-item-active');
-            this.activedIndex = index;
-        }
-        lib.addClass(item, 'ui-nav-item-active');
-    };
-
-    CommonNavigator.prototype.handleClickTab = function (e) {
+    Navigator.prototype.handleClickTab = function (e) {
         e = e || window.event;
         if (e && e.target) {
             var index = e.target.getAttribute('nav-index');
-            locator.redirect(this.config[index].location.redirectUrl);
+            var conf = this.config[index];
+            if (conf.externalUrl) {
+                location.href = externalUrl;
+            }
+            else {
+                locator.redirect(conf.url);
+            }
         }
-    }
+    };
+
+    Navigator.prototype.activeTab = function (index) {
+        var item = this.navItems[index];
+        if (this.activeIndex == null) {
+            this.activeIndex = index;
+        }
+        else {
+            lib.removeClass(this.navItems[this.activeIndex], 'nav-item-current');
+            this.activeIndex = index;
+        }
+        lib.addClass(item, 'nav-item-current');
+    };
 
     function createNavElement (index, text) {
-        var element = document.createElement('li');
-        //var span = document.createElement('span');
-        element.className = 'ui-nav-item';
-        element.setAttribute('nav-index', index);
-        //span.setAttribute('nav-index', index);
-        //span.appendChild(document.createTextNode(text));
-        element.appendChild(document.createTextNode(text));
-        //element.appendChild(span);
-        return element;
+        var li = document.createElement('li');
+        li.className = 'nav-item';
+        li.setAttribute('nav-index', index);
+        li.innerHTML = '<a nav-index="' + index + '">' + text + '</a>';
+        return li;
+    }
+
+    function testUrlIn (url, rule) {
+        res = false;
+        u.every(rule, function (r) {
+            if (typeof r == 'object' && r.test) {
+                if (r.test(url)){
+                    res = true;
+                    return;
+                }
+            }
+            else if (r == url) {
+                res = true;
+                return;
+            }
+        });
+        return res;
     }
 
     function unexceptedError (message) {
@@ -153,12 +171,10 @@ define(function (require) {
         }
     }
 
-    if (commonNavigator) {
-        return commonNavigator;
-    }
-    else {
-        commonNavigator = new CommonNavigator();
-        return commonNavigator;
-    }
+    var commonNavigator = new Navigator(); 
+
+    return {
+        init: u.bind(commonNavigator.init, commonNavigator)
+    };
 
 });
