@@ -61,7 +61,7 @@ define(function (require) {
             // 此处直接new控件出来，
             // 因为这个控件不能属于任何一个业务模块的ViewContext，
             // 不然会随着跳转被销毁，造成下次用不了
-            var Toast = require('../ui/Toast');
+            var Toast = require('esui/Toast');
             var toastOptions = { disposeOnHide: false, autoShow: false };
             globalToast = new Toast(toastOptions);
             globalToast.on(

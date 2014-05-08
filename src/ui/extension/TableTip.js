@@ -62,7 +62,7 @@ define(
             var options = {
                 id: 'table-operation-tip-' + u.escape(type),
                 viewContext: this.target.viewContext,
-                content: lib.getText(elements[0]),
+                content: elements[0].innerHTML,
                 arrow: true,
                 skin: 'table-tip'
             };
