@@ -42,7 +42,7 @@ define(function (require) {
      * @cfg {String} [config.externalUrl]  外部路径，优先跳转
      * @cfg {Array} [config.include]  需要高亮该导航的action路径规则
      * @cfg {Array} [config.exclude]  不需要高亮该导航的action路径规则 
-     * @cfg {Array} [config.children]  子导航，结构和config中每一项保持一致
+     * @cfg {Array} [config.children]  子导航，结构和config中每一项保持一致，TODO
      * 
      * @sample:
      * [{
@@ -80,7 +80,8 @@ define(function (require) {
 
         u.each(config, function (item, index) {
             if (!item.auth || permission.isAllow(item.auth)) {
-                var element = createNavElement(index, item.text);
+                var url = (item.externalUrl ? item.externalUrl : '#' + item.url);
+                var element = createNavElement(index, item.text, url);
                 nav.appendChild(element);
                 me.navItems.push(element);
             }
@@ -88,7 +89,6 @@ define(function (require) {
 
         main.appendChild(nav);
 
-        lib.on(nav, 'click', u.bind(this.handleClickTab, this));
         locator.on('redirect', u.bind(this.handleRedirect, this));
 
         this.handleRedirect({
@@ -113,20 +113,6 @@ define(function (require) {
         });
     };
 
-    Navigator.prototype.handleClickTab = function (e) {
-        e = e || window.event;
-        if (e && e.target) {
-            var index = e.target.getAttribute('nav-index');
-            var conf = this.config[index];
-            if (conf.externalUrl) {
-                location.href = externalUrl;
-            }
-            else {
-                locator.redirect(conf.url);
-            }
-        }
-    };
-
     Navigator.prototype.activeTab = function (index) {
         var item = this.navItems[index];
         if (this.activeIndex == null) {
@@ -139,11 +125,12 @@ define(function (require) {
         lib.addClass(item, 'nav-item-current');
     };
 
-    function createNavElement (index, text) {
+    function createNavElement (index, text, url) {
         var li = document.createElement('li');
         li.className = 'nav-item';
-        li.setAttribute('nav-index', index);
-        li.innerHTML = '<a nav-index="' + index + '">' + text + '</a>';
+        li.innerHTML =  '<a href="' + url + '" data-nav-index="' + index + '">'
+                            + '<span>' + u.escape(text) + '</span>'
+                        + '</a>';
         return li;
     }
 
@@ -168,7 +155,7 @@ define(function (require) {
         throw {
             name: 'System Error',
             message: message ? message : 'Unknow Error'
-        }
+        };
     }
 
     var commonNavigator = new Navigator(); 
