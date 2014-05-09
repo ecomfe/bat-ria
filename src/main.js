@@ -74,7 +74,13 @@ define(
          *
          * @ignore
          */
-        function erStart() {
+        function init() {
+
+            // 初始化主导航栏
+            if (config.nav && config.navId) {
+                require('./ui/navigator').init(config.navId, config.nav);
+            }
+
             initErConfigs();
 
             // 启动er
@@ -96,7 +102,7 @@ define(
             // 读取必要信息后初始化系统
             return loadData()
                 .then(initData)
-                .then(erStart);
+                .then(init);
         }
 
         return {

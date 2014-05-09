@@ -21,7 +21,7 @@ define(function (require) {
      * exclude规则进行过滤
      *
      * @usage
-     * req('bat-ria/ui/Navigator').init('nav', globalConfig.nav);
+     * req('bat-ria/ui/navigator').init('nav', globalConfig.nav);
      *
      * @singleton
      */
