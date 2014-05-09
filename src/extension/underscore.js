@@ -68,6 +68,22 @@ define(function(require) {
     };
 
     /**
+     * 根据指定的映射关系修改对象的键值
+     *
+     * @param {Object} obj 输入的对象
+     * @param {Function} iterator 每个键值的映射函数
+     * @return {Object} context 映射函数的this
+     */
+    util.mapObject = function(obj, iterator, context) {
+        var result = {};
+        if (obj == null) { return result; }
+        u.each(obj, function(value, key) {
+            result[key] = iterator.call(context, value);
+        });
+        return result;
+    };
+
+    /**
      * 根据指定的映射关系修改对象的键名
      *
      * 如果键名不在给定的映射关系中，保留原名
@@ -78,7 +94,7 @@ define(function(require) {
      */
     util.mapKey = function(obj, map) {
         var result = {};
-        if (obj == null) { return results; }
+        if (obj == null) { return result; }
         u.each(obj, function(value, key) {
             if (map[key]) {
                 result[map[key]] = value;

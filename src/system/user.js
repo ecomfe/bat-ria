@@ -26,9 +26,9 @@ define(function (require) {
             // 如果配置了权限信息，需要初始化 `er/permission`
             var auth = this.visitor.auth;
             if (auth) {
-                u.each(auth, function (module, level) {
-                    permission.add(module, level !== 'none');
-                });
+                permission.add(u.mapObject(auth, function (value) {
+                    return value !== 'none';
+                }));
             }
         }
     };
