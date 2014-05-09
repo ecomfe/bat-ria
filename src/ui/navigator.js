@@ -80,7 +80,7 @@ define(function (require) {
 
         u.each(config, function (item, index) {
             if (!item.auth || permission.isAllow(item.auth)) {
-                var url = (item.externalUrl ? item.externalUrl : '#' + item.url);
+                var url = item.externalUrl || ('#' + item.url);
                 var element = createNavElement(index, item.text, url);
                 nav.appendChild(element);
                 me.navItems.push(element);
@@ -99,23 +99,19 @@ define(function (require) {
 
     Navigator.prototype.handleRedirect = function (e) {
         var me = this;
-        u.each(this.config, function (item, index) {
+        u.some(this.config, function (item, index) {
             var include = item.include || [];
             var exclude = item.exclude || [];
-            if (include.length > exclude.length && exclude.length) {
-                if ( !testUrlIn(e.url, exclude) && testUrlIn(e.url, include) ) {
-                    me.activeTab(index);
-                }
-            }
-            else if ( testUrlIn(e.url, include) ) {
+            if ( !testUrlIn(e.url, exclude) && testUrlIn(e.url, include) ) {
                 me.activeTab(index);
+                return true;
             }
         });
     };
 
     Navigator.prototype.activeTab = function (index) {
         var item = this.navItems[index];
-        if (this.activeIndex == null) {
+        if (this.activeIndex === null) {
             this.activeIndex = index;
         }
         else {
@@ -134,21 +130,15 @@ define(function (require) {
         return li;
     }
 
-    function testUrlIn (url, rule) {
-        res = false;
-        u.every(rule, function (r) {
-            if (typeof r == 'object' && r.test) {
-                if (r.test(url)){
-                    res = true;
-                    return;
-                }
+    function testUrlIn (url, patterns) {
+        return u.some(patterns, function (pattern) {
+            if (typeof pattern.test === 'function') {
+                return pattern.test(url);
             }
-            else if (r == url) {
-                res = true;
-                return;
+            else {
+                return pattern === url;
             }
         });
-        return res;
     }
 
     function unexceptedError (message) {
