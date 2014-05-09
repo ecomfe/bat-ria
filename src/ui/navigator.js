@@ -21,9 +21,13 @@ define(function (require) {
      * exclude规则进行过滤
      *
      * @usage
+<<<<<<< HEAD
      * 在html中放一个div或者ul元素，<ul id="nav" class="nav"></ul>
      * 初始化er前
      * req('bat-ria/ui/Navigator').init('nav', globalConfig.nav);
+=======
+     * req('bat-ria/ui/navigator').init('nav', globalConfig.nav);
+>>>>>>> dbb6e56dbdbfe93f66a18768d6ccbc14b9f34720
      *
      * @singleton
      */

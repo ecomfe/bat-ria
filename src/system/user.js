@@ -1,12 +1,15 @@
 /**
- * @file [Please input file description]
+ * @file 用户信息模块
  * @author Justineo(justice360@gmail.com)
  */
 
 define(function (require) {
-    
+
+    var u = require('underscore');
+    var permission = require('er/permission');
+
     /**
-     * [Please input module description]
+     * 用户信息模块
      */
     var exports = {
         init: function(session) {
@@ -18,6 +21,14 @@ define(function (require) {
             }
             if (!session.visitor && !session.adOwner) {
                 this.visitor = session;
+            }
+
+            // 如果配置了权限信息，需要初始化 `er/permission`
+            var auth = this.visitor.auth;
+            if (auth) {
+                u.each(auth, function (module, level) {
+                    permission.add(module, level !== 'none');
+                });
             }
         }
     };
