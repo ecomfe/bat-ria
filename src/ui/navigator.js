@@ -21,6 +21,8 @@ define(function (require) {
      * exclude规则进行过滤
      *
      * @usage
+     * 在html中放一个div或者ul元素，<ul id="nav" class="nav"></ul>
+     * 初始化er前
      * req('bat-ria/ui/Navigator').init('nav', globalConfig.nav);
      *
      * @singleton
@@ -72,12 +74,19 @@ define(function (require) {
             return;
         }
 
-        var me = this;
+        var nav = null;
         this.config = config;
 
-        var nav = document.createElement('ul');
-        nav.className = 'nav';
+        if (main.tagName.toLowerCase() === 'ul') {
+            nav = main;
+        }
+        else {
+            nav = document.createElement('ul');
+            nav.className = 'nav';
+            main.appendChild(nav);
+        }
 
+        var me = this;
         u.each(config, function (item, index) {
             if (!item.auth || permission.isAllow(item.auth)) {
                 var url = item.externalUrl || ('#' + item.url);
@@ -86,8 +95,6 @@ define(function (require) {
                 me.navItems.push(element);
             }
         });
-
-        main.appendChild(nav);
 
         locator.on('redirect', u.bind(this.handleRedirect, this));
 
@@ -121,7 +128,7 @@ define(function (require) {
         lib.addClass(item, 'nav-item-current');
     };
 
-    function createNavElement (index, text, url) {
+    function createNavElement(index, text, url) {
         var li = document.createElement('li');
         li.className = 'nav-item';
         li.innerHTML =  '<a href="' + url + '" data-nav-index="' + index + '">'
@@ -130,7 +137,7 @@ define(function (require) {
         return li;
     }
 
-    function testUrlIn (url, patterns) {
+    function testUrlIn(url, patterns) {
         return u.some(patterns, function (pattern) {
             if (typeof pattern.test === 'function') {
                 return pattern.test(url);
@@ -141,7 +148,7 @@ define(function (require) {
         });
     }
 
-    function unexceptedError (message) {
+    function unexceptedError(message) {
         throw {
             name: 'System Error',
             message: message ? message : 'Unknow Error'
