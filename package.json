@@ -1,6 +1,6 @@
 {
   "name": "bat-ria",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "RIA extension for Brand Ads Team",
   "main": "main.js",
   "scripts": {

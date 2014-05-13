@@ -524,10 +524,11 @@ define(
             //    }
             // }
 
+            var result = options.result;
             if (options.success === false || options.success === "false") {
                 this.notifyFail(options.message);
             }
-            else if (options.result){
+            else if (result){
                 if (!options.hasOwnProperty('type')) {
                     options.result.type = this.fileType;
                 }
@@ -535,7 +536,8 @@ define(
                     options.result.type = FILE_TYPES[options.result.type];
                 }
                 
-                this.fileInfo = options.result;
+                this.fileInfo = result;
+                this.rawValue = result.url || result.previewUrl || '';
                 this.notifyComplete(options.result);
             }
         };
