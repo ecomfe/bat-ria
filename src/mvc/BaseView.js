@@ -64,17 +64,9 @@ define(function (require) {
             var Toast = require('esui/Toast');
             var toastOptions = { disposeOnHide: false, autoShow: false };
             globalToast = new Toast(toastOptions);
-            globalToast.on(
-                'hide',
-                u.bind(globalToast.detach, globalToast)
-            );
             globalToast.render();
         }
 
-        // 如果这个信息无比素正好显示着内容，又有新内容要显示，
-        // 那么新内容也应该有个动画效果，以吸引用户眼球，
-        // 所以要先`detach`一次，让`animation`生效
-        globalToast.detach();
         var properties = {
             content: content
         };

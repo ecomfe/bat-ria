@@ -65,6 +65,16 @@ define(
         };
 
         /**
+         * 修改action属性的过滤器（扩展点）
+         *
+         * @param {string} action 文件发送的表单action URL
+         * @return {string} 修改后的URL
+         */
+        Uploader.prototype.filterAction = function (action) {
+            return action;
+        };
+
+        /**
          * 初始化参数
          *
          * @param {Object=} options 构造函数传入的参数
@@ -179,15 +189,16 @@ define(
                         'value="' + 'parent.esuiShowUploadResult[\'' + this.callbackName + '\']" ',
                     '/>',
                     // sessionToken
-                    '<input type="hidden" name="sessionToken" ',
-                        'value="' + this.getSessionToken() + '" ',
-                    '/>',
+                    // '<input type="hidden" name="sessionToken" ',
+                    //     'value="' + this.getSessionToken() + '" ',
+                    // '/>',
                     // 文件上传框
                     '<input type="file" ',
                         'id="' + helper.getId(this, 'input') + '" ',
                         'size="1" ',
-                        (this.name ? 'name="' + this.name + '" ' : ' '),
-                    '/>',
+                        'name="' + (this.dataKey ? this.dataKey : 'filedata') + '" ',
+                    '/>'
+                    ,
                     // 类型字段
                     '<input type="hidden" name="type" ',
                         'value="' + this.typeIndex + '"',
@@ -265,7 +276,9 @@ define(
             this.addState('uploaded');
             var button = lib.g(helper.getId(this, 'button'));
             button.innerHTML = lib.encodeHTML(this.overrideText);
-            this.setFile(this.getFileName(info.previewUrl) || this.getFileName());
+
+            var label = lib.g(helper.getId(this, 'label'));
+            label.innerHTML = lib.encodeHTML(this.getFileName() || info.url);
 
             // 清掉可能存在的错误信息
             var validity = new Validity();
@@ -275,6 +288,8 @@ define(
             if (this.preview) {
                 this.showPreview(info);
             }
+
+            window.up = this;
         }
 
         /**
@@ -290,7 +305,7 @@ define(
                 paint: function (uploader, method, action) {
                     var form = uploader.helper.getPart('form');
                     form.method = method;
-                    form.action = action;
+                    form.action = uploader.filterAction(action);
                 }
             },
             {
@@ -365,16 +380,14 @@ define(
                         return;
                     }
 
-                    if (!rawValue.hasOwnProperty('type')) {
-                        rawValue.type = uploader.fileType;
-                    }
-                    else if (typeof rawValue.type === 'number') {
-                        rawValue.type = FILE_TYPES[rawValue.type];
-                    }
+                    var type = uploader.fileType;
 
-                    uploader.fileInfo = rawValue;
+                    uploader.fileInfo = {
+                        url: rawValue,
+                        type: type
+                    };
 
-                    setStateToComplete.call(uploader, rawValue);
+                    setStateToComplete.call(uploader, uploader.fileInfo);
                     // 不需要停留在完成提示
                     uploader.removeState('complete');
                 }
@@ -507,11 +520,11 @@ define(
             // {
             //    "success" : "false",
             //    "message" : {
-            //         error : something
+            //         "upload" : "error message"
             //    }
             // }
 
-            if (!options.success || options.success == "false") {
+            if (options.success === false || options.success === "false") {
                 this.notifyFail(options.message);
             }
             else if (options.result){
@@ -590,28 +603,14 @@ define(
             }
         };
 
-        Uploader.prototype.setRawValue = function (rawValue) {
-            if (!rawValue) {
-                return;
-            }
-
-            if (!rawValue.hasOwnProperty('type')) {
-                rawValue.type = this.fileType;
-            }
-            else if (typeof rawValue.type === 'number') {
-                rawValue.type = FILE_TYPES[rawValue.type];
-            }
-
-            this.fileInfo = rawValue;
-
-            setStateToComplete.call(this, rawValue);
-            // 不需要停留在完成提示
-            this.removeState('complete');
-        }; 
-
-        Uploader.prototype.getRawValue = function () {
-            return this.fileInfo || null;
-        };
+        // /**
+        //  * 获取作为`InputControl`时的数据，只需返回上传成功后得到的URL即可
+        //  *
+        //  * @return {string} 上传成功文件的URL
+        //  */
+        // Uploader.prototype.getRawValue = function () {
+        //     return this.fileInfo.url || this.fileInfo.previewUrl || '';
+        // };
 
         Uploader.prototype.getRawValueProperty = Uploader.prototype.getRawValue;
 
@@ -659,7 +658,7 @@ define(
          * @protected
          */
         Uploader.prototype.getPreviewUrl = function () {
-            return this.fileInfo ? this.fileInfo.url || this.fileInfo.previewUrl : '';
+            return this.fileInfo ? (this.fileInfo.previewUrl || this.fileInfo.url) : '';
         };
 
         /**
@@ -670,20 +669,6 @@ define(
          */
         Uploader.prototype.getSessionToken = function () {
             return '';
-        };
-
-        /**
-         * 上传成功时
-         *      展示已上传文件名
-         * 初始化时
-         *      设置默认文件名，其实input里边没有文件（囧）
-         *      需要配置rawValue.name
-         */
-        Uploader.prototype.setFile = function (fileName) {
-            var label = lib.g(helper.getId(this, 'label'));
-            if (fileName) {
-                label.innerHTML = lib.encodeHTML(fileName);
-            }
         };
 
         /**

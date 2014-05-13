@@ -160,3 +160,54 @@ button.skin-link-button:hover {
         .placeholder(@bat-aux-color);
     }
 }
+
+.ui-tab-horizontal {
+    .ui-tab-navigator {
+        .clearfix();
+        overflow: visible;
+        border-bottom: none;
+    }
+
+    .ui-tab-item {
+        position: relative;
+        top: 1px;
+        margin-right: 5px;
+        border: 1px solid #447ED0;
+        padding: 6px 12px 5px;
+        background-color: #447ED0;
+        color: #FBFFF5;
+    }
+
+    .ui-tab-item-active {
+        padding-bottom: 6px;
+        border-color: @bat-border-blue;
+        border-bottom-color: @bat-bg-light-blue;
+        background-color: @bat-bg-light-blue;
+        color: #313131;
+    }
+}
+
+.ui-toast-content {
+    padding: 0 10px;
+    font-size: 12px;
+    color: #555;
+
+    .ui-toast-normal & {
+        background-color: #FFF4DA;
+        box-shadow: 0px 2px 10px 0px #9B9B9B;
+        border-color: #D9CBAA;
+    }
+
+    .ui-toast-success & {
+        background-color: #90EE90;
+        box-shadow: 0px 2px 10px 0px #9B9B9B;
+        border-color: #57C24E;
+    }
+
+    .ui-toast-error & {
+        background-color: #C00;
+        box-shadow: 0px 2px 10px 0px #9B9B9B;
+        border-color: #900;
+        color: #FFF;
+    }
+}

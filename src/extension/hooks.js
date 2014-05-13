@@ -41,6 +41,15 @@ define(function (require) {
         ajax.hooks.beforeSend = function(xhr) {
             xhr.setRequestHeader('X-Request-By', 'ERApplication');
         };
+
+        var Uploader = require('bat-ria/ui/Uploader');
+        Uploader.prototype.filterAction = function (action) {
+            var argMap = getAderArgMap();
+            if (argMap) {
+                action = URI(action).addQuery(argMap).toString();
+            }
+            return action;
+        };
     }
 
     return {
