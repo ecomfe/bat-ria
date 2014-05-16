@@ -171,9 +171,30 @@ define(
             };
         }
 
+        function addPanelAppendContentSupport() {
+            var Panel = require('esui/Panel');
+
+            Panel.prototype.appendContent = function (html) {
+                var panel = this;
+                var container = document.createElement('div');
+                container.innerHTML = html;
+
+                var children = [].slice.call(container.childNodes, 0);
+                var options = u.extend({}, panel.renderOptions, {
+                    viewContext: panel.viewContext,
+                    parent: panel
+                });
+                u.each(children, function (child) {
+                    panel.main.appendChild(child);
+                    require('esui').init(panel.main, options);
+                });
+            };
+        }
+
         function activate() {
             initializeValidationRules();
             addControlLinkMode();
+            addPanelAppendContentSupport();
         }
 
         return {

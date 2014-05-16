@@ -10,10 +10,6 @@ define(
         var u = require('underscore');
         var util = require('./util');
 
-        require('./extension/underscore').activate();
-        require('./extension/hooks').activate();
-        require('./extension/ui').activate();
-
         /**
          * 初始化API请求器
          *
@@ -76,11 +72,6 @@ define(
          */
         function init() {
 
-            // 初始化主导航栏
-            if (config.nav && config.navId) {
-                require('./ui/navigator').init(config.navId, config.nav);
-            }
-
             initErConfigs();
 
             // 启动er
@@ -95,6 +86,10 @@ define(
         function start(riaConfig) {
 
             config = riaConfig;
+
+            require('./extension/underscore').activate();
+            require('./extension/hooks').activate(config.hooks);
+            require('./extension/ui').activate();
 
             // 对API配置进行一下封装
             initApiConfig();
