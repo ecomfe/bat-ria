@@ -3,13 +3,13 @@
     padding: 8px 10px;
     .clearfix();
 
-    & > [class^="ui"],
-    & .ui-group > [class^="ui"] {
+    & > [data-ctrl-id],
+    & .ui-group > [data-ctrl-id] {
         margin-left: 10px;
     }
 
-    & > [class^="ui"]:first-child,
-    & .ui-group > [class^="ui"]:first-child {
+    & > [data-ctrl-id]:first-child,
+    & .ui-group > [data-ctrl-id]:first-child {
         margin-left: 0;
     }
 
@@ -210,4 +210,13 @@ button.skin-link-button:hover {
         border-color: #900;
         color: #FFF;
     }
+}
+
+.ui-select-validity-label-invalid {
+    display: inline-block;
+    margin: 0;
+    border: none;
+    padding-left: 10px;
+    background: none;
+    color: #C00;
 }

@@ -38,7 +38,20 @@ define(function (require) {
      */
     FormView.prototype.getFormData = function () {
         var form = this.get('form');
-        return form ? form.getData() : {};
+        return u.extend(
+            {},
+            form ? form.getData() : {},
+            this.getExtraFormData()
+        );
+    };
+
+    /**
+     * 获取当前表单需要提交的额外数据
+     *
+     * @return {Object} 表单数据
+     */
+    FormView.prototype.getExtraFormData = function () {
+        return {};
     };
 
     /**

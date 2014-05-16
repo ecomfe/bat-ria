@@ -44,7 +44,11 @@
 
     .form-row {
         padding: 0;
-        margin-bottom: 8px;
+        margin-top: 8px;
+
+        &:first-child {
+            margin-top: 0;
+        }
     }
 }
 
@@ -57,4 +61,6 @@
 
 .form-operation {
     &:extend(.ui-row all);
+
+    padding-left: 0;
 }

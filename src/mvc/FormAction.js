@@ -69,6 +69,12 @@ define(function (require) {
     };
 
     /**
+     * 默认提交/取消后跳转的路径
+     * @type {string}
+     */
+    FormAction.prototype.backLocation = null;
+
+    /**
      * 执行提交成功后的跳转操作
      * 在有referrer的情况下跳转至referrer
      * 在没有referrer的情况下history.back()
@@ -78,7 +84,7 @@ define(function (require) {
      * @param {Object} result 提交后服务器返回的数据
      */
     FormAction.prototype.redirectAfterSubmit = function (result) {
-        this.back(true);
+        this.back(this.backLocation, true);
     };
 
     /**
@@ -189,7 +195,7 @@ define(function (require) {
      * 可在业务action里边重写
      */
     FormAction.prototype.redirectAfterCancel = function () {
-        this.back(true);
+        this.back(this.backLocation, true);
     };
 
     /**

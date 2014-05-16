@@ -115,8 +115,6 @@ define(function (require) {
      */
     FormModel.prototype.isFormDataChanged = function (present) {
         var original = this.get('formData');
-        u.defaults(present, original);
-        u.defaults(original, present);
         return !u.isEqual(present, original);
     };
 
