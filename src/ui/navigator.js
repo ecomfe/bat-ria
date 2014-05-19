@@ -31,7 +31,7 @@ define(function (require) {
 
      Navigator.prototype.config = null;
      Navigator.prototype.activeIndex = null;
-     Navigator.prototype.navItems = [];
+     Navigator.prototype.navItems = {};
 
     /**
      * 初始化导航
@@ -91,7 +91,7 @@ define(function (require) {
                 var url = item.externalUrl || ('#' + item.url);
                 var element = createNavElement(index, item.text, url);
                 nav.appendChild(element);
-                me.navItems.push(element);
+                me.navItems[index] = element;
             }
         });
 
