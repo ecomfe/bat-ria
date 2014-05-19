@@ -98,8 +98,8 @@ define(function (require) {
      *
      * @param {Element} validity label的dom元素
      */
-    function locateToFirstError(firstErrValidity) {
-        var offset = lib.getOffset(firstErrValidity);
+    function scrollTo(element) {
+        var offset = lib.getOffset(element);
         if (lib.page.getScrollTop() > offset.top) {
             document.body.scrollTop = document.documentElement.scrollTop = offset.top - 10;
         }
@@ -141,9 +141,9 @@ define(function (require) {
             }
         });
 
-        var e = this.fire('locatetofirsterror', {firstErrValidity: firstErrValidity});
+        var e = this.fire('scrolltofirsterror', {firstErrValidity: firstErrValidity});
         if (!e.isDefaultPrevented()) {
-            locateToFirstError(firstErrValidity);
+            scrollTo(firstErrValidity);
         }
     };
 
@@ -179,7 +179,7 @@ define(function (require) {
         u.some(form.getInputControls(), function (input, index) {
             if (!input.checkValidity()) {
                 var label = input.getValidityLabel(true).main;
-                locateToFirstError(label);
+                scrollTo(label);
                 return true;
             }
         });
@@ -194,7 +194,7 @@ define(function (require) {
         var form = this.get('form');
         if (form) {
             form.on('submit', submit, this);
-            form.on('invalid', this.handleAutoValidateInvalid, this); 
+            form.on('invalid', this.handleAutoValidateInvalid, this);
         }
 
         var resetButton = this.get('reset');
