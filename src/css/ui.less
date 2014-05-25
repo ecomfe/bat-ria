@@ -3,14 +3,17 @@
     padding: 8px 10px;
     .clearfix();
 
-    & > [data-ctrl-id],
-    & .ui-group > [data-ctrl-id] {
-        margin-left: 10px;
-    }
+    &,
+    .ui-group,
+    .form-value {
+        & > [data-ctrl-id] {
+            float: left;
+            margin-left: 10px;
 
-    & > [data-ctrl-id]:first-child,
-    & .ui-group > [data-ctrl-id]:first-child {
-        margin-left: 0;
+            &:first-child {
+                margin-left: 0;
+            }
+        }
     }
 
     & > .ui-group {
@@ -219,4 +222,50 @@ button.skin-link-button:hover {
     padding-left: 10px;
     background: none;
     color: #C00;
+}
+
+.skin-default-wizard {
+    .ui-wizard-node {
+        padding-right: 8px;
+
+        &:first-child span:before {
+            display: none;
+        }
+
+        span {
+            background-color: @bat-bg-blue;
+            font-size: 12px;
+            font-weight: 400;
+            color: #999;
+            &:before {
+                left: -6px;
+                border-left-width: 6px;
+                border-top-color: @bat-bg-blue;
+                border-bottom-color: @bat-bg-blue;
+            }
+
+            &:after {
+                right: -6px;
+                border-left-width: 6px;
+                border-left-color: @bat-bg-blue;
+            }
+        }
+    }
+
+    .ui-wizard-node-active span {
+        background-color: @bat-bg-dark-blue;
+        color: #333;
+
+        &:before {
+            border-top-color: @bat-bg-dark-blue;
+            border-bottom-color: @bat-bg-dark-blue;
+        }
+        &:after {
+            border-left-color: @bat-bg-dark-blue;
+        }
+    }
+
+    .ui-wizard-node-done span {
+        background-color: @bat-bg-blue;
+    }    
 }
