@@ -24,7 +24,7 @@
       "etpl": ">=2.0.8",
       "urijs": ">=1.12.0"
   },
-  "author": "Justineo, chestnutchen",
+  "author": "Justineo, chestnutchen, leeight",
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/ecomfe/bat-ria/issues"
