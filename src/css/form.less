@@ -35,6 +35,10 @@
     .clearfix();
     padding: 8px 10px;
     line-height: 25px;
+
+    &.ui-panel {
+        margin-left: 0;
+    }
 }
 
 .form-value {
@@ -62,5 +66,8 @@
 .form-operation {
     &:extend(.ui-row all);
 
-    padding-left: 0;
+    .form-block + &,
+    .form-segment + & {
+        padding-left: 0;
+    }
 }

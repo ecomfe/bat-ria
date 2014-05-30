@@ -221,9 +221,10 @@ define(
             document.body.appendChild(content);
 
             var close = this.helper.createPart('full-size-close');
-            close.innerHTML = 'X';
+            close.innerHTML = '×';
             document.body.appendChild(close);
 
+            this.helper.addDOMEvent(mask, 'click', this.cancelFullSize);
             this.helper.addDOMEvent(close, 'click', this.cancelFullSize);
         };
 

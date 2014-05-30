@@ -44,6 +44,16 @@ define(function (require) {
     FormModel.prototype.defaultArgs = {};
 
     /**
+     * 获取默认请求参数，针对formData的请求发送，默认直接返回`this.defaultArgs`
+     *
+     * @return {Object}
+     * @protected
+     */
+    FormModel.prototype.getDefaultArgs = function () {
+        return this.defaultArgs;
+    };
+
+    /**
      * @inheritDoc
      */
     FormModel.prototype.defaultDatasource = {
@@ -55,9 +65,8 @@ define(function (require) {
                 }
                 else {
                     var formRequester = model.formRequester;
-                    var defaultArgs = model.defaultArgs;
                     if (formRequester) {
-                        return formRequester(defaultArgs);
+                        return formRequester(model.getDefaultArgs());
                     }
                     else {
                         return {};
@@ -108,14 +117,14 @@ define(function (require) {
     };
 
     /**
-     * 表单数据是否改动过
+     * 表单数据是否改动过，默认未改动，取消时直接返回
+     * 如果需要提示已修改请按需实现此功能
      *
      * @param {Object} 新表单数据
      * @return {Boolean}
      */
     FormModel.prototype.isFormDataChanged = function (present) {
-        var original = this.get('formData');
-        return !u.isEqual(present, original);
+        return false;
     };
 
     /**

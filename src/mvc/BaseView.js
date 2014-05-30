@@ -201,6 +201,8 @@ define(function (require) {
             dialog.fire(type);
         }
 
+        options = options || {};
+
         //使用默认foot时，改变显示文字
         if (options.needFoot || dialog.getFoot()) {
             var okBtn = dialog.getFoot().getChild('btnOk');

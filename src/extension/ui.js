@@ -172,6 +172,7 @@ define(
         }
 
         function addPanelAppendContentSupport() {
+            var ui = require('esui');
             var Panel = require('esui/Panel');
 
             Panel.prototype.appendContent = function (html) {
@@ -179,14 +180,19 @@ define(
                 var container = document.createElement('div');
                 container.innerHTML = html;
 
-                var children = [].slice.call(container.childNodes, 0);
+                var childNodes = container.childNodes;
+                var children = [];
+                for (var i = 0; i < childNodes.length; i++) {
+                    children.push(childNodes[i]);
+                };
+
                 var options = u.extend({}, panel.renderOptions, {
                     viewContext: panel.viewContext,
                     parent: panel
                 });
                 u.each(children, function (child) {
                     panel.main.appendChild(child);
-                    require('esui').init(panel.main, options);
+                    ui.init(panel.main, options);
                 });
             };
         }
