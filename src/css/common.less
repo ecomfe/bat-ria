@@ -138,12 +138,12 @@ hr {
 
             &:before {
                 left: 0;
-                background-position: left -27px;
+                background-position: 0 -27px;
             }
 
             &:after {
                 right: 0;
-                background-position: right -27px;
+                background-position: 100% -27px;
             }
         }
 
@@ -153,21 +153,26 @@ hr {
         }
     }
 
+    /**
+     * IE8下必须切换content内容触发重绘
+     */
     .nav-item-current {
         &:before {
+            content: " "; /* Fix IE8 */
             background-position: 0 -54px;
         }
 
-
         a {
             &:before {
+                content: " "; /* Fix IE8 */
                 left: 0;
-                background-position: left 0;
+                background-position: 0 0;
             }
 
             &:after {
+                content: " "; /* Fix IE8 */
                 right: 0;
-                background-position: right 0;
+                background-position: 100% 0;
             }
         }
     }
