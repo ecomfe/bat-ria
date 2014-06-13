@@ -171,9 +171,26 @@ define(
             };
         }
 
+        /**
+         * 激活全局ESUI扩展
+         *
+         * @ignore
+         */
+        function initializeGlobalExtensions() {
+            var ui = require('esui');
+            var globalExtensions = [
+                { type: 'CustomData', options: {} }
+            ];
+
+            u.each(globalExtensions, function (extension) {
+                ui.attachExtension(extension.type, extension.options);
+            });
+        }
+
         function activate() {
             initializeValidationRules();
             addControlLinkMode();
+            initializeGlobalExtensions();
         }
 
         return {
