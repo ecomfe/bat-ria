@@ -61,7 +61,7 @@ define(function (require) {
                 }
             }
 
-            if (hooks['SHOW_LOADING']) {
+            if (options.showLoading !== false && hooks['SHOW_LOADING']) {
                 loading.show();
             }
         };

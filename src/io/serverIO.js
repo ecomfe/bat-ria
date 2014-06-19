@@ -128,15 +128,17 @@ define(function (require) {
     };
 
     io.get = function(url, data, options) {
-        return this.request(url, data, {
+        u.extend(options, {
             method: 'GET'
         });
+        return this.request(url, data, options);
     };
 
     io.post = function(url, data, options) {
-        return this.request(url, data, {
+        u.extend(options, {
             method: 'POST'
         });
+        return this.request(url, data, options);
     };
 
     // return模块

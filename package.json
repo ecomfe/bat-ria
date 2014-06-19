@@ -19,7 +19,7 @@
       "er": ">=3.1.0-beta.3",
       "esui": ">=3.1.0-beta.3",
       "ef": "3.1.x",
-      "underscore": "1.4.x",
+      "underscore": ">=1.6.0",
       "moment": "2.x",
       "etpl": ">=2.0.8",
       "urijs": ">=1.12.0"
