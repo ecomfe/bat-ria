@@ -72,7 +72,7 @@ define(function (require) {
             };
         }
 
-        if (hooks['ADD_ADER_ID']) {
+        if (hooks['ADD_ER_REQUEST_HEADER']) {
             var ajax = require('er/ajax');
             ajax.hooks.beforeSend = function(xhr) {
                 xhr.setRequestHeader('X-Request-By', 'ERApplication');
