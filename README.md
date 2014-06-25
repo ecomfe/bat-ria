@@ -52,3 +52,6 @@ require('bat-ria/main').start(config).then(function () {
 
 常用的单纯的数据操作工具被扩展到了 `underscore` 中，参见 `bat-ria/extension/underscore`。
 其他和 ER/ESUI/EF 相关的辅助方法在 `bat-ria/util` 中。
+
+
+测试一下发送pull request，jenkis那边有没有反应
