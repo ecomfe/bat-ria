@@ -93,6 +93,14 @@ define(function (require) {
         this.fire('pagechange', { page: page });
     }
 
+    /**
+     * 根据表格中所选择的行来控制批量更新按钮的启用/禁用状态
+     */
+    ListView.prototype.updateBatchButtonStatus = function () {
+        var items = this.getSelectedItems();
+
+        this.getGroup('batch').set('disabled', u.isEmpty(items));
+    };
 
     /**
      * 获取table已经选择的列的数据
@@ -103,6 +111,21 @@ define(function (require) {
         var table = this.get('table');
         return table ? table.getSelectedItems() : [];
     };
+
+    /**
+     * 触发批量操作
+     *
+     * @param {Object} e 控件事件对象
+     * @ignore
+     */
+    function batchModify(e) {
+        var args = {
+            // 批量操作的类型
+            type: e.target.getData('type')
+        };
+
+        this.fire('batchmodify', args);
+    }
 
     /**
      * @inheritDoc
@@ -117,6 +140,8 @@ define(function (require) {
 
         var table = this.get('table');
         if (table) {
+            // 选中表格行后控制批量更新按钮的启用/禁用状态
+            table.on('select', this.updateBatchButtonStatus, this);
             // 表格排序触发查询
             table.on('sort', this.submitSearch, this);
         }
@@ -127,7 +152,26 @@ define(function (require) {
             filter.on('submit', this.submitSearch, this);
         }
 
+        u.each(
+            this.getGroup('batch'),
+            function (button) {
+                // 批量更新
+                button.on('click', batchModify, this);
+            },
+            this
+        );
+
         BaseView.prototype.bindEvents.apply(this, arguments);
+    };
+
+    /**
+     * 控制元素展现
+     *
+     * @override
+     */
+    ListView.prototype.enterDocument = function () {
+        BaseView.prototype.enterDocument.apply(this, arguments);
+        this.updateBatchButtonStatus();
     };
 
     require('er/util').inherits(ListView, BaseView);

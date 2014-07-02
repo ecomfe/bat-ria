@@ -3,7 +3,7 @@
  * @author Justineo(justice360@gmail.com)
  */
 
-define(function(require) {
+define(function (require) {
     var u = require('underscore');
 
     /**
@@ -58,10 +58,10 @@ define(function(require) {
      * @param {*} [context] 判断函数的`this`
      * @return {Object} 过滤的结果
      */
-    util.filterObject = function(obj, predicate, context) {
+    util.filterObject = function (obj, predicate, context) {
         var result = {};
         if (obj == null) { return results; }
-        u.each(obj, function(value, key) {
+        u.each(obj, function (value, key) {
             if (predicate.call(context, value, key, obj)) { result[key] = value; }
         });
         return result;
@@ -74,10 +74,10 @@ define(function(require) {
      * @param {Function} iterator 每个键值的映射函数
      * @return {Object} context 映射函数的this
      */
-    util.mapObject = function(obj, iterator, context) {
+    util.mapObject = function (obj, iterator, context) {
         var result = {};
         if (obj == null) { return result; }
-        u.each(obj, function(value, key) {
+        u.each(obj, function (value, key) {
             result[key] = iterator.call(context, value);
         });
         return result;
@@ -92,10 +92,10 @@ define(function(require) {
      * @param {Object.<string, string>} map 键名的映射关系
      * @return {Object} 转换过的新对象
      */
-    util.mapKey = function(obj, map) {
+    util.mapKey = function (obj, map) {
         var result = {};
         if (obj == null) { return result; }
-        u.each(obj, function(value, key) {
+        u.each(obj, function (value, key) {
             if (map[key]) {
                 result[map[key]] = value;
             }
@@ -112,7 +112,7 @@ define(function(require) {
      * @param {string} s 输入字符串
      * @return {string}
      */
-    util.trim = function(s) {
+    util.trim = function (s) {
         return s.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
     };
 
@@ -124,14 +124,14 @@ define(function(require) {
      * @param {string} s 输入的字符串
      * @return {string}
      */
-    util.pascalize = function(s) {
+    util.pascalize = function (s) {
         s = s + '';
         if (/^[A-Z\-_]+$/.test(s)) {
             s = s.toLowerCase();
         }
         s = s.replace(
             /[\s-_]+(.)/g,
-            function(w, c) {
+            function (w, c) {
                 return c.toUpperCase();
             }
         );
@@ -147,7 +147,7 @@ define(function(require) {
      * @param {string} s 输入的字符串
      * @return {string}
      */
-    util.camelize = function(s) {
+    util.camelize = function (s) {
         s = util.pascalize(s);
         return s.charAt(0).toLowerCase() + s.slice(1);
     };
@@ -165,14 +165,14 @@ define(function(require) {
      * @param {string} s 输入的字符串
      * @return {string}
      */
-    util.dasherize = function(s) {
+    util.dasherize = function (s) {
         s = util.pascalize(s);
         // 这里把ABCD这种连续的大写，转成AbcD这种形式。
         // 如果`encodeURIComponent`，会变成`encodeUriComponent`，
         // 然后加横线后就是`encode-uri-component`得到正确的结果
         s = s.replace(
             /[A-Z]{2,}/g,
-            function(match) {
+            function (match) {
                 return match.charAt(0)
                     + match.slice(1, -1).toLowerCase()
                     + match.charAt(match.length - 1);
@@ -181,7 +181,7 @@ define(function(require) {
         // 大写字符之间用横线连起来
         s = s.replace(
             /[A-Z]/g, 
-            function(match) { return '-' + match.toLowerCase(); }
+            function (match) { return '-' + match.toLowerCase(); }
         );
         if (s.charAt(0) === '-') {
             s = s.substring(1);
@@ -197,7 +197,7 @@ define(function(require) {
      * @param {string} s 输入的字符串
      * @return {string}
      */
-    util.constanize = function(s) {
+    util.constanize = function (s) {
         s = util.pascalize(s);
         return s.toUpperCase();
     };
@@ -210,7 +210,7 @@ define(function(require) {
      * @param {string} s 输入的字符串
      * @return {string}
      */
-    util.pluralize = function(s) {
+    util.pluralize = function (s) {
         return s.replace(/y$/, 'ie') + 's';
     };
 
@@ -269,7 +269,7 @@ define(function(require) {
      * @param {number} length 补齐后的长度
      * @return {string}
      */
-    util.pad = function(s, padding, length) {
+    util.pad = function (s, padding, length) {
         s = s + '';
         var padLength = length - s.length;
         if (padLength > 0) {
@@ -289,7 +289,7 @@ define(function(require) {
      * @param {number} length 补齐后的长度
      * @return {string}
      */
-    util.padRight = function() {
+    util.padRight = function () {
         s = s + '';
         var padLength = length - s.length;
         if (padLength > 0) {
@@ -307,7 +307,7 @@ define(function(require) {
      * @param {Mixed} obj 任何对象
      * @return {Mixed} 复制后的对象
      */
-    util.deepClone = function(obj) {
+    util.deepClone = function (obj) {
         // 非对象以及函数就直接返回
         if (!u.isObject(obj) || u.isFunction(obj)) {
             return obj;
@@ -320,12 +320,24 @@ define(function(require) {
         var clone = {};
         u.each(
             obj,
-            function(value, key) {
+            function (value, key) {
                 clone[key] = util.deepClone(value);
             }
         );
         return clone;
     };
+
+    /**
+     * 获取指定参数的类型
+     *
+     * 取自`Object.prototype.toString`的结果，比isXX方法更为准确
+     *
+     * @param {Mixed} value 需要判断的参数
+     * @return {string} 参数类型（Object, Array, Function, ...）
+     */
+    util.typeOf = function (value) {
+        return Object.prototype.toString.call(value).slice(8, -1);
+    }
 
     function activate() {
         u.mixin(util);

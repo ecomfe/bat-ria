@@ -8,9 +8,9 @@
 
 ## 启动入口
 
-在 `common/main` 中如此通过 MA-RIA 来启动系统：
+在 `common/main`（或其他入口模块）中如此通过 BAT-RIA 来启动系统：
 ```javascript
-require('bat-ria/main').start().then(function () {
+require('bat-ria/main').start(config).then(function () {
     // custom system initialization
 });
 ```

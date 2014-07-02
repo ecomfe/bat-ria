@@ -171,36 +171,26 @@ define(
             };
         }
 
-        function addPanelAppendContentSupport() {
+        /**
+         * 激活全局ESUI扩展
+         *
+         * @ignore
+         */
+        function initializeGlobalExtensions() {
             var ui = require('esui');
-            var Panel = require('esui/Panel');
+            var globalExtensions = [
+                { type: 'CustomData', options: {} }
+            ];
 
-            Panel.prototype.appendContent = function (html) {
-                var panel = this;
-                var container = document.createElement('div');
-                container.innerHTML = html;
-
-                var childNodes = container.childNodes;
-                var children = [];
-                for (var i = 0; i < childNodes.length; i++) {
-                    children.push(childNodes[i]);
-                };
-
-                var options = u.extend({}, panel.renderOptions, {
-                    viewContext: panel.viewContext,
-                    parent: panel
-                });
-                u.each(children, function (child) {
-                    panel.main.appendChild(child);
-                    ui.init(panel.main, options);
-                });
-            };
+            u.each(globalExtensions, function (extension) {
+                ui.attachExtension(extension.type, extension.options);
+            });
         }
 
         function activate() {
             initializeValidationRules();
             addControlLinkMode();
-            addPanelAppendContentSupport();
+            initializeGlobalExtensions();
         }
 
         return {
