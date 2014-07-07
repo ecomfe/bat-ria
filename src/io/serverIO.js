@@ -31,6 +31,11 @@ define(function (require) {
     }
     
     function requestSuccessHandler(data) {
+
+        if (typeof io.hooks.filterData === 'function') {
+            data = io.hooks.filterData(data);
+        }
+
         if (data.success !== 'true' && data.success !== true) {
             var message = data.message;
             var title;
