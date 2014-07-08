@@ -11,6 +11,29 @@ define(function (require) {
 
     var io = {};
 
+    /**
+     * 常规请求流程中的hook如下：
+     *
+     * io.request(url, data, options)
+     *   │
+     *   ├───── io.hooks.beforeRequest(data) ───┐
+     *   │                                      │
+     *   │<────────────── data ─────────────────┘
+     *   │
+     *   ├───── io.hooks.afterResponse(data) ───┐
+     *   │                                      │
+     *   │<────────────── data ─────────────────┘
+     *   │
+     *   └─────────────────┐
+     *   ┌──── success ────♦──── failure ────┐
+     *   │                                   │
+     *   ├─ io.hooks.afterSuccess(data) ─┐   ├─ io.hooks.afterFailure(message) ─┐
+     *   │                               │   │                                  │
+     *   │<──────────── data ────────────┘   │<───────────── message ───────────┘
+     *   │                                   │
+     *   ├───────────────────────────────────┘
+     *   ●
+     */
     io.hooks = {};
 
     var DEFAULT_SERVER_ERROR = {
@@ -24,13 +47,17 @@ define(function (require) {
         var url = '/index.html';
 
         if (typeof io.hooks.filterIndexUrl === 'function') {
-            url = io.hooks.filterIndexUrl(url);
+            url = io.hooks.filterIndexUrl(url) || url;
         }
 
         document.location.href = url;
     }
-    
+
     function requestSuccessHandler(data) {
+        if (typeof io.hooks.afterResponse === 'function') {
+            data = io.hooks.afterResponse(data) || data;
+        }
+
         if (data.success !== 'true' && data.success !== true) {
             var message = data.message;
             var title;
@@ -77,30 +104,29 @@ define(function (require) {
                 });
             }
             if (typeof io.hooks.afterFailure === 'function') {
-                io.hooks.afterFailure(message);
+                message = io.hooks.afterFailure(message) || message;
             }
-            requestCompleteHandler(message);
+            message = requestCompleteHandler(message) || message;
             return Deferred.rejected(message);
         }
         // success
         else {
             if (typeof io.hooks.afterSuccess === 'function') {
-                io.hooks.afterSuccess(data);
+                data = io.hooks.afterSuccess(data) || data;
             }
             var result = data.page || data.result;
-            requestCompleteHandler(result);
+            result = requestCompleteHandler(result) || result;
             return Deferred.resolved(result);
         }
     }
 
     function requestFailureHandler(data) {
-        requestCompleteHandler(data);
         return requestSuccessHandler(DEFAULT_SERVER_ERROR);
     }
 
     function requestCompleteHandler(data) {
         if (typeof io.hooks.afterComplete === 'function') {
-            io.hooks.afterComplete(data);
+            data = io.hooks.afterComplete(data) || data;
         }
         return data;
     }
@@ -117,7 +143,7 @@ define(function (require) {
             : defaults;
 
         if (typeof io.hooks.beforeRequest === 'function') {
-            io.hooks.beforeRequest(options);
+            options = io.hooks.beforeRequest(options) || options;
         }
 
         return ajax.request(options)

@@ -64,6 +64,8 @@ define(function (require) {
             if (options.showLoading !== false && hooks['SHOW_LOADING']) {
                 loading.show();
             }
+
+            return options;
         };
 
         if (hooks['SHOW_LOADING']) {

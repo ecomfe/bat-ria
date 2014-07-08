@@ -121,7 +121,7 @@ define(function (require) {
         if (!reset.isDefaultPrevented()) {
             this.view.rollbackFormData();
         }
-    }
+    };
 
     /**
      * 设置取消编辑时的提示信息标题

@@ -1,6 +1,7 @@
 * 0.1.17
     - 修复了 AJAX 请求不发送 NMP 指定 Header 的问题
-    - 增加了 `io.hooks.filterData` 来完成返回数据格式的适配
+    - 使得 `io.hooks.*` 返回值用来修改传入参数
+    - 修复了 `navigator` 匹配路径为字符串的问题
 
 * 0.1.16
     - 增加了可以对单个请求发送器设定不显示 loading 的功能

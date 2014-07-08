@@ -9,7 +9,7 @@ define(function (require) {
     var u = require('underscore');
     var locator = require('er/locator');
     var permission = require('er/permission');
-    var URL = require('er/URL');
+    // var URL = require('er/URL');
     var lib = require('esui/lib');
 
     /**
@@ -97,18 +97,21 @@ define(function (require) {
 
         locator.on('redirect', u.bind(this.handleRedirect, this));
 
+        var index = location.href.indexOf('#');
+        var url = (index != -1 ? location.href.slice(index + 1) : '');
         this.handleRedirect({
-            url: location.hash.slice(1)
+            url: url
         });
 
     };
 
     Navigator.prototype.handleRedirect = function (e) {
         var me = this;
+        var url = URL.parse(e.url).getPath();
         u.some(this.config, function (item, index) {
             var include = item.include || [];
             var exclude = item.exclude || [];
-            if ( !testUrlIn(e.url, exclude) && testUrlIn(e.url, include) ) {
+            if (!testUrlIn(url, exclude) && testUrlIn(url, include)) {
                 me.activeTab(index);
                 return true;
             }

@@ -337,7 +337,7 @@ define(function (require) {
      */
     util.typeOf = function (value) {
         return Object.prototype.toString.call(value).slice(8, -1);
-    }
+    };
 
     function activate() {
         u.mixin(util);
