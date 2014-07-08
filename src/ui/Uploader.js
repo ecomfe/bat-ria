@@ -197,8 +197,7 @@ define(
                         'id="' + helper.getId(this, 'input') + '" ',
                         'size="1" ',
                         'name="' + (this.dataKey ? this.dataKey : 'filedata') + '" ',
-                    '/>'
-                    ,
+                    '/>',
                     // 类型字段
                     '<input type="hidden" name="type" ',
                         'value="' + this.typeIndex + '"',
@@ -255,7 +254,7 @@ define(
                 input,
                 'change',
                 function () {
-                    if (input.value != '') {
+                    if (input.value !== '') {
                         this.receiveFile();
                     }
                 }
@@ -525,7 +524,7 @@ define(
             // }
 
             var result = options.result;
-            if (options.success === false || options.success === "false") {
+            if (options.success === false || options.success === 'false') {
                 this.notifyFail(options.message);
             }
             else if (result){
@@ -535,7 +534,7 @@ define(
                 else if (typeof options.type === 'number') {
                     options.result.type = FILE_TYPES[options.result.type];
                 }
-                
+
                 this.fileInfo = result;
                 this.rawValue = result.url || result.previewUrl || '';
                 this.notifyComplete(options.result);
