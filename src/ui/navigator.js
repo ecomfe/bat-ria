@@ -9,7 +9,7 @@ define(function (require) {
     var u = require('underscore');
     var locator = require('er/locator');
     var permission = require('er/permission');
-    var URL = require('er/URL');
+    // var URL = require('er/URL');
     var lib = require('esui/lib');
 
     /**

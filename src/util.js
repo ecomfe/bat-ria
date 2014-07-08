@@ -35,7 +35,7 @@ define(function (require) {
             isRequester = isRequester || function (path) {
                 // 默认跳过以`/download`和`/upload`结尾的路径 
                 return !/\/(?:up|down)load$/.test(path);
-            }
+            };
 
             if (!isRequester(url)) {
                 return url;
