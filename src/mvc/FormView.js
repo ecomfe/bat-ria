@@ -7,12 +7,15 @@ define(function (require) {
     var util = require('er/util');
     var BaseView = require('./BaseView');
     var u = require('underscore');
+    var lib = require('esui/lib');
 
     /**
      * 使用表单视图，有以下要求：
      *
      * - 有id为`form`的`Form`控件
      * - 所有触发提交的按钮，会触发`form`的`submit`事件
+     * - 可以使用`Form`控件的`data-ui-auto-validate`属性，
+     *   设置为`true`可以在submit之前自动校验含有`name`属性的`InputControl`
      * 
      * 可选：
      * 
@@ -85,7 +88,6 @@ define(function (require) {
     /**
      * 设置表单额外数据
      * 这个接口提供给不是input的控件去扩展，自个玩去
-     * 不知道是不是又是可以砍掉的接口
      *
      * @param {Object} key：value形式的数据 key和input的name一一对应
      */
@@ -93,10 +95,26 @@ define(function (require) {
         return;
     };
 
+     /**
+     * 若页面在目标dom元素下方，设置页面scrollTop至该元素
+     *
+     * @param {Element} validity label的dom元素
+     */
+    function scrollTo(element) {
+        var offset = lib.getOffset(element);
+        if (lib.page.getScrollTop() > offset.top) {
+            document.body.scrollTop = document.documentElement.scrollTop = offset.top - 10;
+        }
+    }
+
     /**
-     * 向用户通知提交错误信息，默认根据`field`字段查找对应`name`的控件并显示错误信息
+     * 向用户通知提交错误信息，默认根据`errors`的`key`字段查找对应`name`的控件并显示错误信息
      *
      * @param {Object} errors 错误信息，每个key为控件`name`，value为`errorMessage`
+     *
+     * @fire {Event} scrolltofirsterror 定位至页面第一个出错的控件，
+     *      由于是后端或自定义处理的错误，并不会按页面控件顺序排序，需要自己
+     *      计算哪一个是第一个出错的控件
      */
     FormView.prototype.notifyErrors = function (errors) {
         if (typeof errors !== 'object') {
@@ -106,6 +124,8 @@ define(function (require) {
         var Validity = require('esui/validator/Validity');
         var ValidityState = require('esui/validator/ValidityState');
         var form = this.get('form');
+        var firstErrValidity = null;
+        var miniOffsetTop = 9999999;
 
         u.each(errors, function (message, field){
             var state = new ValidityState(false, message);
@@ -116,7 +136,17 @@ define(function (require) {
             if (input && typeof input.showValidity === 'function') {
                 input.showValidity(validity);
             }
+
+            var label = input.getValidityLabel().main;
+            if (miniOffsetTop > lib.getOffset(label).top) {
+                firstErrValidity = label;
+            }
         });
+
+        var e = this.fire('scrolltofirsterror', {firstErrValidity: firstErrValidity});
+        if (!e.isDefaultPrevented()) {
+            scrollTo(firstErrValidity);
+        }
     };
 
     /**
@@ -134,11 +164,29 @@ define(function (require) {
     }
 
     /**
-     * 提交数据
+     * 进入提交前的处理
      */
-    function submit() {
-        this.fire('submit');
+    function beforeSubmit(e) {
+        e.preventDefault();
+        this.fire('beforesubmit');
     }
+
+    /**
+     * 处理esui表单控件自动校验出错
+     * 定位至第一个出错的控件
+     *
+     * @param {Object} e esui表单控件触发invalid事件时传入的事件对象
+     */
+    FormView.prototype.handleAutoValidateInvalid = function (e) {
+        var form = e.target;
+        u.some(form.getInputControls(), function (input, index) {
+            if (!input.checkValidity()) {
+                var label = input.getValidityLabel(true).main;
+                scrollTo(label);
+                return true;
+            }
+        });
+    };
 
     /**
      * 绑定控件事件
@@ -149,6 +197,12 @@ define(function (require) {
         var form = this.get('form');
         if (form) {
             form.on('submit', submit, this);
+            form.on('invalid', this.handleAutoValidateInvalid, this);
+        }
+
+        var submitButton = this.get('submit');
+        if (submitButton) {
+            submitButton.on('click', beforeSubmit, this);
         }
 
         var resetButton = this.get('reset');

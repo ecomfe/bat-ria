@@ -11,38 +11,124 @@ define(function (require) {
 
     var io = {};
 
+    /**
+     * 常规请求流程中的hook如下：
+     *
+     * io.request(url, data, options)
+     *   │
+     *   ├───── io.hooks.beforeRequest(data) ───┐
+     *   │                                      │
+     *   │<────────────── data ─────────────────┘
+     *   │
+     *   ├───── io.hooks.afterResponse(data) ───┐
+     *   │                                      │
+     *   │<────────────── data ─────────────────┘
+     *   │
+     *   └─────────────────┐
+     *   ┌──── success ────♦──── failure ────┐
+     *   │                                   │
+     *   ├─ io.hooks.afterSuccess(data) ─┐   ├─ io.hooks.afterFailure(message) ─┐
+     *   │                               │   │                                  │
+     *   │<──────────── data ────────────┘   │<───────────── message ───────────┘
+     *   │                                   │
+     *   ├───────────────────────────────────┘
+     *   ●
+     */
     io.hooks = {};
 
-    var DEFAULT_SERVER_ERROR = {
-        'success': 'false',
-        'message': {
-            'global': '服务器错误'
-        }
+    var CODE_MAP = {
+        0: 'SUCCESS',
+        1: 'GLOBAL',
+        2: 'FIELD',
+        3: 'REDIRECT',
+        4: 'NO_SESSION'
     };
+
+    var MINIMAL_CUSTOM_FAIL_CODE = 100;
+
+    var SERVER_ERROR = getGlobalError('服务器错误');
+    var PARSE_ERROR = getGlobalError('数据解析失败');
+    var SCHEMA_ERROR = getGlobalError('数据格式错误');
+    var UNKNOWN_ERROR = getGlobalError('未知错误');
+
+    function getGlobalError(message) {
+        return {
+            success: false,
+            message: {
+                global: message
+            }
+        };
+    }
+
+    function prepareResponse(data) {
+        if (typeof data.code !== 'undefined') { // 有code时认为是新版接口
+            var status = CODE_MAP[data.code];
+
+            if (!status) {
+                if (data.code < MINIMAL_CUSTOM_FAIL_CODE) { // 非预定义类型，未知错误
+                    return UNKNOWN_ERROR;
+                }
+                else { // 自定义类型错误
+                    var message = data.message || {};
+                    message.code = data.code;
+                    return {
+                        success: false,
+                        message: message
+                    };
+                }
+            }
+            else {
+                if (status === 'SUCCESS') {
+                    return {
+                        success: true,
+                        result: data.result
+                    };
+                }
+                else {
+                    return {
+                        success: false,
+                        message: data.message
+                    };
+                }
+            }
+        }
+        else if (typeof data.success !== 'undefined') {
+            return data;
+        }
+        else {
+            return SCHEMA_ERROR;
+        }
+    }
 
     function gotoIndex() {
         var url = '/index.html';
 
         if (typeof io.hooks.filterIndexUrl === 'function') {
-            url = io.hooks.filterIndexUrl(url);
+            url = io.hooks.filterIndexUrl(url) || url;
         }
 
         document.location.href = url;
     }
-    
-    function requestSuccessHandler(data) {
-        if (data.success !== 'true' && data.success !== true) {
+
+    function requestSuccessHandler(rawData) {
+        var data = prepareResponse(rawData);
+
+        if (typeof io.hooks.afterResponse === 'function') {
+            data = io.hooks.afterResponse(data) || data;
+        }
+
+        if ((data.success + '') !== 'true') {
             var message = data.message;
             var title;
             var content;
             var onok;
             var needAlert = true;
 
-            if (message.global) {
+            if (typeof message.global !== 'undefined') {
                 title = '系统提示';
                 content = message.global;
             }
-            else if (message.noSession) {
+            else if (typeof message.noSession !== 'undefined') {
                 title = '系统超时';
                 content = message.noSession;
                 onok = gotoIndex;
@@ -60,13 +146,14 @@ define(function (require) {
                     return;
                 }
             }
-            else if (!message.field) {
-                title = '系统提示';
-                content = '请求失败(未知错误)';
-            }
-            // field error
-            else {
+            else if (typeof message.field !== 'undefined' || typeof message.code !== 'undefined') {
+                // 字段错误不需要弹窗提示，直接在表单中处理
+                // 自定义错误也在后面的过程中自行处理
                 needAlert = false;
+            }
+            else { // last resort
+                title = '系统提示';
+                content = '未知错误';
             }
 
             if (needAlert) {
@@ -76,31 +163,41 @@ define(function (require) {
                     onok: onok
                 });
             }
+
             if (typeof io.hooks.afterFailure === 'function') {
-                io.hooks.afterFailure(message);
+                message = io.hooks.afterFailure(message) || message;
             }
-            requestCompleteHandler(message);
+
+            message = requestCompleteHandler(message) || message;
+
             return Deferred.rejected(message);
         }
-        // success
-        else {
+        else { // 成功状态
             if (typeof io.hooks.afterSuccess === 'function') {
-                io.hooks.afterSuccess(data);
+                data = io.hooks.afterSuccess(data) || data;
             }
             var result = data.page || data.result;
-            requestCompleteHandler(result);
+            result = requestCompleteHandler(result) || result;
             return Deferred.resolved(result);
         }
     }
 
-    function requestFailureHandler(data) {
-        requestCompleteHandler(data);
-        return requestSuccessHandler(DEFAULT_SERVER_ERROR);
+    function requestFailureHandler(fakeXHR) {
+        var status = fakeXHR.status;
+
+        if (status < 200 || (status >= 300 && status !== 304)) { // 服务器没有正常返回
+            error = SERVER_ERROR;
+        }
+        else {
+            error = PARSE_ERROR;
+        }
+
+        return requestSuccessHandler(error);
     }
 
     function requestCompleteHandler(data) {
         if (typeof io.hooks.afterComplete === 'function') {
-            io.hooks.afterComplete(data);
+            data = io.hooks.afterComplete(data) || data;
         }
         return data;
     }
@@ -117,7 +214,7 @@ define(function (require) {
             : defaults;
 
         if (typeof io.hooks.beforeRequest === 'function') {
-            io.hooks.beforeRequest(options);
+            options = io.hooks.beforeRequest(options) || options;
         }
 
         return ajax.request(options)

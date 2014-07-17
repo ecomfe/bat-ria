@@ -103,14 +103,18 @@ define(function (require) {
      * 处理本地的验证错误
      * 没有name的controls请自行扩展处理
      *
-     * @param {meta.FieldError[]} errors 本地验证得到的错误集合
-     * @return {Mixed} 处理完后的返回值，返回对象的情况下将显示错误
+     * @param {object | string} errors 本地验证得到的错误信息
+     *        object视为一个FieldError，string视为GlobalError
+     * @return {Mixed} 本地验证得到的错误信息
      */
     FormAction.prototype.handleLocalValidationErrors = function (errors) {
-        if (typeof errors === 'object') {
-            this.view.notifyErrors(errors);
-            return errors;
+        if (typeof errors === 'string') {
+            this.view.alert(errors, '系统提示');
         }
+        else if (typeof errors === 'object') {
+            this.view.notifyErrors(errors);
+        }
+        return errors;
     };
 
     /**
@@ -121,7 +125,7 @@ define(function (require) {
         if (!reset.isDefaultPrevented()) {
             this.view.rollbackFormData();
         }
-    }
+    };
 
     /**
      * 设置取消编辑时的提示信息标题
@@ -158,6 +162,9 @@ define(function (require) {
 
     /**
      * 取消编辑的操作
+     *
+     * @fires submitcancel
+     * @fires aftercancel
      */
     FormAction.prototype.cancel = function () {
         var submitCancelEvent = this.fire('submitcancel');
@@ -202,16 +209,10 @@ define(function (require) {
      * 提交表单
      *
      * @param {object} 表单数据
+     * @return {promise}
      */
     FormAction.prototype.submit = function (submitData) {
-        var localValidationResult = this.model.validateSubmitData(submitData);
-        if (localValidationResult !== true) {
-            var handleResult = this.handleLocalValidationErrors(localValidationResult);
-            return Deferred.rejected(handleResult);
-        }
-
         var handleBeforeSubmit = this.fire('beforesubmit');
-
         if (!handleBeforeSubmit.isDefaultPrevented()) {
             try {
                 var submitRequester = this.model.submitRequester;
@@ -228,16 +229,76 @@ define(function (require) {
     };
 
     /**
-     * 提交表单前锁定提交，完成提交操作后释放提交
+     * 校验表单前可扩展的操作，在提交之前做`异步`的校验
+     * 比如弹个框“提交有风险，是否要提交”之类
+     *
+     * @return {promise}
      */
-    FormAction.prototype.submitEdit = function () {
+    FormAction.prototype.beforeValidation = function () {
+        return Deferred.resolved();
+    };
+
+    /**
+     * 校验表单后可扩展的动作，在校验之后做`异步`的处理
+     * 比如弹个框“提交仍有风险，是否要提交”之类
+     *
+     * @return {promise}
+     */
+    FormAction.prototype.afterValidation = function () {
+        return Deferred.resolved();
+    };
+
+    /**
+     * 进行校验，先进行表单控件自校验，然后进行自定义校验
+     *
+     * @return {promise}
+     */
+    FormAction.prototype.validating = function (submitData) {
+        var form = this.view.get('form');
+        if (form.validate()) {
+            var localValidationResult = this.model.validateSubmitData(submitData);
+            if (localValidationResult === true) {
+                return Deferred.resolved();
+            }
+            else {
+                var handleResult = this.handleLocalValidationErrors(localValidationResult);
+                return Deferred.rejected(handleResult);
+            }
+        }
+        return Deferred.rejected();
+    };
+
+    /**
+     * 此处为点击提交按钮后、表单校验前的准备
+     * 主要逻辑是锁定提交，在校验通过并完成提交操作后释放表单的提交操作
+     *
+     * 提交流程：
+     * disableSubmit ->
+     * beforeValidation ->
+     * validating ->
+     * afterValidation ->
+     * sumbmit ->
+     * enableSubmit
+     *
+     * 可针对业务需求扩展beforeValidation、afterValidation
+     * validating、submit若与业务有冲突，也可自行修改，但不推荐
+     */
+    FormAction.prototype.beforeSubmit = function () {
         this.view.disableSubmit();
         var formData = this.view.getFormData();
         var submitData = this.model.getSubmitData(formData);
+        var me = this;
 
         require('er/Deferred')
-            .when(this.submit(submitData))
-            .ensure(this.view.enableSubmit());
+            .when(this.beforeValidation())
+            .then(function () {
+                return me.validating(submitData);
+            })
+            .then(u.bind(this.afterValidation, this))
+            .then(function () {
+                me.submit(submitData);
+            })
+            .ensure(u.bind(this.view.enableSubmit, this.view));
     };
 
     /**
@@ -248,7 +309,7 @@ define(function (require) {
      */
     FormAction.prototype.initBehavior = function () {
         BaseAction.prototype.initBehavior.apply(this, arguments);
-        this.view.on('submit', this.submitEdit, this);
+        this.view.on('beforesubmit', this.beforeSubmit, this);
         this.view.on('cancel', this.cancelEdit, this);
         this.view.on('reset', this.reset, this);
     };
