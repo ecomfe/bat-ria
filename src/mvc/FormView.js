@@ -14,6 +14,8 @@ define(function (require) {
      *
      * - 有id为`form`的`Form`控件
      * - 所有触发提交的按钮，会触发`form`的`submit`事件
+     * - 可以使用`Form`控件的`data-ui-auto-validate`属性，
+     *   设置为`true`可以在submit之前自动校验含有`name`属性的`InputControl`
      * 
      * 可选：
      * 
@@ -106,7 +108,7 @@ define(function (require) {
     }
 
     /**
-     * 向用户通知提交错误信息，默认根据`field`字段查找对应`name`的控件并显示错误信息
+     * 向用户通知提交错误信息，默认根据`errors`的`key`字段查找对应`name`的控件并显示错误信息
      *
      * @param {Object} errors 错误信息，每个key为控件`name`，value为`errorMessage`
      *
@@ -162,10 +164,11 @@ define(function (require) {
     }
 
     /**
-     * 提交数据
+     * 进入提交前的处理
      */
-    function submit() {
-        this.fire('submit');
+    function beforeSubmit(e) {
+        e.preventDefault();
+        this.fire('beforesubmit');
     }
 
     /**
@@ -195,6 +198,11 @@ define(function (require) {
         if (form) {
             form.on('submit', submit, this);
             form.on('invalid', this.handleAutoValidateInvalid, this);
+        }
+
+        var submitButton = this.get('submit');
+        if (submitButton) {
+            submitButton.on('click', beforeSubmit, this);
         }
 
         var resetButton = this.get('reset');

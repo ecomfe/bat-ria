@@ -131,8 +131,9 @@ define(function (require) {
      * 检验表单数据有效性，除了控件自动检测之外的逻辑可以在这里扩展
      *
      * @param {Object} submitData 提交的数据，包含extraData
-     * @return {meta.FieldError[] | true} 
-     *         {field: {name: message}}
+     * @return {object | true} 
+     *         返回{inputControl-name: errorMessage}形式的fieldError内容
+     *         可以触发FormView的notifyErrors方法
      *         返回`true`则验证通过
      */
     FormModel.prototype.validateSubmitData = function (submitData) {
