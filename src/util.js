@@ -21,30 +21,41 @@ define(function (require) {
     /**
      * 根据URL字符串生成请求发送器
      *
-     * 传入一个字符串时，只返回一个发送器函数；传入数组或对象时，返回值也为相应的类型
+     * 传入一个字符串时，只返回一个发送器函数；传入数组或对象时，递归；传入函数时
      *
-     * @param {string|Array.<string>|Object.<string, string>} url 请求路径或多个请求路径的集合
+     * @param {string|Array.<string>|Object.<string, string>|Function} url 请求路径或多个请求路径的集合，或是取值函数
+     * @param {Function(string):boolean} isRequester 判断是否是需要生成请求发送器的路径
      * @return {Function|Array.<Function>|Object.<string, Function>} 将对应的路径转换为发送器后返回
      */
-    util.genRequesters = function (url) {
-        if (u.isString(url)) {
+    util.genRequesters = function (url, isRequester) {
+        if (u.typeOf(url) === 'String') {
             // 只有一个URL，直接返回封装过的请求方法
-            return function (data) {
-                return io.post(url, data);
+
+            // 过滤掉不需要生成的URL
+            isRequester = isRequester || function (path) {
+                // 默认跳过以`/download`和`/upload`结尾的路径 
+                return !/\/(?:up|down)load$/.test(path);
+            };
+
+            if (!isRequester(url)) {
+                return url;
+            }
+
+            return function (data, options) {
+                return io.post(url, data, options);
             };
         }
-        else if (u.isObject(url)) {
-            // 是一个集合，那么每个项目都封装一下
-            var map = u.clone(url);
-            u.each(map, function (url, name) {
-                if (u.isString(url)) {
-                    map[name] = function (data) {
-                        return io.post(url, data);
-                    };
-                }
-                // 如果不是string那可能封装过了
+        else if (u.typeOf(url) === 'Object' || u.typeOf(url) === 'Array') {
+            // 是一个集合，那么递归封装一下
+            var collection = u.clone(url);
+            u.each(collection, function (url, key) {
+                collection[key] = util.genRequesters(url);
             });
-            return map;
+            return collection;
+        }
+        else if (u.typeOf(url) === 'Function') {
+            // 是一个函数，不用封装
+            return url;
         }
     };
 

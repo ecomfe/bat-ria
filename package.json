@@ -1,6 +1,6 @@
 {
   "name": "bat-ria",
-  "version": "0.1.14",
+  "version": "0.1.17",
   "description": "RIA extension for Brand Ads Team",
   "main": "main.js",
   "scripts": {
@@ -16,10 +16,10 @@
     "er"
   ],
   "dependencies": {
-      "er": "3.1.x",
-      "esui": ">=3.1.0-alpha.5",
+      "er": ">=3.1.0-beta.3",
+      "esui": ">=3.1.0-beta.3",
       "ef": "3.1.x",
-      "underscore": "1.4.x",
+      "underscore": ">=1.6.0",
       "moment": "2.x",
       "etpl": ">=2.0.8",
       "urijs": ">=1.12.0"

@@ -6,7 +6,7 @@
 define(
     function (require) {
 
-        var config;
+        var config = {};
         var u = require('underscore');
         var util = require('./util');
 
@@ -16,17 +16,7 @@ define(
          * @ignore
          */
         function initApiConfig() {
-            var requesters = u.filterObject(
-                config.api,
-                config.isRequester || function (path) {
-                    // 默认跳过以`/download`和`/upload`结尾的路径 
-                    return !/\/(?:up|down)load$/.test(path);
-                }
-            );
-            config.api = u.extend(
-                config.api,
-                util.genRequesters(requesters)
-            );
+            config.api = util.genRequesters(config.api);
         }
 
         function initErConfigs() {
@@ -44,8 +34,8 @@ define(
             var Deferred = require('er/Deferred');
 
             return Deferred.all(
-                config.api.user(),
-                config.api.constants()
+                Deferred.when(config.api.user()),
+                Deferred.when(config.api.constants())
             );
         }
 
