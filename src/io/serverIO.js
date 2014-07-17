@@ -185,6 +185,7 @@ define(function (require) {
     function requestFailureHandler(fakeXHR) {
         var status = fakeXHR.status;
 
+        var error;
         if (status < 200 || (status >= 300 && status !== 304)) { // 服务器没有正常返回
             error = SERVER_ERROR;
         }
