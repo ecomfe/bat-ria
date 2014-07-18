@@ -98,7 +98,7 @@ define(function (require) {
         locator.on('redirect', u.bind(this.handleRedirect, this));
 
         var index = location.href.indexOf('#');
-        var url = (index != -1 ? location.href.slice(index + 1) : '');
+        var url = (index !== -1 ? location.href.slice(index + 1) : '');
         this.handleRedirect({
             url: url
         });

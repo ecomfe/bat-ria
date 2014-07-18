@@ -70,7 +70,7 @@ define(function (require) {
      */
     FormView.prototype.setFormData = function (formData) {
         var form = this.get('form');
-        inputs = form.getInputControls();
+        var inputs = form.getInputControls();
         u.each(inputs, function (input, index) {
             var key = input.name;
             if (formData) {

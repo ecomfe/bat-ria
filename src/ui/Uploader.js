@@ -125,7 +125,7 @@ define(
             // 现在开始解析args
             var keyAndValues = [];
             if (properties.args) {
-                if (typeof properties.args == 'string' ) {
+                if (typeof properties.args === 'string' ) {
                     keyAndValues = properties.args.split('&');
                     u.each(keyAndValues, function (keyAndValue) {
                         keyAndValue = keyAndValue.split('=');
@@ -134,7 +134,7 @@ define(
                         }
                     });
                 }
-                else if (typeof properties.args == 'object' ) {
+                else if (typeof properties.args === 'object' ) {
                     for (var key in properties.args) {
                         buildExtraArgs(key, properties.args[key]);
                     }
@@ -179,7 +179,7 @@ define(
 
             var html = [
                 '<div id="' + helper.getId(this, 'input-container') + '" ',
-                        'class="' + inputContainerClasses + '">',
+                    'class="' + inputContainerClasses + '">',
                     // 按钮
                     '<span id="' + helper.getId(this, 'button') + '" ',
                         'class="' + buttonClasses + '">',
