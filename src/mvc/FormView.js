@@ -135,19 +135,20 @@ define(function (require) {
             var input = form.getInputControls(field)[0];
             if (input && typeof input.showValidity === 'function') {
                 input.showValidity(validity);
-            }
-
-            var label = input.getValidityLabel().main;
-            var offsetTop = lib.getOffset(label).top;
-            if (miniOffsetTop > offsetTop) {
-                firstErrValidity = label;
-                miniOffsetTop = offsetTop;
+                var label = input.getValidityLabel().main;
+                var offsetTop = lib.getOffset(label).top;
+                if (miniOffsetTop > offsetTop) {
+                    firstErrValidity = label;
+                    miniOffsetTop = offsetTop;
+                }
             }
         });
 
-        var e = this.fire('scrolltofirsterror', {firstErrValidity: firstErrValidity});
-        if (!e.isDefaultPrevented()) {
-            scrollTo(firstErrValidity);
+        if (firstErrValidity) {
+            var e = this.fire('scrolltofirsterror', {firstErrValidity: firstErrValidity});
+            if (!e.isDefaultPrevented()) {
+                scrollTo(firstErrValidity);
+            }
         }
     };
 
