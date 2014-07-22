@@ -138,8 +138,10 @@ define(function (require) {
             }
 
             var label = input.getValidityLabel().main;
-            if (miniOffsetTop > lib.getOffset(label).top) {
+            var offsetTop = lib.getOffset(label).top;
+            if (miniOffsetTop > offsetTop) {
                 firstErrValidity = label;
+                miniOffsetTop = offsetTop;
             }
         });
 
