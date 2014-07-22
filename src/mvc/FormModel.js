@@ -132,8 +132,12 @@ define(function (require) {
      *
      * @param {Object} submitData 提交的数据，包含extraData
      * @return {object | true} 
-     *         返回{inputControl-name: errorMessage}形式的fieldError内容
-     *         可以触发FormView的notifyErrors方法
+     *         返回object形式为
+     *         {
+     *             name1: message1
+     *             name2: message2
+     *         }
+     *         的`fieldError`内容，可以触发`FormView`的`notifyErrors`
      *         返回`true`则验证通过
      */
     FormModel.prototype.validateSubmitData = function (submitData) {

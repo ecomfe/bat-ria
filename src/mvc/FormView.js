@@ -73,7 +73,7 @@ define(function (require) {
      */
     FormView.prototype.setFormData = function (formData) {
         var form = this.get('form');
-        inputs = form.getInputControls();
+        var inputs = form.getInputControls();
         u.each(inputs, function (input, index) {
             var key = input.name;
             if (formData) {
@@ -166,9 +166,9 @@ define(function (require) {
     /**
      * 进入提交前的处理
      */
-    function beforeSubmit(e) {
+    function submit(e) {
         e.preventDefault();
-        this.fire('beforesubmit');
+        this.fire('submit');
     }
 
     /**
@@ -196,13 +196,8 @@ define(function (require) {
     FormView.prototype.bindEvents = function () {
         var form = this.get('form');
         if (form) {
-            form.on('submit', submit, this);
+            form.on('beforevalidate', submit, this);
             form.on('invalid', this.handleAutoValidateInvalid, this);
-        }
-
-        var submitButton = this.get('submit');
-        if (submitButton) {
-            submitButton.on('click', beforeSubmit, this);
         }
 
         var resetButton = this.get('reset');
