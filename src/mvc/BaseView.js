@@ -101,6 +101,7 @@ define(function (require) {
 
         var ui = require('esui');
         var dialog = ui.create('Dialog', options);
+        dialog.render();
 
         //使用默认foot时，改变显示文字
         if (options.needFoot) {
@@ -130,9 +131,9 @@ define(function (require) {
      * 2. waitDialog(dialog, options)
      */
     BaseView.prototype.waitDialog = function (dialog, options) {
-        if (!dialog instanceof Dialog) {
+        if (!(dialog instanceof Dialog)) {
             options = dialog;
-            dialog = this.popDialog.apply(this, options);
+            dialog = this.popDialog.call(this, options);
         }
         else if (!dialog.isShow) {
             dialog.show();
@@ -184,13 +185,13 @@ define(function (require) {
      * 如果返回一个`Promise`对象，则在`resolve`时执行默认关闭动作，在`reject`时不执行
      *
      * 有两种重载：
-     * 1. showDialog(options, onOk, onCancel)
-     * 2. showDialog(dialog, options, onOk, onCancel)
+     * 1. showDialog(options)
+     * 2. showDialog(dialog, options)
      */
     BaseView.prototype.showDialog = function (dialog, options) {
         if (!dialog instanceof Dialog) {
             options = dialog;
-            dialog = this.popDialog.apply(this, options);
+            dialog = this.popDialog.call(this, options);
         }
         else if (!dialog.isShow) {
             dialog.show();

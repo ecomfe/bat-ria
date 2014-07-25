@@ -3,6 +3,8 @@
     - 使得 `io.hooks.*` 返回值用来修改传入参数
     - 修复了 `navigator` 匹配路径为字符串的问题
     - 升级了 `serverIO` 模块，以适配新版本 NMP 接口并更好地显示错误信息
+    - 修复了 `extension/underscore` 重的一些 bug
+    - 修复了 `mvc/BaseView` 中 `popDialog` 的一些问题
 
 * 0.1.16
     - 增加了可以对单个请求发送器设定不显示 loading 的功能

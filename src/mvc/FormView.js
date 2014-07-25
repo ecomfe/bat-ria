@@ -95,26 +95,31 @@ define(function (require) {
         return;
     };
 
-     /**
-     * 若页面在目标dom元素下方，设置页面scrollTop至该元素
+    /**
+     * 表单校验
+     * 为啥要有这东西？Form控件不是有了吗?
+     * 问得好，Form控件的beforevalidate事件（同步）在FormView中已经阻止掉了
+     * 然后在FormAction中提供了异步的beforeValidate、validate、afterValidate的扩展点
+     * 因此FormView必须自己调validate
+     * 这个方法会在FormAction.validite中和FormModel的校验一起做
+     * (还不是一堆蛋疼需求导致的。。。。
      *
-     * @param {Element} validity label的dom元素
+     * return {boolean} true|false
      */
-    function scrollTo(element) {
-        var offset = lib.getOffset(element);
-        if (lib.page.getScrollTop() > offset.top) {
-            document.body.scrollTop = document.documentElement.scrollTop = offset.top - 10;
+    FormView.prototype.validate = function () {
+        var form = this.get('form');
+        var isAutoValidate = form.get('autoValidate');
+        if (!isAutoValidate) {
+            return true;
         }
-    }
+        return form.validate();
+    };
 
     /**
      * 向用户通知提交错误信息，默认根据`errors`的`key`字段查找对应`name`的控件并显示错误信息
      *
      * @param {Object} errors 错误信息，每个key为控件`name`，value为`errorMessage`
      *
-     * @fire {Event} scrolltofirsterror 定位至页面第一个出错的控件，
-     *      由于是后端或自定义处理的错误，并不会按页面控件顺序排序，需要自己
-     *      计算哪一个是第一个出错的控件
      */
     FormView.prototype.notifyErrors = function (errors) {
         if (typeof errors !== 'object') {
@@ -124,8 +129,6 @@ define(function (require) {
         var Validity = require('esui/validator/Validity');
         var ValidityState = require('esui/validator/ValidityState');
         var form = this.get('form');
-        var firstErrValidity = null;
-        var miniOffsetTop = 9999999;
 
         u.each(errors, function (message, field){
             var state = new ValidityState(false, message);
@@ -135,21 +138,8 @@ define(function (require) {
             var input = form.getInputControls(field)[0];
             if (input && typeof input.showValidity === 'function') {
                 input.showValidity(validity);
-                var label = input.getValidityLabel().main;
-                var offsetTop = lib.getOffset(label).top;
-                if (miniOffsetTop > offsetTop) {
-                    firstErrValidity = label;
-                    miniOffsetTop = offsetTop;
-                }
             }
         });
-
-        if (firstErrValidity) {
-            var e = this.fire('scrolltofirsterror', {firstErrValidity: firstErrValidity});
-            if (!e.isDefaultPrevented()) {
-                scrollTo(firstErrValidity);
-            }
-        }
     };
 
     /**
@@ -175,17 +165,33 @@ define(function (require) {
     }
 
     /**
+     * 若页面在目标dom元素下方，设置页面scrollTop至该元素
+     *
+     * @param {Element} validity label的dom元素
+     */
+    function scrollTo(element) {
+        var offset = lib.getOffset(element);
+        if (lib.page.getScrollTop() > offset.top) {
+            document.body.scrollTop = document.documentElement.scrollTop = offset.top - 10;
+        }
+    }
+
+    /**
      * 处理esui表单控件自动校验出错
      * 定位至第一个出错的控件
      *
-     * @param {Object} e esui表单控件触发invalid事件时传入的事件对象
+     * @param {Object} form esui表单控件
+     * @fire {Event} scrolltofirsterror 定位至页面第一个出错的控件
      */
-    FormView.prototype.handleAutoValidateInvalid = function (e) {
-        var form = e.target;
+    FormView.prototype.handleValidateInvalid = function () {
+        var me = this;
+        var form = this.get('form');
         u.some(form.getInputControls(), function (input, index) {
-            if (!input.checkValidity()) {
-                var label = input.getValidityLabel(true).main;
-                scrollTo(label);
+            if (input.hasState('validity-invalid')) {
+                var e = me.fire('scrolltofirsterror', {firstErrValidity: input});
+                if (!e.isDefaultPrevented()) {
+                    scrollTo(input.main);
+                }
                 return true;
             }
         });
@@ -200,7 +206,6 @@ define(function (require) {
         var form = this.get('form');
         if (form) {
             form.on('beforevalidate', submit, this);
-            form.on('invalid', this.handleAutoValidateInvalid, this);
         }
 
         var resetButton = this.get('reset');

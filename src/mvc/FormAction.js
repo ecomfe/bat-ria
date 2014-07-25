@@ -95,6 +95,7 @@ define(function (require) {
     FormAction.prototype.handleSubmitError = function (message) {
         if (message && message.field) {
             this.view.notifyErrors(message.field);
+            this.view.handleValidateInvalid();
         }
         this.view.showToast('保存失败');
     };
@@ -238,21 +239,23 @@ define(function (require) {
      * 校验表单前可扩展的操作，在提交之前做`异步`的校验
      * 比如弹个框“提交有风险，是否要提交”之类
      *
-     * @return {meta.Promise}
+     * @param {object} submitData 最终要提交的数据
+     * @return {Mixed}
+     *      当且仅当返回Deferred.rejected()阻止后续流程
+     *      其他任意返回结果均与Deferred.resolved()等效
      */
-    FormAction.prototype.beforeValidate = function () {
-        return Deferred.resolved();
-    };
+    FormAction.prototype.beforeValidate = function (submitData) {};
 
     /**
      * 校验表单后可扩展的动作，在校验之后做`异步`的处理
      * 比如弹个框“提交仍有风险，是否要提交”之类
      *
-     * @return {meta.Promise}
+     * @param {object} submitData 最终要提交的数据
+     * @return {Mixed}
+     *      当且仅当返回Deferred.rejected()阻止后续流程
+     *      其他任意返回结果均与Deferred.resolved()等效
      */
-    FormAction.prototype.afterValidate = function () {
-        return Deferred.resolved();
-    };
+    FormAction.prototype.afterValidate = function (submitData) {};
 
     /**
      * 进行校验，如果设置了Form的`autoValidate`则先进行表单控件自校验，否则只做自定义校验
@@ -260,19 +263,18 @@ define(function (require) {
      * @return {meta.Promise}
      */
     FormAction.prototype.validate = function (submitData) {
-        var form = this.view.get('form');
-        var isAutoValidate = form.get('autoValidate');
-        if (isAutoValidate && !form.validate()) {
-            return Deferred.rejected();
+        var localViewValidationResult = this.view.validate();
+        var localModelValidationResult = this.model.validateSubmitData(submitData);
+        if (localViewValidationResult && localModelValidationResult === true) {
+            return Deferred.resolved(submitData);
         }
-        var localValidationResult = this.model.validateSubmitData(submitData);
-        if (localValidationResult === true) {
-            return Deferred.resolved();
+
+        if (localModelValidationResult !== true) {
+            this.handleLocalValidationErrors(localModelValidationResult);
         }
-        else {
-            var handleResult = this.handleLocalValidationErrors(localValidationResult);
-            return Deferred.rejected(handleResult);
-        }
+        this.view.handleValidateInvalid();
+
+        return Deferred.rejected();
     };
 
     /**
@@ -294,17 +296,12 @@ define(function (require) {
         this.view.disableSubmit();
         var formData = this.view.getFormData();
         var submitData = this.model.getSubmitData(formData);
-        var me = this;
 
         require('er/Deferred')
-            .when(this.beforeValidate())
-            .then(function () {
-                return me.validate(submitData);
-            })
-            .then(u.bind(this.afterValidate, this))
-            .then(function () {
-                me.submit(submitData);
-            })
+            .when(this.beforeValidate(submitData))
+            .then(u.bind(u.partial(this.validate, submitData), this))
+            .then(u.bind(u.partial(this.afterValidate, submitData), this))
+            .then(u.bind(u.partial(this.submit, submitData), this))
             .ensure(u.bind(this.view.enableSubmit, this.view));
     };
 

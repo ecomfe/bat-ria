@@ -60,7 +60,7 @@ define(function (require) {
      */
     util.filterObject = function (obj, predicate, context) {
         var result = {};
-        if (obj == null) { return results; }
+        if (obj == null) { return result; }
         u.each(obj, function (value, key) {
             if (predicate.call(context, value, key, obj)) { result[key] = value; }
         });
@@ -289,7 +289,7 @@ define(function (require) {
      * @param {number} length 补齐后的长度
      * @return {string}
      */
-    util.padRight = function () {
+    util.padRight = function (s, padding, length) {
         s = s + '';
         var padLength = length - s.length;
         if (padLength > 0) {

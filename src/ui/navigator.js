@@ -10,6 +10,7 @@ define(function (require) {
     var locator = require('er/locator');
     var permission = require('er/permission');
     var lib = require('esui/lib');
+    var URL = require('er/URL');
 
     /**
      * @class Navigator
@@ -88,8 +89,10 @@ define(function (require) {
 
         locator.on('redirect', u.bind(this.handleRedirect, this));
 
+        var index = location.href.indexOf('#');
+        var url = (index !== -1 ? location.href.slice(index + 1) : '');
         this.handleRedirect({
-            url: location.hash.slice(1)
+            url: url
         });
 
     };
@@ -101,12 +104,13 @@ define(function (require) {
      */
     Navigator.prototype.handleRedirect = function (e) {
         var me = this;
+        var url = URL.parse(e.url).getPath();
         u.some(this.config, function (item, index) {
             var navItems = me.navItems;
             var subNavs = me.subNavs;
             var children = item.children || '';
 
-            if (isActive(e.url, item)) {
+            if (isActive(url, item)) {
                 activateNavElement(navItems, navItems[index], index, 'nav-item-current');
 
                 if (children.length) {
@@ -114,7 +118,7 @@ define(function (require) {
                     createOrShowSubNav(item.children, navItems, subNavs, me.main, index);
 
                     u.some(children, function (subItem, subIndex) {
-                        if (isActive(e.url, subItem)) {
+                        if (isActive(url, subItem)) {
                             var subNavItems = subNavs[index].navItems;
                             activateNavElement(subNavItems, subNavItems[subIndex],
                                 subIndex, 'nav-sub-item-current');
@@ -223,7 +227,6 @@ define(function (require) {
      * @index {string} 一级导航navElement的index
      */
     function createOrShowSubNav(config, navItems, subNavs, main, index) {
-        var className = 'nav-sub-current';
         var ul = subNavs[index].nav;
 
         if (!u.isObject(ul)) {
