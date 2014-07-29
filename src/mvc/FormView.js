@@ -62,8 +62,8 @@ define(function (require) {
      *
      * @param {Object} key：value形式的数据 key和input的name一一对应
      */
-    FormView.prototype.rollbackFormData = function () {
-        this.setFormData(this.model.getDefaultData());
+    FormView.prototype.rollbackFormData = function (defaultData) {
+        this.setFormData(defaultData);
     };
 
     /**

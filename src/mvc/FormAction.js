@@ -130,7 +130,7 @@ define(function (require) {
     FormAction.prototype.reset = function () {
         var reset = this.fire('reset');
         if (!reset.isDefaultPrevented()) {
-            this.view.rollbackFormData();
+            this.view.rollbackFormData(this.model.getDefaultData());
         }
     };
 
