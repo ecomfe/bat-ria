@@ -194,19 +194,29 @@ define(function (require) {
      * @param {string} link.url 链接的目标URL
      * @param {string} [link.target] 链接的target属性
      * @param {string} link.text 链接文本
+     * @param {Object} [link.extra] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
      * @return {string} 生成的HTML内容
      */
     util.genListLink = function (link) {
         var defaults = {
             className: 'list-operation'
         };
+
         link = u.defaults(link, defaults);
+
         var attrs = {
             href: link.url,
             'class': link.className
         };
+
         if (link.target && link.target.toLowerCase() !== '_self') {
             attrs.target = link.target;
+        }
+
+        if (u.typeOf(link.extra) === 'Object') {
+            u.each(link.extra, function (val, key) {
+                attrs['data-' + key] = val;
+            });
         }
 
         attrs = u.map(attrs, function (val, key) {
@@ -226,6 +236,7 @@ define(function (require) {
      * @param {string} command.type 操作按钮点击时触发的事件类型
      * @param {string} [command.args] 操作按钮点击后触发事件所带的参数
      * @param {string} command.text 操作按钮显示的文本
+     * @param {Object} [command.extra] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
      * @return {string} 生成的HTML内容
      */
     util.genListCommand = function (command) {
@@ -239,8 +250,14 @@ define(function (require) {
             'data-command': command.type
         };
 
-        if (command.args != null) {
+        if (u.typeOf(command.args) === 'String') {
             attrs['data-command-args'] = command.args;
+        }
+
+        if (u.typeOf(command.extra) === 'Object') {
+            u.each(command.extra, function (val, key) {
+                attrs['data-' + key] = val;
+            });
         }
 
         attrs = u.map(attrs, function (val, key) {
