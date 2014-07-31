@@ -188,7 +188,7 @@ define(
         }
 
         /**
-         * esui升级前region的过渡扩展，增加getSelectedItem方法
+         * esui升级前region的过渡扩展，增加获取最大地域个数的方法
          *
          * @ignore
          */
@@ -204,7 +204,7 @@ define(
         }
 
         /**
-         * esui升级前region的过渡扩展，增加getSelectedItem方法
+         * esui升级前Crumb的过渡扩展，增加global-redirect的功能
          *
          * @ignore
          */
