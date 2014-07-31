@@ -39,28 +39,36 @@ define(function (require) {
      * @param {String} domId  dom元素id
      * @param {Array} config  配置数组
      *
+     * @cfg {String} [config.navId]  主导航dom元素id
      * @cfg {String} [config.text]  导航文本
-     * @cfg {String} [config.url]  er内部hash路径
+     * @cfg {String} [config.url]  er.url，不包含参数
      * @cfg {String} [config.externalUrl]  外部路径，优先跳转
-     * @cfg {Array} [config.include]  需要高亮该导航的action路径规则
-     * @cfg {Array} [config.exclude]  不需要高亮该导航的action路径规则
-     * @cfg {Array} [config.children]  子导航，结构和config中每一项保持一致
+     * @cfg {Array} [config.include]  表示是否需要高亮该导航
+     *      匹配目标均为`er.action.url`，不包含`~`的参数
+     * @cfg {Array} [config.exclude]  和`include`相反的配置
+     *      这里的逻辑`exclude`优先级比`include`高，但是也不要两个都配同个规则吧。。
+     * @cfg {Array} [config.tabs]  子导航，结构和一级导航config中每一项保持一致
+     * @cfg {string} [config.auth]  与er.permission对应的权限控制
+     *      TODO：二级导航暂未支持权限
      * 
      * @sample:
-     * [{
-     *      text: '主页',
-     *      url: '/',                           // redirect using er/locator
-     *      externalUrl: '',                    // redirect using url navigation
-     *      include: [
-     *          /\/validation\/check\/create/,  // can be a regexp
-     *          '/validation/check/edit'        // string of url either
-     *      ],
-     *      exclude: [
-     *          '/validation/check/update'
-     *      ],
-     *      auth: 'auth.promotion',             // authority to display nav item
-     *      children: []                        // child navigator
-     * }]
+     * nav: {
+     *      navId: 'nav',
+     *      tabs: [{
+     *          text: '主页',
+     *          url: '/',                           // redirect using er/locator
+     *          externalUrl: '',                    // redirect using url navigation
+     *          include: [
+     *              /\/validation\/check\/create/,  // can be a regexp
+     *              '/validation/check/edit'        // string of url either
+     *          ],
+     *          exclude: [
+     *              '/validation/check/update'
+     *          ],
+     *          auth: 'auth.system',                // authority to display nav item
+     *          tabs: []                            // child navigator
+     *      }]
+     * }
      */
      Navigator.prototype.init = function (domId, config) {
         if (!config) {
@@ -98,6 +106,31 @@ define(function (require) {
     };
 
     /**
+     * 显示或隐藏整个导航
+     *
+     * @param {string} type 'block|none'
+     */
+    function toggleNav(type) {
+        this.main.style.cssText = 'display:' + type + ';';
+        u.some(this.subNavs, function (subNav, index) {
+            if (u.isObject(subNav)) {
+                if (lib.hasClass(subNav.nav, 'nav-sub-item-current')) {
+                    subNav.nav.cssText = 'display:' + type + ';';
+                    return true;
+                }
+            }
+        });
+    }
+
+    Navigator.prototype.show = function () {
+        toggleNav.call(this, 'block');
+    };
+
+    Navigator.prototype.hide = function () {
+        toggleNav.call(this, 'none');
+    };
+
+    /**
      * locator redirect的时候处理navigator的主要逻辑
      * 先将对应一级导航高亮
      * 如果该导航下有二级导航，创建或者显示出来，并高亮二级导航对应元素
@@ -108,16 +141,16 @@ define(function (require) {
         u.some(this.config, function (item, index) {
             var navItems = me.navItems;
             var subNavs = me.subNavs;
-            var children = item.children || '';
+            var tabs = item.tabs || '';
 
             if (isActive(url, item)) {
                 activateNavElement(navItems, navItems[index], index, 'nav-item-current');
 
-                if (children.length) {
+                if (tabs.length) {
                     subNavs[index] = subNavs[index] || {};
-                    createOrShowSubNav(item.children, navItems, subNavs, me.main, index);
+                    createOrShowSubNav(item.tabs, navItems, subNavs, me.main, index);
 
-                    u.some(children, function (subItem, subIndex) {
+                    u.some(tabs, function (subItem, subIndex) {
                         if (isActive(url, subItem)) {
                             var subNavItems = subNavs[index].navItems;
                             activateNavElement(subNavItems, subNavItems[subIndex],
@@ -192,7 +225,7 @@ define(function (require) {
      * @isSub {string} '' 或 'sub-'，主导航或二级子导航 
      */
     function createNavElements(config, navItems, nav, isSub) {
-        isSub = isSub || '';
+        var isSub = isSub || '';
         u.each(config, function (item, index) {
             if (!item.auth || permission.isAllow(item.auth)) {
                 var url = item.externalUrl || ('#' + item.url);
@@ -220,7 +253,7 @@ define(function (require) {
     /**
      * 创建二级nav元素，如果存在，直接展示
      *
-     * @config {object} config.children，某个主导航的二级导航配置
+     * @config {object} config.tabs，某个主导航的二级导航配置
      * @navItems {object} 缓存一级导航的对象，用来计算位置
      * @subNavs {object} 缓存二级导航的对象
      * @parentNav {object} 一级导航容器
@@ -228,8 +261,10 @@ define(function (require) {
      */
     function createOrShowSubNav(config, navItems, subNavs, main, index) {
         var ul = subNavs[index].nav;
+        var isNew = false;
 
         if (!u.isObject(ul)) {
+            isNew = true;
             ul = document.createElement('ul');
             ul.className = 'nav-sub';
             lib.insertAfter(ul, main);
@@ -241,17 +276,19 @@ define(function (require) {
 
         toggleSubNav(subNavs, subNavs[index].nav, index);
 
-        // 二级导航位置的计算，二级导航的长度默认为去除最右子元素的边距后的剩余长度
-        // 然后将二级导航的垂直平分线与一级导航子元素对齐
-        var navOffset = lib.getOffset(main);
-        var navItemOffset = lib.getOffset(navItems[index]);
-        var subNavOffset = lib.getOffset(ul);
-        var middleOfNavItem = navItemOffset.left + navItemOffset.width / 2;
-        var marginLeft = (middleOfNavItem - subNavOffset.width / 2);
-        if (marginLeft < -navOffset.left + 10) {
-            marginLeft = -navOffset.left + 10;
+        if (isNew) {
+            // 二级导航位置的计算，二级导航的长度默认为去除最右子元素的边距后的剩余长度
+            // 然后将二级导航的垂直平分线与一级导航子元素对齐
+            var navOffset = lib.getOffset(main);
+            var navItemOffset = lib.getOffset(navItems[index]);
+            var subNavOffset = lib.getOffset(ul);
+            var middleOfNavItem = navItemOffset.left + navItemOffset.width / 2;
+            var marginLeft = (middleOfNavItem - subNavOffset.width / 2);
+            if (marginLeft < -navOffset.left + 10) {
+                marginLeft = -navOffset.left + 10;
+            }
+            ul.style.cssText = 'margin-left: ' + marginLeft + 'px';
         }
-        ul.style.cssText = 'margin-left: ' + marginLeft + 'px';
     }
 
     /**
@@ -291,7 +328,9 @@ define(function (require) {
     var commonNavigator = new Navigator(); 
 
     return {
-        init: u.bind(commonNavigator.init, commonNavigator)
+        init: u.bind(commonNavigator.init, commonNavigator),
+        show: u.bind(commonNavigator.show, commonNavigator),
+        hide: u.bind(commonNavigator.hide, commonNavigator)
     };
 
 });

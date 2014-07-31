@@ -42,7 +42,12 @@ define(
             Validity: 'esui',
             Wizard: 'esui',
             ActionPanel: 'ef',
-            ActionDialog: 'ef'
+            ActionDialog: 'ef',
+            SelectorTreeStrategy: './ui',
+            TreeRichSelector: './ui',
+            tableRichSelector: './ui',
+            RichSelector: './ui',
+            ToggleButton: './ui'
         };
 
         var extensionModulePrefix = {
