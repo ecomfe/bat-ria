@@ -146,7 +146,7 @@ define(function (require) {
             if (isActive(url, item)) {
                 activateNavElement(navItems, navItems[index], index, 'nav-item-current');
 
-                if (tabs.length) {
+                if (tabs.length && (!item.auth || permission.isAllow(item.auth))) {
                     subNavs[index] = subNavs[index] || {};
                     createOrShowSubNav(item.tabs, navItems, subNavs, me.main, index);
 
