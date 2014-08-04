@@ -46,7 +46,7 @@ define(
          */
         TableTip.prototype.type = 'TableTip';
 
-        var typeRule = /table-operation-(\w+)/;
+        var typeRule = /table-operation-(\w+(?:-\w+)*)/;
 
         function getTipType(element) {
             return typeRule.exec(element.className)[1];
@@ -59,17 +59,18 @@ define(
          * @param {string} type 操作类型
          */
         TableTip.prototype.createAndAttachTip = function (elements, type) {
+            var element = elements[0];
             var options = {
                 id: 'table-operation-tip-' + u.escape(type),
                 viewContext: this.target.viewContext,
-                content: elements[0].innerHTML,
+                content: element.getAttribute('data-title') || element.innerHTML,
                 arrow: true,
                 skin: 'table-tip'
             };
             var tip = ui.create('TipLayer', options);
             tip.appendTo(document.body);
             u.each(
-                elements, 
+                elements,
                 function (element) {
                     var options = {
                         targetDOM: element,

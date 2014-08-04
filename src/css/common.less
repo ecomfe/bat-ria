@@ -74,6 +74,7 @@ hr {
 
 .main-area {
     margin: 10px;
+    clear: both;
 }
 
 #main {
@@ -153,11 +154,11 @@ hr {
         }
     }
 
-    /**
-     * IE8下必须切换content内容触发重绘
-     */
     .nav-item-current {
         &:before {
+            /**
+             * IE8下必须切换content内容触发重绘
+             */
             content: " "; /* Fix IE8 */
             background-position: 0 -54px;
         }
@@ -175,6 +176,50 @@ hr {
                 background-position: 100% 0;
             }
         }
+    }
+}
+
+.nav-sub {
+    display: none;
+    float: left;
+    height: 20px;
+    padding: 8px 0;
+    clear: both;
+
+    /* 覆盖一部分esui的样式 */
+    .nav-sub-item {
+        float: left;
+        line-height: 18px;
+        height: 20px;
+        margin-right: 15px;
+        border: none;
+        border-radius: 0;
+        background-color: #fff;
+
+        a {
+            height: 20px;
+            line-height: 20px;
+            padding: 0 5px;
+            color: #3962bf;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
+    .nav-sub-item-current {
+        background-color: #3962bf;
+
+        a {
+            color: #fff;
+        }
+    }
+
+    &.nav-sub-current {
+        display: block;
     }
 }
 

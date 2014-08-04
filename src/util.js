@@ -35,7 +35,7 @@ define(function (require) {
             isRequester = isRequester || function (path) {
                 // 默认跳过以`/download`和`/upload`结尾的路径 
                 return !/\/(?:up|down)load$/.test(path);
-            }
+            };
 
             if (!isRequester(url)) {
                 return url;
@@ -164,21 +164,24 @@ define(function (require) {
      * @return {Object} 转换完毕的对象
      */
     util.toMap = function (list, key, converter) {
-        var i, item, k,
-            map = {},
-            converter = converter;
+        var i;
+        var item;
+        var k;
+        var map = {};
+        var converter = converter;
 
         for (i = list.length; i--;) {
             item = list[i];
             k = item[key];
-                
             if (k != null) {
                 if (u.isFunction(converter)) {
                     var keyValue = converter(item);
                     map[keyValue.key] = keyValue.value;
-                } else if (u.isString(converter)) {
+                }
+                else if (u.isString(converter)) {
                     map[k] = item[converter];
-                } else {
+                }
+                else {
                     map[k] = item;
                 }
             }
@@ -194,19 +197,29 @@ define(function (require) {
      * @param {string} link.url 链接的目标URL
      * @param {string} [link.target] 链接的target属性
      * @param {string} link.text 链接文本
+     * @param {Object} [link.extra] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
      * @return {string} 生成的HTML内容
      */
     util.genListLink = function (link) {
         var defaults = {
             className: 'list-operation'
         };
+
         link = u.defaults(link, defaults);
+
         var attrs = {
             href: link.url,
             'class': link.className
         };
+
         if (link.target && link.target.toLowerCase() !== '_self') {
             attrs.target = link.target;
+        }
+
+        if (u.typeOf(link.extra) === 'Object') {
+            u.each(link.extra, function (val, key) {
+                attrs['data-' + key] = val;
+            });
         }
 
         attrs = u.map(attrs, function (val, key) {
@@ -226,6 +239,7 @@ define(function (require) {
      * @param {string} command.type 操作按钮点击时触发的事件类型
      * @param {string} [command.args] 操作按钮点击后触发事件所带的参数
      * @param {string} command.text 操作按钮显示的文本
+     * @param {Object} [command.extra] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
      * @return {string} 生成的HTML内容
      */
     util.genListCommand = function (command) {
@@ -239,8 +253,14 @@ define(function (require) {
             'data-command': command.type
         };
 
-        if (command.args != null) {
+        if (u.typeOf(command.args) === 'String') {
             attrs['data-command-args'] = command.args;
+        }
+
+        if (u.typeOf(command.extra) === 'Object') {
+            u.each(command.extra, function (val, key) {
+                attrs['data-' + key] = val;
+            });
         }
 
         attrs = u.map(attrs, function (val, key) {

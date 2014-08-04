@@ -125,7 +125,7 @@ define(
             // 现在开始解析args
             var keyAndValues = [];
             if (properties.args) {
-                if (typeof properties.args == 'string' ) {
+                if (typeof properties.args === 'string') {
                     keyAndValues = properties.args.split('&');
                     u.each(keyAndValues, function (keyAndValue) {
                         keyAndValue = keyAndValue.split('=');
@@ -134,7 +134,7 @@ define(
                         }
                     });
                 }
-                else if (typeof properties.args == 'object' ) {
+                else if (typeof properties.args === 'object') {
                     for (var key in properties.args) {
                         buildExtraArgs(key, properties.args[key]);
                     }
@@ -179,7 +179,7 @@ define(
 
             var html = [
                 '<div id="' + helper.getId(this, 'input-container') + '" ',
-                        'class="' + inputContainerClasses + '">',
+                    'class="' + inputContainerClasses + '">',
                     // 按钮
                     '<span id="' + helper.getId(this, 'button') + '" ',
                         'class="' + buttonClasses + '">',
@@ -197,14 +197,13 @@ define(
                         'id="' + helper.getId(this, 'input') + '" ',
                         'size="1" ',
                         'name="' + (this.dataKey ? this.dataKey : 'filedata') + '" ',
-                    '/>'
-                    ,
+                    '/>',
                     // 类型字段
                     '<input type="hidden" name="type" ',
                         'value="' + this.typeIndex + '"',
                     '/>'
             ];
-            //从附加参数里构造
+            // 从附加参数里构造
             if (this.extraArgs) {
                 u.each(this.extraArgs, function (arg) {
                     html.push(
@@ -255,7 +254,7 @@ define(
                 input,
                 'change',
                 function () {
-                    if (input.value != '') {
+                    if (input.value !== '') {
                         this.receiveFile();
                     }
                 }
@@ -525,17 +524,17 @@ define(
             // }
 
             var result = options.result;
-            if (options.success === false || options.success === "false") {
+            if (options.success === false || options.success === 'false') {
                 this.notifyFail(options.message);
             }
-            else if (result){
+            else if (result) {
                 if (!options.hasOwnProperty('type')) {
                     options.result.type = this.fileType;
                 }
                 else if (typeof options.type === 'number') {
                     options.result.type = FILE_TYPES[options.result.type];
                 }
-                
+
                 this.fileInfo = result;
                 this.rawValue = result.url || result.previewUrl || '';
                 this.notifyComplete(options.result);

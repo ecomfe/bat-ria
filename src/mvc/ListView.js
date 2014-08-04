@@ -34,7 +34,6 @@ define(function (require) {
     /**
      * 收集查询参数并触发查询事件
      *
-     * @param {ListView} this 当前视图实例
      * @param {mini-event.Event} e 控件事件对象
      */
     ListView.prototype.submitSearch = function (e) {

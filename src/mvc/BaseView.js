@@ -48,8 +48,8 @@ define(function (require) {
     /**
      * 显示toast提示信息，这个方法会控制一个单例，以免信息叠在一起
      *
-     * @parma {string} content 显示的内容
-     * @param {Object} [options] 配置
+     * @param {string} content 显示的内容
+     * @param {Object=} options 配置
      * @return {esui.Toast}
      */
     BaseView.prototype.showToast = function (content, options) {
@@ -84,7 +84,7 @@ define(function (require) {
      * @protected
      */
     BaseView.prototype.popDialog = function (options) {
-        //创建main
+        // 创建main
         var main = document.createElement('div');
         document.body.appendChild(main);
 
@@ -101,8 +101,9 @@ define(function (require) {
 
         var ui = require('esui');
         var dialog = ui.create('Dialog', options);
+        dialog.render();
 
-        //使用默认foot时，改变显示文字
+        // 使用默认foot时，改变显示文字
         if (options.needFoot) {
             var okBtn = dialog.getFoot().getChild('btnOk');
             var cancelBtn = dialog.getFoot().getChild('btnCancel');
@@ -130,9 +131,9 @@ define(function (require) {
      * 2. waitDialog(dialog, options)
      */
     BaseView.prototype.waitDialog = function (dialog, options) {
-        if (!dialog instanceof Dialog) {
+        if (!(dialog instanceof Dialog)) {
             options = dialog;
-            dialog = this.popDialog.apply(this, options);
+            dialog = this.popDialog.call(this, options);
         }
         else if (!dialog.isShow) {
             dialog.show();
@@ -144,7 +145,7 @@ define(function (require) {
             dialog.hide();
         }
 
-        //使用默认foot时，改变显示文字
+        // 使用默认foot时，改变显示文字
         if (options.needFoot || dialog.getFoot()) {
             var okBtn = dialog.getFoot().getChild('btnOk');
             var cancelBtn = dialog.getFoot().getChild('btnCancel');
@@ -184,13 +185,13 @@ define(function (require) {
      * 如果返回一个`Promise`对象，则在`resolve`时执行默认关闭动作，在`reject`时不执行
      *
      * 有两种重载：
-     * 1. showDialog(options, onOk, onCancel)
-     * 2. showDialog(dialog, options, onOk, onCancel)
+     * 1. showDialog(options)
+     * 2. showDialog(dialog, options)
      */
     BaseView.prototype.showDialog = function (dialog, options) {
         if (!dialog instanceof Dialog) {
             options = dialog;
-            dialog = this.popDialog.apply(this, options);
+            dialog = this.popDialog.call(this, options);
         }
         else if (!dialog.isShow) {
             dialog.show();
@@ -203,7 +204,7 @@ define(function (require) {
 
         options = options || {};
 
-        //使用默认foot时，改变显示文字
+        // 使用默认foot时，改变显示文字
         if (options.needFoot || dialog.getFoot()) {
             var okBtn = dialog.getFoot().getChild('btnOk');
             var cancelBtn = dialog.getFoot().getChild('btnCancel');

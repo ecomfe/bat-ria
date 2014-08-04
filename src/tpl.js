@@ -42,7 +42,12 @@ define(
             Validity: 'esui',
             Wizard: 'esui',
             ActionPanel: 'ef',
-            ActionDialog: 'ef'
+            ActionDialog: 'ef',
+            SelectorTreeStrategy: './ui',
+            TreeRichSelector: './ui',
+            tableRichSelector: './ui',
+            RichSelector: './ui',
+            ToggleButton: './ui'
         };
 
         var extensionModulePrefix = {
@@ -152,7 +157,9 @@ define(
                     var extensions = getExtensionDependencies(text);
                     var dependencies = controls.concat(extensions);
 
-                    require(dependencies, function () { load(text); });
+                    require(dependencies, function() {
+                        load(text);
+                    });
                 }
 
                 if (/\.html?$/.test(resourceId)) {
