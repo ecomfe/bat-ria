@@ -60,9 +60,13 @@ define(function (require) {
      */
     util.filterObject = function (obj, predicate, context) {
         var result = {};
-        if (obj == null) { return result; }
+        if (obj == null) {
+            return result;
+        }
         u.each(obj, function (value, key) {
-            if (predicate.call(context, value, key, obj)) { result[key] = value; }
+            if (predicate.call(context, value, key, obj)) {
+                result[key] = value;
+            }
         });
         return result;
     };
@@ -76,7 +80,9 @@ define(function (require) {
      */
     util.mapObject = function (obj, iterator, context) {
         var result = {};
-        if (obj == null) { return result; }
+        if (obj == null) {
+            return result;
+        }
         u.each(obj, function (value, key) {
             result[key] = iterator.call(context, value);
         });
@@ -94,7 +100,9 @@ define(function (require) {
      */
     util.mapKey = function (obj, map) {
         var result = {};
-        if (obj == null) { return result; }
+        if (obj == null) {
+            return result;
+        }
         u.each(obj, function (value, key) {
             if (map[key]) {
                 result[map[key]] = value;
@@ -180,8 +188,10 @@ define(function (require) {
         );
         // 大写字符之间用横线连起来
         s = s.replace(
-            /[A-Z]/g, 
-            function (match) { return '-' + match.toLowerCase(); }
+            /[A-Z]/g,
+            function (match) {
+                return '-' + match.toLowerCase();
+            }
         );
         if (s.charAt(0) === '-') {
             s = s.substring(1);

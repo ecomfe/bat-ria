@@ -100,7 +100,7 @@ define(function (require) {
     /**
      * 为表单数据附加数据(比如上传文件的url)
      *
-     * @param {Object} 附加数据
+     * @return {Object} 附加数据
      */
     FormModel.prototype.getExtraData = function () {
         return {};
@@ -110,7 +110,7 @@ define(function (require) {
      * 过滤提交数据
      * 提交前可对所有数据进行操作，比如转换数据格式
      *
-     * @param {Object} 
+     * @param {Object} data
      */
     FormModel.prototype.filterData = function(data) {
         return data;
@@ -120,8 +120,8 @@ define(function (require) {
      * 表单数据是否改动过，默认未改动，取消时直接返回
      * 如果需要提示已修改请按需实现此功能
      *
-     * @param {Object} 新表单数据
-     * @return {Boolean}
+     * @param {Object} present 新表单数据
+     * @return {boolean}
      */
     FormModel.prototype.isFormDataChanged = function (present) {
         return false;

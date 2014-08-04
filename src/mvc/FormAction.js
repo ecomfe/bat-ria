@@ -90,7 +90,7 @@ define(function (require) {
     /**
      * 处理提交错误
      *
-     * @param {Object} 失败时的message对象
+     * @param {Object} message 失败时的message对象
      */
     FormAction.prototype.handleSubmitError = function (message) {
         if (message && message.field) {
@@ -215,7 +215,7 @@ define(function (require) {
     /**
      * 提交表单
      *
-     * @param {object} 表单数据
+     * @param {object} submitData 表单数据
      * @return {meta.Promise}
      */
     FormAction.prototype.submit = function (submitData) {

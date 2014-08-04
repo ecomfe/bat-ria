@@ -27,11 +27,11 @@ define(function (require) {
      *
      * @singleton
      */
-     function Navigator () {}
+    function Navigator() {}
 
-     Navigator.prototype.config = null;
-     Navigator.prototype.navItems = {};
-     Navigator.prototype.subNavs = {};
+    Navigator.prototype.config = null;
+    Navigator.prototype.activeIndex = null;
+    Navigator.prototype.navItems = {};
 
     /**
      * 初始化导航
@@ -70,7 +70,7 @@ define(function (require) {
      *      }]
      * }
      */
-     Navigator.prototype.init = function (domId, config) {
+    Navigator.prototype.init = function (domId, config) {
         if (!config) {
             unexceptedError('Navigator config is null!');
             return;

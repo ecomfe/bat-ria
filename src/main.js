@@ -81,6 +81,16 @@ define(
             require('./extension/hooks').activate(config.hooks);
             require('./extension/ui').activate();
 
+            if (!(riaConfig.ext && riaConfig.ext.track === false)) {
+                // 默认开启，如果想要禁用的话，可以在调用bat-ria的时候关闭
+                // require('bat-ria').start({
+                //   ext: {
+                //     track: false
+                //   }
+                // });
+                require('./extension/track').activate();
+            }
+
             // 对API配置进行一下封装
             initApiConfig();
 

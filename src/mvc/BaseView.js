@@ -48,8 +48,8 @@ define(function (require) {
     /**
      * 显示toast提示信息，这个方法会控制一个单例，以免信息叠在一起
      *
-     * @parma {string} content 显示的内容
-     * @param {Object} [options] 配置
+     * @param {string} content 显示的内容
+     * @param {Object=} options 配置
      * @return {esui.Toast}
      */
     BaseView.prototype.showToast = function (content, options) {
@@ -84,7 +84,7 @@ define(function (require) {
      * @protected
      */
     BaseView.prototype.popDialog = function (options) {
-        //创建main
+        // 创建main
         var main = document.createElement('div');
         document.body.appendChild(main);
 
@@ -103,7 +103,7 @@ define(function (require) {
         var dialog = ui.create('Dialog', options);
         dialog.render();
 
-        //使用默认foot时，改变显示文字
+        // 使用默认foot时，改变显示文字
         if (options.needFoot) {
             var okBtn = dialog.getFoot().getChild('btnOk');
             var cancelBtn = dialog.getFoot().getChild('btnCancel');
@@ -145,7 +145,7 @@ define(function (require) {
             dialog.hide();
         }
 
-        //使用默认foot时，改变显示文字
+        // 使用默认foot时，改变显示文字
         if (options.needFoot || dialog.getFoot()) {
             var okBtn = dialog.getFoot().getChild('btnOk');
             var cancelBtn = dialog.getFoot().getChild('btnCancel');
@@ -204,7 +204,7 @@ define(function (require) {
 
         options = options || {};
 
-        //使用默认foot时，改变显示文字
+        // 使用默认foot时，改变显示文字
         if (options.needFoot || dialog.getFoot()) {
             var okBtn = dialog.getFoot().getChild('btnOk');
             var cancelBtn = dialog.getFoot().getChild('btnCancel');
