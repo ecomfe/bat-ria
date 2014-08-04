@@ -30,8 +30,8 @@ define(function (require) {
     function Navigator() {}
 
     Navigator.prototype.config = null;
-    Navigator.prototype.activeIndex = null;
     Navigator.prototype.navItems = {};
+    Navigator.prototype.subNavs = {};
 
     /**
      * 初始化导航
