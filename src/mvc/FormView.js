@@ -104,7 +104,7 @@ define(function (require) {
      * 这个方法会在FormAction.validite中和FormModel的校验一起做
      * (还不是一堆蛋疼需求导致的。。。。
      *
-     * return {boolean} true|false
+     * return {boolean} `true|false` 校验是否成功
      */
     FormView.prototype.validate = function () {
         var form = this.get('form');

@@ -218,13 +218,14 @@ define(
              *
              * - `{string} text`：文本内容，经过HTML转义
              * - `{string} href`：链接地址，经过HTML转义
-             * - `{string} redirect`：是否global跳转，经过HTML转义
+             * - `{string} scope`：当Crumb在一个子action中时是否global跳转，经过HTML转义
+             *       值为`global`时全局跳转，其他值或空在子action中跳转
              *
              * @type {string}
              * @override
              */
             Crumb.prototype.linkNodeTemplate =
-                '<a class="${classes}" href="${href}" data-redirect="${redirect}">${text}</a>';
+                '<a class="${classes}" href="${href}" data-redirect="${scope}">${text}</a>';
 
             /**
              * 获取节点的HTML内容
@@ -255,7 +256,7 @@ define(
                     : this.textNodeTemplate;
                 var data = {
                     href: u.escape(node.href),
-                    redirect: u.escape(node.redirect),
+                    scope: u.escape(node.scope),
                     text: u.escape(node.text),
                     classes: classes.join(' ')
                 };
