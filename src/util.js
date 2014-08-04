@@ -164,21 +164,24 @@ define(function (require) {
      * @return {Object} 转换完毕的对象
      */
     util.toMap = function (list, key, converter) {
-        var i, item, k,
-            map = {},
-            converter = converter;
+        var i;
+        var item;
+        var k;
+        var map = {};
+        var converter = converter;
 
         for (i = list.length; i--;) {
             item = list[i];
             k = item[key];
-                
             if (k != null) {
                 if (u.isFunction(converter)) {
                     var keyValue = converter(item);
                     map[keyValue.key] = keyValue.value;
-                } else if (u.isString(converter)) {
+                }
+                else if (u.isString(converter)) {
                     map[k] = item[converter];
-                } else {
+                }
+                else {
                     map[k] = item;
                 }
             }

@@ -152,7 +152,9 @@ define(
                     var extensions = getExtensionDependencies(text);
                     var dependencies = controls.concat(extensions);
 
-                    require(dependencies, function () { load(text); });
+                    require(dependencies, function() {
+                        load(text);
+                    });
                 }
 
                 if (/\.html?$/.test(resourceId)) {

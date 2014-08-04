@@ -9,7 +9,7 @@ define(function (require) {
     var u = require('underscore');
     var locator = require('er/locator');
     var permission = require('er/permission');
-    // var URL = require('er/URL');
+    var URL = require('er/URL');
     var lib = require('esui/lib');
 
     /**
@@ -27,11 +27,11 @@ define(function (require) {
      *
      * @singleton
      */
-     function Navigator () {}
+    function Navigator() {}
 
-     Navigator.prototype.config = null;
-     Navigator.prototype.activeIndex = null;
-     Navigator.prototype.navItems = {};
+    Navigator.prototype.config = null;
+    Navigator.prototype.activeIndex = null;
+    Navigator.prototype.navItems = {};
 
     /**
      * 初始化导航
@@ -62,7 +62,7 @@ define(function (require) {
      *      children: []                        // TODO: add it
      * }]
      */
-     Navigator.prototype.init = function (domId, config) {
+    Navigator.prototype.init = function (domId, config) {
         if (!config) {
             unexceptedError('Navigator config is null!');
             return;

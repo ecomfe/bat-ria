@@ -125,7 +125,7 @@ define(
             // 现在开始解析args
             var keyAndValues = [];
             if (properties.args) {
-                if (typeof properties.args === 'string' ) {
+                if (typeof properties.args === 'string') {
                     keyAndValues = properties.args.split('&');
                     u.each(keyAndValues, function (keyAndValue) {
                         keyAndValue = keyAndValue.split('=');
@@ -134,7 +134,7 @@ define(
                         }
                     });
                 }
-                else if (typeof properties.args === 'object' ) {
+                else if (typeof properties.args === 'object') {
                     for (var key in properties.args) {
                         buildExtraArgs(key, properties.args[key]);
                     }
@@ -203,7 +203,7 @@ define(
                         'value="' + this.typeIndex + '"',
                     '/>'
             ];
-            //从附加参数里构造
+            // 从附加参数里构造
             if (this.extraArgs) {
                 u.each(this.extraArgs, function (arg) {
                     html.push(
@@ -527,7 +527,7 @@ define(
             if (options.success === false || options.success === 'false') {
                 this.notifyFail(options.message);
             }
-            else if (result){
+            else if (result) {
                 if (!options.hasOwnProperty('type')) {
                     options.result.type = this.fileType;
                 }

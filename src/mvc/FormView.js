@@ -66,7 +66,7 @@ define(function (require) {
     /**
      * 设置表单数据
      *
-     * @param {Object} key：value形式的数据 key和input的name一一对应
+     * @param {Object} formData key:value形式的数据 key和input的name一一对应
      */
     FormView.prototype.setFormData = function (formData) {
         var form = this.get('form');
@@ -87,7 +87,7 @@ define(function (require) {
      * 这个接口提供给不是input的控件去扩展，自个玩去
      * 不知道是不是又是可以砍掉的接口
      *
-     * @param {Object} key：value形式的数据 key和input的name一一对应
+     * @param {Object} formData key:value形式的数据 key和input的name一一对应
      */
     FormView.prototype.setExtraFormData = function (formData) {
         return;
@@ -107,7 +107,7 @@ define(function (require) {
         var ValidityState = require('esui/validator/ValidityState');
         var form = this.get('form');
 
-        u.each(errors, function (message, field){
+        u.each(errors, function (message, field) {
             var state = new ValidityState(false, message);
             var validity = new Validity();
             validity.addState('invalid', state);
