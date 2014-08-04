@@ -60,7 +60,7 @@ define(function (require) {
     /**
      * 回滚表单数据
      *
-     * @param {Object} key：value形式的数据 key和input的name一一对应
+     * @param {Object} defaultData key/value形式的数据，key和input的name一一对应
      */
     FormView.prototype.rollbackFormData = function (defaultData) {
         this.setFormData(defaultData);
@@ -167,7 +167,7 @@ define(function (require) {
     /**
      * 若页面在目标dom元素下方，设置页面scrollTop至该元素
      *
-     * @param {Element} validity label的dom元素
+     * @param {Element} element label的dom元素
      */
     function scrollTo(element) {
         var offset = lib.getOffset(element);
@@ -188,7 +188,7 @@ define(function (require) {
         var form = this.get('form');
         u.some(form.getInputControls(), function (input, index) {
             if (input.hasState('validity-invalid')) {
-                var e = me.fire('scrolltofirsterror', {firstErrValidity: input});
+                var e = me.fire('scrolltofirsterror', { firstErrValidity: input });
                 if (!e.isDefaultPrevented()) {
                     scrollTo(input.main);
                 }

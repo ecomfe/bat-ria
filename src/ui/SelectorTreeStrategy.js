@@ -63,14 +63,14 @@ define(
         };
 
         SelectorTreeStrategy.prototype.enableSelectStrategy = function (tree) {
-            var treeStrategy = this;
+            var me = this;
             tree.on(
                 'select',
                 function (e) {
                     var canSelect = true;
-                    var isLeafNode = treeStrategy.isLeafNode(e.node);
-                    if (treeStrategy.mode !== 'load') {
-                        if (treeStrategy.onlyLeafSelect && !isLeafNode) {
+                    var isLeafNode = me.isLeafNode(e.node);
+                    if (me.mode !== 'load') {
+                        if (me.onlyLeafSelect && !isLeafNode) {
                             canSelect = false;
                         }
                     }

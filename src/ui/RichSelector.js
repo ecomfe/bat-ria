@@ -272,7 +272,7 @@ define(
 
         /**
          * 点击行为分发器
-         * @param {Event} 事件对象
+         * @param {Event} e 事件对象
          * @ignore
          */
         RichSelector.prototype.eventDispatcher = function (e) {
@@ -282,7 +282,7 @@ define(
 
         /**
          * 根据关键词搜索结果
-         * @param {event} SearchBox的点击事件对象
+         * @param {event} e SearchBox的点击事件对象
          * @ignore
          */
         RichSelector.prototype.search = function (e) {
@@ -415,11 +415,11 @@ define(
          *
          */
         RichSelector.prototype.batchAction = function () {
-            if (this.mode == 'delete') {
+            if (this.mode === 'delete') {
                 this.deleteAll();
                 this.refreshFoot();
             }
-            else if (this.mode == 'add') {
+            else if (this.mode === 'add') {
                 this.selectAll();
             }
             return false;

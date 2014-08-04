@@ -161,13 +161,13 @@ define(
                 queryList.addChild(tree);
                 tree.appendTo(queryList.main);
 
-                var control = this;
+                var me = this;
                 var indexData = this.indexData;
                 tree.on(
                     'selectnode',
                     function (e) {
                         var node = e.node;
-                        control.handlerAfterClickNode(node);
+                        me.handlerAfterClickNode(node);
                     }
                 );
 
@@ -176,7 +176,7 @@ define(
                     function (e) {
                         var node = e.node;
                         if (indexData[node.id]) {
-                            indexData[node.id]['isSelected'] = false;
+                            indexData[node.id].isSelected = false;
                         }
                     }
                 );
@@ -197,7 +197,7 @@ define(
          */
         TreeRichSelector.prototype.handlerAfterClickNode = function (node) {
             // 这个item不一定是源数据元，为了连锁同步，再取一遍
-            var item = this['indexData'][node.id];
+            var item = this.indexData[node.id];
             if (!item) {
                 return;
             }
@@ -222,11 +222,11 @@ define(
          * @ignore
          */
         function actionForAdd(control, item) {
-            item['isSelected'] = true;
-            //如果是单选，需要将其他的已选项置为未选
+            item.isSelected = true;
+            // 如果是单选，需要将其他的已选项置为未选
             if (!control.multi) {
                 // 赋予新值
-                control.curSeleId = item['node'].id;
+                control.curSeleId = item.node.id;
             }
             control.fire('add');
         }
@@ -245,14 +245,14 @@ define(
         function selectItem(control, id, toBeSelected) {
             var tree = control.getQueryList().getChild('tree');
             // 完整数据
-            var indexData = control['indexData'];
+            var indexData = control.indexData;
             var item = indexData[id];
 
             if (!item) {
                 return;
             }
 
-            //如果是单选，需要将其他的已选项置为未选
+            // 如果是单选，需要将其他的已选项置为未选
             if (!control.multi && toBeSelected) {
                 unselectCurrent(control);
                 // 赋予新值
@@ -275,7 +275,7 @@ define(
          */
         function unselectCurrent(control) {
             var curId = control.curSeleId;
-            //撤销当前选中项
+            // 撤销当前选中项
             if (curId) {
                 var treeList = control.getQueryList().getChild('tree');
                 treeList.unselectNode(curId);
@@ -292,9 +292,9 @@ define(
             var data = this.isQuery() ? this.queriedData : this.allData;
             var children = data.children;
             var items = this.getLeafItems(children, false);
-            var control = this;
+            var me = this;
             u.each(items, function (item) {
-                selectItem(control, item.id, true);
+                selectItem(me, item.id, true);
             });
             this.fire('add');
         };
@@ -309,16 +309,16 @@ define(
         TreeRichSelector.prototype.selectItems =
             function (nodes, toBeSelected) {
                 var indexData = this.indexData;
-                var control = this;
+                var me = this;
                 u.each(
                     nodes,
                     function (node) {
                         var id = node.id !== undefined ? node.id : node;
                         var item = indexData[id];
                         if (item !== null && item !== undefined) {
-                            var node = item['node'];
+                            var node = item.node;
                             // 更新状态，但不触发事件
-                            selectItem(control, node.id, toBeSelected);
+                            selectItem(me, node.id, toBeSelected);
                         }
                     }
                 );
@@ -333,9 +333,9 @@ define(
          * @ignore
          */
         function actionForDelete(control, item) {
-            deleteItem(control, item['node'].id);
+            deleteItem(control, item.node.id);
             // 外部需要知道什么数据被删除了
-            control.fire('delete', { items: [item['node']] });
+            control.fire('delete', { items: [item.node] });
         }
 
         /**
@@ -364,7 +364,7 @@ define(
             var children = node.children || [];
 
             // 从parentNode的children里删除
-            var newChildren = u.without(children, item['node']);
+            var newChildren = u.without(children, item.node);
             // 没有孩子了，父节点也删了吧
             if (newChildren.length === 0 && parentId !== -1) {
                 deleteItem(control, parentId);
@@ -406,7 +406,6 @@ define(
         /**
          * 获取指定状态的叶子节点，递归
          *
-         * @param {ui.TreeRichSelector} treeForSelector 类实例
          * @param {Array=} data 检测的数据源
          * @param {boolean} isSelected 选择状态还是未选状态
          * @ignore
@@ -453,11 +452,11 @@ define(
          * @public
          */
         TreeRichSelector.prototype.getSelectedTree = function () {
-            var control = this;
+            var me = this;
             var copyData = u.deepClone(this.allData);
             var nodes = copyData.children;
             u.each(nodes, function (node) {
-                var selectedChildren = getSelectedNodesUnder(node, control);
+                var selectedChildren = getSelectedNodesUnder(node, me);
                 if (selectedChildren.length) {
                     node.children = selectedChildren;
                 }
@@ -506,7 +505,6 @@ define(
         /**
          * 搜索含有关键字的结果
          *
-         * @param {ui.TreeRichSelector} treeForSelector 类实例
          * @param {String} keyword 关键字
          * @return {Array} 结果集
          */
@@ -562,6 +560,7 @@ define(
         /**
          * 一个遍历树的方法
          *
+         * @param {Object} parent 父节点
          * @param {Array} children 需要遍历的树的孩子节点
          * @param {Function} callback 遍历时执行的函数
          * @ignore
@@ -584,7 +583,7 @@ define(
             // 是叶子节点，但不是root节点
             if (isLeaf(node)) {
                 // FIXME: 这里感觉不应该hardcode，后期想想办法
-                if (!node.id || node.id === '-1' || node.id === '0' ) {
+                if (!node.id || node.id === '-1' || node.id === '0') {
                     return 0;
                 }
                 return 1;
