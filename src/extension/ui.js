@@ -187,10 +187,89 @@ define(
             });
         }
 
+        /**
+         * esui升级前region的过渡扩展，增加获取最大地域个数的方法
+         *
+         * @ignore
+         */
+        function addRegionExtension() {
+            var Region = require('esui/Region');
+
+            Region.prototype.getMaxRegionSize = function () {
+                if (!this.maxRegionSize) {
+                    this.maxRegionSize = u.size(this.regionDataIndex);
+                }
+                return this.maxRegionSize;
+            };
+        }
+
+        /**
+         * esui升级前Crumb的过渡扩展，增加global-redirect的功能
+         *
+         * @ignore
+         */
+        function addCrumbGlobalRedirect() {
+            var Crumb = require('esui/Crumb');
+
+            /**
+             * 链接节点的内容HTML模板
+             *
+             * 模板中可以使用以下占位符：
+             *
+             * - `{string} text`：文本内容，经过HTML转义
+             * - `{string} href`：链接地址，经过HTML转义
+             * - `{string} scope`：当Crumb在一个子action中时是否global跳转，经过HTML转义
+             *       值为`global`时全局跳转，其他值或空在子action中跳转
+             *
+             * @type {string}
+             * @override
+             */
+            Crumb.prototype.linkNodeTemplate =
+                '<a class="${classes}" href="${href}" data-redirect="${scope}">${text}</a>';
+
+            /**
+             * 获取节点的HTML内容
+             *
+             * @param {meta.CrumbItem} node 节点数据项
+             * @param {number} index 节点索引序号
+             * @return {string}
+             *
+             * @override
+             */
+            Crumb.prototype.getNodeHTML = function (node, index) {
+                var classes = this.helper.getPartClasses('node');
+                if (index === 0) {
+                    classes.push.apply(
+                        classes,
+                        this.helper.getPartClasses('node-first')
+                    );
+                }
+                if (index === this.path.length - 1) {
+                    classes.push.apply(
+                        classes,
+                        this.helper.getPartClasses('node-last')
+                    );
+                }
+
+                var template = node.href
+                    ? this.linkNodeTemplate
+                    : this.textNodeTemplate;
+                var data = {
+                    href: u.escape(node.href),
+                    scope: u.escape(node.scope),
+                    text: u.escape(node.text),
+                    classes: classes.join(' ')
+                };
+                return lib.format(template, data);
+            };
+        }
+
         function activate() {
             initializeValidationRules();
             addControlLinkMode();
             initializeGlobalExtensions();
+            addRegionExtension();
+            addCrumbGlobalRedirect();
         }
 
         return {
