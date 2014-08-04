@@ -4,7 +4,7 @@
     - 修复了 `navigator` 匹配路径为字符串的问题
     - `navigator` 现在支持二级菜单及设置显示隐藏
     - 升级了 `serverIO` 模块，以适配新版本 NMP 接口并更好地显示错误信息
-    - 修复了 `extension/underscore` 重的一些 bug
+    - 修复了 `extension/underscore` 中的一些 bug
     - 修复了 `mvc/BaseView` 中 `popDialog` 的一些问题
     - 给表单页面增加了多个异步确认扩展点
     - 表单页在验证出错后现在会默认将页面滚动到第一个出错的位置
