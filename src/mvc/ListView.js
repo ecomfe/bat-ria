@@ -20,7 +20,19 @@ define(function (require) {
     function ListView() {
         BaseView.apply(this, arguments);
     }
-    
+
+    /**
+     * @type {Object}
+     * @inheritDoc
+     */
+    ListView.prototype.idDefault = {
+        pager: 'pager',
+        filter: 'filter',
+        keyword: 'keyword',
+        range: 'range',
+        table: 'table'
+    };
+
     /**
      * @inheritDoc
      */
@@ -46,8 +58,7 @@ define(function (require) {
         }
 
         // 总是带上每页显示数
-        args.pageSize = this.get('pager').get('pageSize');
-
+        args.pageSize = this.getCtrl('pager').get('pageSize');
 
         this.fire('search', { args: args });
     };
@@ -59,20 +70,20 @@ define(function (require) {
      */
     ListView.prototype.getSearchArgs = function () {
         // 获取表单的字段
-        var form = this.get('filter');
+        var form = this.getCtrl('filter');
         var args = form ? form.getData() : {};
         // 加上原本的排序方向和排序字段名
         args.order = this.model.get('order');
         args.orderBy = this.model.get('orderBy');
 
-        var keyword = this.get('keyword');
+        var keyword = this.getCtrl('keyword');
         if (keyword) {
             // 关键词去空格
             args.keyword = u.trim(keyword.getValue());
         }
         
         // 日期是独立的
-        var range = this.get('range');
+        var range = this.getCtrl('range');
         if (range) {
             range = range.getValue().split(',');
             args.startTime = moment(range[0]).format('YYYYMMDDHHmmss');
@@ -107,7 +118,7 @@ define(function (require) {
      * @return {Object[]} 当前table的已选择列对应的数据
      */
     ListView.prototype.getSelectedItems = function () {
-        var table = this.get('table');
+        var table = this.getCtrl('table');
         return table ? table.getSelectedItems() : [];
     };
 
@@ -129,15 +140,15 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    ListView.prototype.bindEvents = function() {
-        var pager = this.get('pager');
+    ListView.prototype.bindEvents = function () {
+        var pager = this.getCtrl('pager');
         if (pager) {
             // 切换每页大小
             pager.on('pagesizechange', this.submitSearch, this);
             pager.on('pagechange', updatePageIndex, this);
         }
 
-        var table = this.get('table');
+        var table = this.getCtrl('table');
         if (table) {
             // 选中表格行后控制批量更新按钮的启用/禁用状态
             table.on('select', this.updateBatchButtonStatus, this);
@@ -145,7 +156,7 @@ define(function (require) {
             table.on('sort', this.submitSearch, this);
         }
 
-        var filter = this.get('filter');
+        var filter = this.getCtrl('filter');
         if (filter) {
             // 多条件查询
             filter.on('submit', this.submitSearch, this);

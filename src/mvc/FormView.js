@@ -35,12 +35,22 @@ define(function (require) {
     util.inherits(FormView, BaseView);
 
     /**
+     * @type {Object}
+     * @inheritDoc
+     */
+    FormView.prototype.idDefault = {
+        form: 'form',
+        reset: 'reset',
+        cancel: 'cancel'
+    };
+
+    /**
      * 从表单中获取数据
      *
      * @return {Object}
      */
     FormView.prototype.getFormData = function () {
-        var form = this.get('form');
+        var form = this.getCtrl('form');
         return u.extend(
             {},
             form ? form.getData() : {},
@@ -72,7 +82,7 @@ define(function (require) {
      * @param {Object} formData key:value形式的数据 key和input的name一一对应
      */
     FormView.prototype.setFormData = function (formData) {
-        var form = this.get('form');
+        var form = this.getCtrl('form');
         var inputs = form.getInputControls();
         u.each(inputs, function (input, index) {
             var key = input.name;
@@ -107,7 +117,7 @@ define(function (require) {
      * return {boolean} 校验是否成功
      */
     FormView.prototype.validate = function () {
-        var form = this.get('form');
+        var form = this.getCtrl('form');
         var isAutoValidate = form.get('autoValidate');
         if (!isAutoValidate) {
             return true;
@@ -128,7 +138,7 @@ define(function (require) {
 
         var Validity = require('esui/validator/Validity');
         var ValidityState = require('esui/validator/ValidityState');
-        var form = this.get('form');
+        var form = this.getCtrl('form');
 
         u.each(errors, function (message, field) {
             var state = new ValidityState(false, message);
@@ -185,7 +195,7 @@ define(function (require) {
      */
     FormView.prototype.handleValidateInvalid = function () {
         var me = this;
-        var form = this.get('form');
+        var form = this.getCtrl('form');
         u.some(form.getInputControls(), function (input, index) {
             if (input.hasState('validity-invalid')) {
                 var e = me.fire('scrolltofirsterror', { firstErrValidity: input });
@@ -203,17 +213,17 @@ define(function (require) {
      * @override
      */
     FormView.prototype.bindEvents = function () {
-        var form = this.get('form');
+        var form = this.getCtrl('form');
         if (form) {
             form.on('beforevalidate', submit, this);
         }
 
-        var resetButton = this.get('reset');
+        var resetButton = this.getCtrl('reset');
         if (resetButton) {
             resetButton.on('click', reset, this);
         }
 
-        var cancelButton = this.get('cancel');
+        var cancelButton = this.getCtrl('cancel');
         if (cancelButton) {
             cancelButton.on('click', cancelEdit, this);
         }

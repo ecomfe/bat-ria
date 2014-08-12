@@ -28,11 +28,15 @@ define(
         /**
          * 初始化系统启动
          *
+         * @param {boolean=} needSystem
          * @ignore
          */
-        function loadData() {
+        function loadData(needSystem) {
             var Deferred = require('er/Deferred');
 
+            if (needSystem) {
+                return Deferred.all();
+            }
             return Deferred.all(
                 Deferred.when(config.api.user()),
                 Deferred.when(config.api.constants())
@@ -95,9 +99,10 @@ define(
             initApiConfig();
 
             // 读取必要信息后初始化系统
-            return loadData()
-                .then(initData)
-                .then(init);
+            if (config.needSystem) {
+                return loadData(true).then(init);
+            }
+            return loadData().then(initData).then(init);
         }
 
         return {
