@@ -5,7 +5,7 @@
 
 define(
     function (require) {
-
+        var Deferred = require('er/Deferred');
         var config = {};
         var u = require('underscore');
         var util = require('./util');
@@ -28,15 +28,9 @@ define(
         /**
          * 初始化系统启动
          *
-         * @param {boolean=} needSystem
          * @ignore
          */
-        function loadData(needSystem) {
-            var Deferred = require('er/Deferred');
-
-            if (needSystem) {
-                return Deferred.all();
-            }
+        function loadData() {
             return Deferred.all(
                 Deferred.when(config.api.user()),
                 Deferred.when(config.api.constants())
@@ -98,9 +92,9 @@ define(
             // 对API配置进行一下封装
             initApiConfig();
 
-            // 读取必要信息后初始化系统
-            if (config.needSystem) {
-                return loadData(true).then(init);
+            // 读取/或者不读取系统信息，之后初始化系统
+            if (config.noSystem) {
+                return Deferred.all().then(init);
             }
             return loadData().then(initData).then(init);
         }

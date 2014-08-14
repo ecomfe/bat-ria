@@ -23,22 +23,6 @@ define(function (require) {
     util.inherits(BaseView, UIView);
 
     /**
-     * @type {Object}
-     */
-    BaseView.prototype.idConfig = {};
-    BaseView.prototype.idDefault = {};
-
-    /**
-     * 获取对应的控件
-     *
-     * @param {string} key 用这个key得到控件id
-     */
-    BaseView.prototype.getCtrl = function (key) {
-        var id = this.idConfig[key] || this.idDefault[key];
-        return id ? this.get(id) : null;
-    };
-
-    /**
      * 获取对应模板名称
      *
      * 当一个视图被作为子Action使用时，需要在其视图模板名后加上`_child`以进行区分，
