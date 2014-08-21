@@ -20,7 +20,7 @@ define(function (require) {
     function ListView() {
         BaseView.apply(this, arguments);
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -47,7 +47,6 @@ define(function (require) {
 
         // 总是带上每页显示数
         args.pageSize = this.get('pager').get('pageSize');
-
 
         this.fire('search', { args: args });
     };
@@ -129,7 +128,7 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    ListView.prototype.bindEvents = function() {
+    ListView.prototype.bindEvents = function () {
         var pager = this.get('pager');
         if (pager) {
             // 切换每页大小

@@ -5,7 +5,6 @@
 
 define(
     function (require) {
-
         var config = {};
         var u = require('underscore');
         var util = require('./util');
@@ -32,7 +31,6 @@ define(
          */
         function loadData() {
             var Deferred = require('er/Deferred');
-
             return Deferred.all(
                 Deferred.when(config.api.user()),
                 Deferred.when(config.api.constants())
