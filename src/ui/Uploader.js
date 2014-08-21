@@ -75,6 +75,21 @@ define(
         };
 
         /**
+         * 通过callbackName，拼出带?callback=***的actionUrl
+         *
+         * @param {string} action
+         * @param {string} callbackName
+         */
+        function modifyActionUrl(action, callbackName) {
+            if (action.indexOf('?') < 0) {
+                action += '?';
+            }
+            action += '&callback=parent.esuiShowUploadResult[\''
+                + callbackName + '\']';
+            return action;
+        }
+
+        /**
          * 初始化参数
          *
          * @param {Object=} options 构造函数传入的参数
@@ -102,6 +117,12 @@ define(
                 if (!options.method && lib.hasAttribute(this.main, 'method')) {
                     properties.method = this.main.method;
                 }
+            }
+
+            // 把callback加到action的url中去，这样后面不必在form里放hidden input
+            if (properties.callbackName) {
+                properties.action = modifyActionUrl(
+                    properties.action, properties.callbackName);
             }
 
             if (typeof properties.accept === 'string') {
@@ -161,11 +182,12 @@ define(
 
             // 往全局下加个函数，用于上传成功后回调
             // TODO: 抛弃IE7的话能改成`postMessage`实现
-            this.callbackName = helper.getGUID('');
+            var callbackName = this.callbackName || helper.getGUID('');
             if (!window.esuiShowUploadResult) {
                 window.esuiShowUploadResult = {};
             }
-            window.esuiShowUploadResult[this.callbackName] = lib.bind(this.showUploadResult, this);
+            window.esuiShowUploadResult[callbackName]
+                = lib.bind(this.showUploadResult, this);
 
             var inputContainerClasses =
                 helper.getStateClasses(this, 'input-container').join(' ');
@@ -179,15 +201,13 @@ define(
 
             var html = [
                 '<div id="' + helper.getId(this, 'input-container') + '" ',
-                    'class="' + inputContainerClasses + '">',
+                        'class="' + inputContainerClasses + '">',
                     // 按钮
                     '<span id="' + helper.getId(this, 'button') + '" ',
                         'class="' + buttonClasses + '">',
                     '</span>',
                     // 回调函数名
-                    '<input type="hidden" name="callback" ',
-                        'value="' + 'parent.esuiShowUploadResult[\'' + this.callbackName + '\']" ',
-                    '/>',
+                    '${callbackInput}',
                     // sessionToken
                     // '<input type="hidden" name="sessionToken" ',
                     //     'value="' + this.getSessionToken() + '" ',
@@ -231,13 +251,22 @@ define(
                 ' src="about:blank"></iframe>'
             );
 
-
             // IE是不允许在一个`<form>`里有另一个`<form>`，
             // 并且设置内层`<form>`的`innerHTML`的，因此先移出去，设完了再回来
             // var nextSibling = this.main.nextSibling;
             // var parent = this.main.parentNode;
             // parent.removeChild(this.main);
-            this.main.innerHTML = html.join('');
+
+            this.main.innerHTML = lib.format(html.join(''), {
+                // 如果properties指定了callbackName，则action会带?callback=
+                // 不然，这里就需要加一个hidden input，name为callback
+                callbackInput: this.callbackName ? '' : [
+                    '<input type="hidden" name="callback" ',
+                    'value="' + 'parent.esuiShowUploadResult[\'' + callbackName + '\']" ',
+                    '/>'
+                ].join('')
+            });
+            this.callbackName = callbackName;
             // parent.insertBefore(this.main, nextSibling);
 
             // 放个表单在远放，有用
@@ -287,8 +316,6 @@ define(
             if (this.preview) {
                 this.showPreview(info);
             }
-
-            window.up = this;
         }
 
         /**
@@ -534,7 +561,7 @@ define(
                 else if (typeof options.type === 'number') {
                     options.result.type = FILE_TYPES[options.result.type];
                 }
-
+                
                 this.fileInfo = result;
                 this.rawValue = result.url || result.previewUrl || '';
                 this.notifyComplete(options.result);
@@ -678,7 +705,6 @@ define(
         Uploader.prototype.reset = function () {
             var input = lib.g(helper.getId(this, 'input'));
             input.value = '';
-
             return;
         };
 
@@ -691,7 +717,6 @@ define(
             var form = this.helper.getPart('form');
             lib.removeNode(form);
             delete window.esuiShowUploadResult[this.callbackName];
-
             InputControl.prototype.dispose.apply(this, arguments);
         };
 
