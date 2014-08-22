@@ -172,7 +172,7 @@ define(function (require) {
     function scrollTo(element) {
         var offset = lib.getOffset(element);
         if (lib.page.getScrollTop() > offset.top) {
-            document.body.scrollTop = document.documentElement.scrollTop = offset.top - 10;
+            element.scrollIntoView(true);
         }
     }
 
@@ -186,7 +186,7 @@ define(function (require) {
     FormView.prototype.handleValidateInvalid = function () {
         var me = this;
         var form = this.get('form');
-        u.some(form.getInputControls(), function (input, index) {
+        u.some(form.getInputControls(), function (input) {
             if (input.hasState('validity-invalid')) {
                 var e = me.fire('scrolltofirsterror', { firstErrValidity: input });
                 if (!e.isDefaultPrevented()) {

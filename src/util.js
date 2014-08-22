@@ -253,7 +253,7 @@ define(function (require) {
             'data-command': command.type
         };
 
-        if (u.typeOf(command.args) === 'String' || u.typeOf(command.args) === 'Number') {
+        if (u.typeOf(command.args) !== 'Undefined') {
             attrs['data-command-args'] = command.args;
         }
 
