@@ -22,8 +22,8 @@ define(function (require) {
     util.inherits(BaseModel, UIModel);
 
     /**
-    * 合并默认数据源
-    */
+     * 合并默认数据源
+     */
     BaseModel.prototype.mergeDefaultDatasource = function() {
         if (!this.datasource) {
             this.datasource = this.defaultDatasource;

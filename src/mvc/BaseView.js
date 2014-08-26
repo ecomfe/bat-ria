@@ -189,7 +189,7 @@ define(function (require) {
      * 2. showDialog(dialog, options)
      */
     BaseView.prototype.showDialog = function (dialog, options) {
-        if (!dialog instanceof Dialog) {
+        if (!(dialog instanceof Dialog)) {
             options = dialog;
             dialog = this.popDialog.call(this, options);
         }
@@ -289,7 +289,7 @@ define(function (require) {
      */
     BaseView.prototype.waitActionDialog = function () {
         var dialog = this.popActionDialog.apply(this, arguments);
-        
+
         var deferred = new Deferred();
 
         dialog.on('actionloaded', deferred.resolver.resolve);
@@ -297,6 +297,16 @@ define(function (require) {
         dialog.on('actionloadabort', deferred.resolver.reject);
 
         return deferred.promise;
+    };
+
+    /**
+     * 刷新权限设置，在Action加载过新内容时使用
+     */
+    BaseView.prototype.refreshAuth = function () {
+        var authPanel = this.get('authPanel');
+        if (authPanel) {
+            authPanel.initAuth();
+        }
     };
 
     return BaseView;

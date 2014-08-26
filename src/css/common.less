@@ -225,7 +225,15 @@ hr {
 
 @sys-userinfo-color: #FFFFFF;
 .user-info {
-    color: darken(@sys-userinfo-color, 10);
+    color: darken(@sys-userinfo-color, 20);
+
+    span {
+        color: #FFF;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
 }
 
 /**

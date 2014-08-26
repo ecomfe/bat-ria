@@ -21,6 +21,14 @@ define(function (require) {
 
     util.inherits(ListAction, BaseAction);
 
+
+    /**
+     * 在搜索、翻页等操作后选择触发跳转还是仅刷新列表
+     *
+     * @type {boolean}
+     */
+    ListAction.prototype.redirectAfterChange = true;
+
     /**
      * 进行查询
      *
@@ -31,8 +39,8 @@ define(function (require) {
         var defaultArgs = this.model.getDefaultArgs();
         var extraArgs = this.model.getExtraQuery();
         args = u.chain(args)
-            .purify(defaultArgs)
             .extend(extraArgs)
+            .purify(defaultArgs)
             .value();
 
         var event = this.fire('search', { args: args });
@@ -49,17 +57,17 @@ define(function (require) {
     ListAction.prototype.redirectForSearch = function (args) {
         var path = this.model.get('url').getPath();
         var url = URL.withQuery(path, args);
-        this.redirect(url, { force: true });
+        this.loadList(url);
     };
 
     /**
      * 获取指定页码的跳转URL
      *
      * @param {number} pageNo 指定的页码
-     * @return {string}
+     * @return {er/URL} 生成的分页URL对象
      */
     ListAction.prototype.getURLForPage = function (pageNo) {
-        var url = this.context.url;
+        var url = this.model.get('url');
         var path = url.getPath();
         var query = url.getQuery();
         query.pageNo = pageNo;
@@ -69,7 +77,7 @@ define(function (require) {
             query = u.omit(query, 'pageNo');
         }
 
-        return require('er/URL').withQuery(path, query).toString();
+        return require('er/URL').withQuery(path, query);
     };
 
     /**
@@ -93,9 +101,30 @@ define(function (require) {
         var event = this.fire('pagechange', { page: e.page });
         if (!event.isDefaultPrevented()) {
             var url = this.getURLForPage(e.page);
-            this.redirect(url);
+            this.loadList(url);
         }
     }
+
+    /**
+     * 根据新的URL参数刷新列表
+     *
+     * @param {er/URL} [url] 新的URL对象，没有时按当前URL刷新
+     * @return {er/Promise=} 返回请求的Promise对象
+     */
+    ListAction.prototype.loadList = function (url) {
+        if (this.redirectAfterChange) {
+            this.redirect(url, { force: true });
+        }
+        else {
+            var me = this;
+            url = url || me.model.get('url');
+
+            return me.model.loadData(url).then(function () {
+                me.redirect(url, { silent: true });
+                me.view.refresh();
+            });
+        }
+    };
 
     /**
      * 初始化交互行为
@@ -106,8 +135,22 @@ define(function (require) {
     ListAction.prototype.initBehavior = function () {
         BaseAction.prototype.initBehavior.apply(this, arguments);
         this.view.on('search', search, this);
-        this.view.on('pagesizechange', search, this);
         this.view.on('pagechange', forwardToPage, this);
+    };
+
+    /**
+     * 初始化交互行为
+     *
+     * @protected
+     * @override
+     */
+    ListAction.prototype.reload = function () {
+        if (this.redirectAfterChange) {
+            BaseAction.prototype.reload.call(this);
+        }
+        else {
+            this.loadList();
+        }
     };
 
     /**
@@ -116,6 +159,21 @@ define(function (require) {
     ListAction.prototype.adjustLayout = function () {
         this.view.adjustLayout();
     };
-    
+
+    // /**
+    //  * @inheritDoc
+    //  *
+    //  * @protected
+    //  * @override
+    //  */
+    // ListAction.prototype.filterRedirect = function (url) {
+    //     if (url.getPath() !== this.model.get('url').getPath()
+    //         || this.redirectAfterChange) {
+    //         return true;
+    //     }
+    //     this.loadList(url);
+    //     return false;
+    // };
+
     return ListAction;
 });

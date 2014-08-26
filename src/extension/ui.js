@@ -91,7 +91,7 @@ define(
                 }
                 return Rule.prototype.getErrorMessage.apply(this, arguments);
             };
-            
+
             MaxRule.prototype.getErrorMessage = function (control) {
                 if (control.get('maxErrorMessage')) {
                     var getErrorMessage = Rule.prototype.getErrorMessage;
@@ -179,7 +179,7 @@ define(
         function initializeGlobalExtensions() {
             var ui = require('esui');
             var globalExtensions = [
-                { type: 'CustomData', options: {} }
+                // { type: 'CustomData', options: {} }
             ];
 
             u.each(globalExtensions, function (extension) {
@@ -264,12 +264,19 @@ define(
             };
         }
 
+        function addTreeNodeTitle() {
+            var Tree = require('esui/Tree');
+
+            Tree.prototype.itemTemplate = '<span title="${text}">${text}</span>';
+        }
+
         function activate() {
             initializeValidationRules();
             addControlLinkMode();
             initializeGlobalExtensions();
             addRegionExtension();
             addCrumbGlobalRedirect();
+            addTreeNodeTitle();
         }
 
         return {

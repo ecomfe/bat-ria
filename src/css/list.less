@@ -5,6 +5,11 @@
 
 .list-header {
     border-bottom: none;
+
+    h3 {
+        line-height: 26px;
+        font-weight: 700;
+    }
 }
 
 /* 列表头部 > 摘要数据区域 */
@@ -59,7 +64,24 @@
 
 /* 列表头部 > 列表操作列区域 */
 .list-operation {
+    position: relative;
+    margin-left: 12px;
     .bat-linkify();
+
+    &:before {
+        content: "|";
+        display: inline;
+        position: absolute;
+        left: -8px;
+        color: @bat-aux-color;
+    }
+
+    &:first-child {
+        margin-left: 0;
+        &:before {
+            display: none;
+        }
+    }
 }
 
 .list-operation-separator {
