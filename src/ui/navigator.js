@@ -49,7 +49,6 @@ define(function (require) {
      *      这里的逻辑`exclude`优先级比`include`高，但是也不要两个都配同个规则吧。。
      * @cfg {Array} [config.tabs]  子导航，结构和一级导航config中每一项保持一致
      * @cfg {string} [config.auth]  与er.permission对应的权限控制
-     *      TODO：二级导航暂未支持权限
      * 
      * @sample:
      * nav: {
@@ -112,7 +111,7 @@ define(function (require) {
      */
     function toggleNav(type) {
         this.main.style.cssText = 'display:' + type + ';';
-        u.some(this.subNavs, function (subNav, index) {
+        u.some(this.subNavs, function (subNav) {
             if (u.isObject(subNav)) {
                 if (lib.hasClass(subNav.nav, 'nav-sub-item-current')) {
                     subNav.nav.cssText = 'display:' + type + ';';
@@ -193,8 +192,8 @@ define(function (require) {
      * 展示或隐藏二级导航
      *
      * @navItems {object} 缓存导航的集合，传入来记录当前高亮的索引
-     * @element {object} 要高亮的元素，不传表示隐藏所有
-     * @index {string} 要高亮的导航索引
+     * @element {object} 要展示的子tab，不传表示隐藏所有
+     * @index {string} 要展示的导航索引
      */
     function toggleSubNav(navItems, element, index) {
         var className = 'nav-sub-current';
@@ -228,12 +227,39 @@ define(function (require) {
         var isSub = isSub || '';
         u.each(config, function (item, index) {
             if (!item.auth || permission.isAllow(item.auth)) {
-                var url = item.externalUrl || ('#' + item.url);
+                var internalUrl = fixErUrl(item.url || '');
+                var url = item.externalUrl || internalUrl;
+                var target = (item.externalUrl ? ' target="_blank"' : '');
                 var element = document.createElement('li');
                 var separate = '';
 
+                // 处理父tab和子tab权限耦合的部分
+                if (item.tabs) {
+                    // 看看默认要跳转的地址所在的子tab有没有权限
+                    var hasDefaultTabAuth = u.every(item.tabs, function (subItem) {
+                        if (isActive(item.url, subItem)) {
+                            if (!subItem.auth || permission.isAllow(subItem.auth)) {
+                                return true;
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+                    });
+                    // 如果没有权限就得找到第一个有权限的子tab，把父tab跳转链接改成这个
+                    if (!hasDefaultTabAuth) {
+                        u.some(item.tabs, function (subItem) {
+                            if (!subItem.auth || permission.isAllow(subItem.auth)) {
+                                // 暂时假设子tab不会往外跳
+                                url = fixErUrl(subItem.url);
+                                return true;
+                            }
+                        });
+                    }
+                }
+
                 element.className = 'nav-' + isSub + 'item';
-                element.innerHTML = '<a href="' + url + '">'
+                element.innerHTML = '<a href="' + url + '"' + target + '>'
                                         + '<span>' + u.escape(item.text) + '</span>'
                                     + '</a>';
 
@@ -309,6 +335,19 @@ define(function (require) {
     }
 
     /**
+     * 处理er path
+     *
+     * @url {string} url path
+     * @return {string} er path
+     */
+    function fixErUrl(url) {
+        if (!url) {
+            return '';
+        }
+        return (url.indexOf('#') === 0 ? url : ('#' + url));
+    }
+
+    /**
      * 验证url是否命中某个导航元素config的规则
      *
      * @url {string} 当前页面的er path
@@ -325,7 +364,7 @@ define(function (require) {
         };
     }
 
-    var commonNavigator = new Navigator(); 
+    var commonNavigator = new Navigator();
 
     return {
         init: u.bind(commonNavigator.init, commonNavigator),
