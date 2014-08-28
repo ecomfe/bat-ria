@@ -171,10 +171,10 @@ define(function (require) {
     /**
      * 高亮当前导航元素
      *
-     * @navItems {object} 缓存导航的集合，传入来记录当前高亮的索引
-     * @element {object} 要高亮的元素
-     * @index {string} 要高亮的导航索引
-     * @className {string} 通过添加和移除current className来更换高亮样式
+     * @param {object} navItems 缓存导航的集合，传入来记录当前高亮的索引
+     * @param {object} element 要高亮的元素
+     * @param {string} index 要高亮的导航索引
+     * @param {string} className 通过添加和移除current className来更换高亮样式
      */
     function activateNavElement(navItems, element, index, className) {
         if (!u.isNumber(navItems.activeIndex)) {
@@ -191,9 +191,9 @@ define(function (require) {
     /**
      * 展示或隐藏二级导航
      *
-     * @navItems {object} 缓存导航的集合，传入来记录当前高亮的索引
-     * @element {object} 要展示的子tab，不传表示隐藏所有
-     * @index {string} 要展示的导航索引
+     * @param {object} navItems 缓存导航的集合，传入来记录当前高亮的索引
+     * @param {object} element 要展示的子tab，不传表示隐藏所有
+     * @param {string} index 要展示的导航索引
      */
     function toggleSubNav(navItems, element, index) {
         var className = 'nav-sub-current';
@@ -218,10 +218,10 @@ define(function (require) {
     /**
      * 创建nav元素
      * 
-     * @config {object} globalconfig
-     * @navItems {object} 缓存nav元素的对象
-     * @nav {object} nav父元素
-     * @isSub {string} '' 或 'sub-'，主导航或二级子导航 
+     * @param {object} config globalconfig
+     * @param {object} navItems 缓存nav元素的对象
+     * @param {object} nav nav父元素
+     * @param {string} isSub {''|'sub-'}，主导航或二级子导航
      */
     function createNavElements(config, navItems, nav, isSub) {
         var isSub = isSub || '';
@@ -235,9 +235,9 @@ define(function (require) {
 
                 // 处理父tab和子tab权限耦合的部分
                 if (item.tabs) {
-                    // 看看默认要跳转的地址所在的子tab有没有权限
+                    // 看看默认要跳转的地址所在的子tab有没有权限，没有的话得找备胎
                     var hasDefaultTabAuth = u.every(item.tabs, function (subItem) {
-                        if (isActive(item.url, subItem)) {
+                        if (isActive(item.url.replace(/^#/, ''), subItem)) {
                             if (!subItem.auth || permission.isAllow(subItem.auth)) {
                                 return true;
                             }
@@ -246,15 +246,28 @@ define(function (require) {
                             }
                         }
                     });
+
                     // 如果没有权限就得找到第一个有权限的子tab，把父tab跳转链接改成这个
                     if (!hasDefaultTabAuth) {
-                        u.some(item.tabs, function (subItem) {
+                        // 做最坏的打算，所有不外跳的子tab都没权限，那这个父tab只能直接往外跳了
+                        var externalUrlBackUp = '';
+                        var isInternalUrlFound = u.some(item.tabs, function (subItem) {
                             if (!subItem.auth || permission.isAllow(subItem.auth)) {
-                                // 暂时假设子tab不会往外跳
-                                url = fixErUrl(subItem.url);
-                                return true;
+                                if (subItem.url) {
+                                    url = fixErUrl(subItem.url);
+                                    return true;
+                                }
+                                else if (subItem.externalUrl && !externalUrlBackUp) {
+                                    externalUrlBackUp = subItem.externalUrl;
+                                }
                             }
                         });
+
+                        if (!isInternalUrlFound) {
+                            // 如果找不到内跳和外跳的备胎
+                            // 就说明所有子tab都没权限，那就用原来父tab配的url就可以了
+                            url = externalUrlBackUp || url;
+                        }
                     }
                 }
 
@@ -279,11 +292,11 @@ define(function (require) {
     /**
      * 创建二级nav元素，如果存在，直接展示
      *
-     * @config {object} config.tabs，某个主导航的二级导航配置
-     * @navItems {object} 缓存一级导航的对象，用来计算位置
-     * @subNavs {object} 缓存二级导航的对象
-     * @parentNav {object} 一级导航容器
-     * @index {string} 一级导航navElement的index
+     * @param {object} config config.tabs，某个主导航的二级导航配置
+     * @param {object} navItems 缓存一级导航的对象，用来计算位置
+     * @param {object} subNavs 缓存二级导航的对象
+     * @param {object} main 一级导航容器
+     * @param {string} index 一级导航navElement的index
      */
     function createOrShowSubNav(config, navItems, subNavs, main, index) {
         var ul = subNavs[index].nav;
@@ -320,8 +333,10 @@ define(function (require) {
     /**
      * 验证url是否匹配
      *
-     * @url {string} 当前页面的er path
-     * @patterns {RegExp | string} 验证的表达式或path
+     * @param {string} url 某个path
+     * @param {RegExp | string} patterns 验证的表达式或path
+     *
+     * @return {boolean}
      */
     function testUrlIn(url, patterns) {
         return u.some(patterns, function(pattern) {
@@ -335,10 +350,10 @@ define(function (require) {
     }
 
     /**
-     * 处理er path
+     * 将传入的path格式化为er path
      *
-     * @url {string} url path
-     * @return {string} er path
+     * @param {string} url 某个path
+     * @return {string}
      */
     function fixErUrl(url) {
         if (!url) {
@@ -350,8 +365,10 @@ define(function (require) {
     /**
      * 验证url是否命中某个导航元素config的规则
      *
-     * @url {string} 当前页面的er path
-     * @patterns {RegExp | string} 验证的表达式或path
+     * @param {string} url 某个path，不带#
+     * @param {RegExp | string} item 一个tab的配置信息
+     *
+     * @return {boolean}
      */
     function isActive(url, item) {
         return !testUrlIn(url, item.exclude || []) && testUrlIn(url, item.include || []);
