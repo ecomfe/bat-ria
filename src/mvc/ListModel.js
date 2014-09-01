@@ -175,7 +175,7 @@ define(function (require) {
     /**
      * 对合并好的请求参数进行统一的后续处理
      *
-     * @deprecated since v2.1.0 名字起得不好，后面使用`prepareQuery`替代
+     * @deprecated since v0.2.1 名字起得不好，后面使用`prepareQuery`替代
      * @param {Object} query 需要处理的参数对象
      * @return {Object}
      * @protected
