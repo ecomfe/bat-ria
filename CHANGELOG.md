@@ -5,6 +5,7 @@
     - 增加了列表页的局部刷新功能和 `AuthPanel` 控件
     - 补充 `system/user` 模块的接口
     - 修复 `TableTip` 的一些问题
+    - `navigator` 升级，修复子 Tab 的权限问题导致的跳转错误
 
 * 0.2.0
     - 修复 merge 错误
