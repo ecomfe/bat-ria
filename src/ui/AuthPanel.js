@@ -9,7 +9,6 @@
 define(function (require) {
     var u = require('underscore');
     var lib = require('esui/lib');
-    var helper = require('esui/controlHelper');
     var Panel = require('esui/Panel');
     var auth = require('../system/auth');
 

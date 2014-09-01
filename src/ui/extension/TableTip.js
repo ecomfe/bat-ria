@@ -94,8 +94,8 @@ define(
                 return;
             }
 
-            // 根据Table主元素DOM id来限定范围
-            var elements = document.querySelectorAll('#' + this.target.main.id + ' .table-operation');
+            // 根据Table主元素来限定范围
+            var elements = this.target.main.querySelectorAll('.table-operation');
 
             u.chain(elements)
                 .groupBy(getTipType)

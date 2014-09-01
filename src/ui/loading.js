@@ -39,6 +39,7 @@ define(function (require) {
         globalLoading.setProperties(properties);
         globalLoading.show();
         loadingCount++;
+        loadingTimer && clearTimeout(loadingTimer);
         return globalLoading;
     }
     function hideLoading() {

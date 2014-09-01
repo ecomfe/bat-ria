@@ -207,6 +207,8 @@ define(function (require) {
     ListView.prototype.enterDocument = function () {
         BaseView.prototype.enterDocument.apply(this, arguments);
         this.updateBatchButtonStatus();
+
+        this.adjustLayout();
     };
 
     /**

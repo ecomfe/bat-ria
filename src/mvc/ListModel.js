@@ -199,7 +199,7 @@ define(function (require) {
      * 重新读取列表数据
      *
      * @param {er/URL} url 根据指定URL读取数据
-     * @param {er/Promise} 返回异步请求的Promise对象
+     * @return {er/Promise} 返回异步请求的Promise对象
      * @protected
      */
     ListModel.prototype.loadData = function (url) {

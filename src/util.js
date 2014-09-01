@@ -9,7 +9,6 @@ define(function (require) {
     var u = require('underscore');
     var moment = require('moment');
     var io = require('./io/serverIO');
-    var user = require('./system/user');
 
     /**
      * 工具模块

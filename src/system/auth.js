@@ -6,7 +6,6 @@
 define(function (require) {
 
     var u = require('underscore');
-    var lib = require('esui/lib')
 
     var auth = {};
 
@@ -36,6 +35,7 @@ define(function (require) {
         if (/^\(.+\)$/.test(authName)) {
             return auth.get(authName.substr(1, authName.length - 2), authMap);
         }
+        var authNames = [];
         if (/^(\w+):/.test(authName)) {
             var authPattern = /^(?:(\w+):)(.+)$/;
             var arr = authPattern.exec(authName);
@@ -44,20 +44,19 @@ define(function (require) {
             }
             filter = arr[1];
             var paramStr = arr[2].replace(/^[\s,|]+|[\s,|]+$/g, ''); // trim
-            var authNames = [];
             var cache = [];
             var bracketCount = 0;
             for (var i = 0; i < paramStr.length; i++) {
                 var ch = paramStr.charAt(i);
-                if (ch == '(') {
-                    if (bracketCount == 0 && cache.length) { // 括号前有非分隔字符，非法
+                if (ch === '(') {
+                    if (bracketCount === 0 && cache.length) { // 括号前有非分隔字符，非法
                         throw 'Auth error: [' + authName + '] is not a valid auth expression.';
                     }
-                    if (++bracketCount == 1) { // 最外层第一个括号丢弃
+                    if (++bracketCount === 1) { // 最外层第一个括号丢弃
                         continue;
                     }
                 }
-                else if (ch == ')') {
+                else if (ch === ')') {
                     // 最外层括号结束，取出整个括号内的内容递归调用
                     if (--bracketCount <= 0) {
                         var brachketContent = cache.join('');
@@ -67,8 +66,8 @@ define(function (require) {
                     }
                 }
                 else if (bracketCount <= 0 // 不在括号内的内容，碰到分隔字符，将cache里的字符作为一个完整的authName
-                    && (ch == ','
-                        || ch == '|'
+                    && (ch === ','
+                        || ch === '|'
                         || /\s/.test(ch)
                     )
                 ) {
@@ -166,7 +165,7 @@ define(function (require) {
 
         max: function(types) {
             var max = AuthType.NONE;
-            baidu.each(types, function(type) {
+            u.each(types, function(type) {
                 if (type === AuthType.EDITABLE) {
                     max = type;
                     return false;
@@ -180,7 +179,7 @@ define(function (require) {
 
         min: function(types) {
             var min = AuthType.EDITABLE;
-            baidu.each(types, function(type) {
+            u.each(types, function(type) {
                 if (type === AuthType.NONE) {
                     min = type;
                     return false;
