@@ -40,6 +40,7 @@ define(function (require) {
         globalLoading.show();
         globalLoading.main.style.zIndex = parseInt(globalLoading.main.style.zIndex, 10) + 1;
         loadingCount++;
+        loadingTimer && clearTimeout(loadingTimer);
         return globalLoading;
     }
     function hideLoading() {

@@ -10,6 +10,7 @@ define(
     function (require) {
         var u = require('underscore');
         var lib = require('esui/lib');
+        var Control = require('esui/Control');
 
         /**
          * 加载并配置验证规则
@@ -79,6 +80,7 @@ define(
                 if (rangeErrorMessage) {
                     return rangeErrorMessage;
                 }
+
                 return defaultGetErrorMessage.apply(this, arguments);
             }
 
@@ -144,7 +146,7 @@ define(
         function initializeGlobalExtensions() {
             var ui = require('esui');
             var globalExtensions = [
-                { type: 'CustomData', options: {} }
+                // { type: 'CustomData', options: {} }
             ];
 
             u.each(globalExtensions, function (extension) {
@@ -229,12 +231,47 @@ define(
             };
         }
 
+        function addTreeNodeTitle() {
+            var Tree = require('esui/Tree');
+
+            Tree.prototype.itemTemplate = '<span title="${text}">${text}</span>';
+        }
+
+        function fixSidebarHide() {
+            var Sidebar = require('esui/Sidebar');
+
+            /**
+             * 隐藏控件
+             *
+             * @return {boolean}
+             */
+            Sidebar.prototype.hide = function () {
+                Control.prototype.hide.call(this);
+
+                var mat = lib.g(this.helper.getId('mat'));
+                if (mat) {
+                    mat.style.display = 'none';
+                }
+
+                // 隐藏主区域
+                this.main.style.display = 'none';
+
+                // minibar
+                var miniBar = lib.g(this.helper.getId('minibar'));
+                if (miniBar) {
+                    miniBar.style.display = 'none';
+                }
+            };
+        }
+
         function activate() {
             initializeValidationRules();
             addControlLinkMode();
             initializeGlobalExtensions();
             addRegionExtension();
             addCrumbGlobalRedirect();
+            addTreeNodeTitle();
+            fixSidebarHide();
         }
 
         return {

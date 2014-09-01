@@ -74,11 +74,6 @@ define(
                             canSelect = false;
                         }
                     }
-                    else {
-                        if (!isLeafNode) {
-                            canSelect = false;
-                        }
-                    }
 
                     if (canSelect) {
                         this.selectNode(e.node.id);

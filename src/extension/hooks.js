@@ -10,9 +10,7 @@ define(function (require) {
 
     function getAderArgMap() {
         var user = require('../system/user');
-        var aderId = user.ader && user.ader.id
-            || URI.parseQuery(document.location.search).aderId
-            || user.visitor && user.visitor.id;
+        var aderId = user.getAderId();
         return aderId ? { aderId: aderId } : {};
     }
 

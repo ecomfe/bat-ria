@@ -88,7 +88,7 @@ define(
             }
 
             lib.extend(properties, options);
-            properties.width = Math.max(200, properties.width);
+            // properties.width = Math.max(200, properties.width);
             this.setProperties(properties);
         };
 
@@ -465,10 +465,10 @@ define(
                     contentHeight -= 30;
                 }
 
-                
+
                 content.style.height = contentHeight + 'px';
             }
-            
+
         };
 
         RichSelector.prototype.adaptData = function () {};

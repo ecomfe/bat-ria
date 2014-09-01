@@ -32,9 +32,9 @@ define(function (require) {
 
     /**
      * 配置默认查询参数
-     * 
+     *
      * 如果某个参数与这里的值相同，则不会加到URL中
-     * 
+     *
      * 创建`Model`时，如果某个参数不存在，则会自动补上这里的值
      *
      * @type {Object}
@@ -55,18 +55,27 @@ define(function (require) {
     };
 
     /**
+     * 转换列表数据
+     * 将返回值中的`result`字段改为`tableData`来放到Model中
+     *
+     * @param {Object} data 列表请求接口返回的数据
+     * @return {Object} 转换完毕的数据
+     */
+    function adaptData(data) {
+        var page = data;
+        page.tableData = page.result;
+        delete page.result;
+        return page;
+    }
+
+    /**
      * @inheritDoc
      */
     ListModel.prototype.defaultDatasource = {
         listPage: {
             retrieve: function (model) {
                 return model.listRequester(model.getQuery())
-                    .then(function(data) {
-                        var page = data;
-                        page.tableData = page.result;
-                        delete page.result;
-                        return page;
-                    });
+                    .then(adaptData);
             },
             dump: true
         },
@@ -122,7 +131,7 @@ define(function (require) {
     ListModel.prototype.defaultTimeRange = null;
 
     /**
-     * 默认选择的时间范围
+     * 生成默认的后端请求参数
      *
      * @return {Object}
      * @protected
@@ -145,17 +154,16 @@ define(function (require) {
         }
 
         // 合并默认参数、附加参数，最后再统一处理一下输出
-        query = u.chain(query)
+        u.chain(query)
             .defaults(this.getDefaultArgs())
             .defaults(range)
-            .extend(this.getExtraQuery())
-            .value();
+            .extend(this.getExtraQuery());
 
-        return this.filterQuery(query);
+        return this.prepareQuery(query);
     };
 
     /**
-     * 获取附加的请求参数
+     * 获取除列表本身参数外附加的请求参数
      *
      * @return {Object}
      * @protected
@@ -167,12 +175,43 @@ define(function (require) {
     /**
      * 对合并好的请求参数进行统一的后续处理
      *
+     * @deprecated since v2.1.0 名字起得不好，后面使用`prepareQuery`替代
      * @param {Object} query 需要处理的参数对象
      * @return {Object}
      * @protected
      */
-    ListModel.prototype.filterQuery = function(query) {
+    ListModel.prototype.filterQuery = function (query) {
         return query;
+    };
+
+    /**
+     * 对合并好的请求参数进行统一的后续处理
+     *
+     * @param {Object} query 需要处理的参数对象
+     * @return {Object}
+     * @protected
+     */
+    ListModel.prototype.prepareQuery = function (query) {
+        return this.filterQuery(query);
+    };
+
+    /**
+     * 重新读取列表数据
+     *
+     * @param {er/URL} url 根据指定URL读取数据
+     * @return {er/Promise} 返回异步请求的Promise对象
+     * @protected
+     */
+    ListModel.prototype.loadData = function (url) {
+        var me = this;
+        var urlQuery = url.getQuery();
+        me.set('url', url);
+        me.fill(urlQuery);
+
+        return me.listRequester(me.getQuery())
+            .then(function(data) {
+                me.fill(adaptData(data));
+            });
     };
 
     return ListModel;

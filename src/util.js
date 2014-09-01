@@ -1,6 +1,6 @@
 /**
  * Copyright 2014 Baidu Inc. All rights reserved.
- * 
+ *
  * @ignore
  * @file BAT工具模块
  * @author Justineo
@@ -33,7 +33,7 @@ define(function (require) {
 
             // 过滤掉不需要生成的URL
             isRequester = isRequester || function (path) {
-                // 默认跳过以`/download`和`/upload`结尾的路径 
+                // 默认跳过以`/download`和`/upload`结尾的路径
                 return !/\/(?:up|down)load$/.test(path);
             };
 
@@ -253,8 +253,8 @@ define(function (require) {
             'data-command': command.type
         };
 
-        if (u.typeOf(command.args) !== 'Undefined') {
-            attrs['data-command-args'] = command.args;
+        if (typeof command.args !== 'undefined') {
+            attrs['data-command-args'] = '' + command.args;
         }
 
         if (u.typeOf(command.extra) === 'Object') {
@@ -282,19 +282,19 @@ define(function (require) {
      */
     util.genListOperations = function (operations, config) {
         config = config || {};
-        var html = u.map(
-            operations,
-            function (operation) {
+        var html = u.chain(operations)
+            .map(function (operation) {
                 if (operation.url) {
                     return util.genListLink(operation);
                 }
                 else {
                     return util.genListCommand(operation);
                 }
-            }
-        );
+            })
+            .compact()
+            .value();
 
-        return html.join(config.separator || '<span class="list-operation-separator">|</span>');
+        return html.join(config.separator || '');
     };
 
     /**
