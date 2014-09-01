@@ -19,8 +19,10 @@ define(
          */
         function initializeValidationRules() {
             // 加载所有验证规则
-            var MaxLengthRule = require('esui/validator/MaxLengthRule');
-            var MinLengthRule = require('esui/validator/MinLengthRule');
+            require('esui/validator/MaxByteLengthRule');
+            require('esui/validator/MinByteLengthRule');
+            require('esui/validator/MaxLengthRule');
+            require('esui/validator/MinLengthRule');
             var RequiredRule = require('esui/validator/RequiredRule');
             var PatternRule = require('esui/validator/PatternRule');
             var MaxRule = require('esui/validator/MaxRule');
@@ -68,68 +70,32 @@ define(
             }
 
             var Rule = require('esui/validator/Rule');
+            var defaultGetErrorMessage = Rule.prototype.getErrorMessage;
 
-            MaxLengthRule.prototype.getErrorMessage = function (control) {
-                if (control.get('maxErrorMessage')) {
-                    var getErrorMessage = Rule.prototype.getErrorMessage;
-                    getErrorMessage.apply(this, arguments);
+            function getErrorMessage(control) {
+                if (control.get(this.type + 'ErrorMessage')) {
+                    return defaultGetErrorMessage.apply(this, arguments);
                 }
                 var rangeErrorMessage = getRangeErrorMessage(control);
                 if (rangeErrorMessage) {
                     return rangeErrorMessage;
                 }
-                return Rule.prototype.getErrorMessage.apply(this, arguments);
-            };
 
-            MinLengthRule.prototype.getErrorMessage = function (control) {
-                if (control.get('maxErrorMessage')) {
-                    var getErrorMessage = Rule.prototype.getErrorMessage;
-                    getErrorMessage.apply(this, arguments);
-                }
-                var rangeErrorMessage = getRangeErrorMessage(control);
-                if (rangeErrorMessage) {
-                    return rangeErrorMessage;
-                }
-                return Rule.prototype.getErrorMessage.apply(this, arguments);
-            };
+                return defaultGetErrorMessage.apply(this, arguments);
+            }
 
-            MaxRule.prototype.getErrorMessage = function (control) {
-                if (control.get('maxErrorMessage')) {
-                    var getErrorMessage = Rule.prototype.getErrorMessage;
-                    getErrorMessage.apply(this, arguments);
-                }
-                var rangeErrorMessage = getRangeErrorMessage(control);
-                if (rangeErrorMessage) {
-                    return rangeErrorMessage;
-                }
-                return Rule.prototype.getErrorMessage.apply(this, arguments);
-            };
-
-            MinRule.prototype.getErrorMessage = function (control) {
-                if (control.get('maxErrorMessage')) {
-                    var getErrorMessage = Rule.prototype.getErrorMessage;
-                    getErrorMessage.apply(this, arguments);
-                }
-                var rangeErrorMessage = getRangeErrorMessage(control);
-                if (rangeErrorMessage) {
-                    return rangeErrorMessage;
-                }
-                return Rule.prototype.getErrorMessage.apply(this, arguments);
-            };
-
+            MaxRule.prototype.getErrorMessage = getErrorMessage;
+            MinRule.prototype.getErrorMessage = getErrorMessage;
             PatternRule.prototype.getErrorMessage = function (control) {
                 var pattern = control.get('pattern') + '';
-                if (control.get('patternErrorMessage')
-                    || !NUMBER_REGEX.hasOwnProperty(pattern)
-                ) {
-                    var getErrorMessage = Rule.prototype.getErrorMessage;
-                    getErrorMessage.apply(this, arguments);
+                if (control.get('patternErrorMessage') || !NUMBER_REGEX.hasOwnProperty(pattern)) {
+                    return defaultGetErrorMessage.apply(this, arguments);
                 }
                 var rangeErrorMessage = getRangeErrorMessage(control);
                 if (rangeErrorMessage) {
                     return rangeErrorMessage;
                 }
-                return Rule.prototype.getErrorMessage.apply(this, arguments);
+                return defaultGetErrorMessage.apply(this, arguments);
             };
         }
 
