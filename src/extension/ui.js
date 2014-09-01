@@ -287,10 +287,10 @@ define(
                     mat.style.display = 'none';
                 }
 
-                //隐藏主区域
+                // 隐藏主区域
                 this.main.style.display = 'none';
 
-                //minibar
+                // minibar
                 var miniBar = lib.g(this.helper.getId('minibar'));
                 if (miniBar) {
                     miniBar.style.display = 'none';
