@@ -45,9 +45,10 @@ define(
             ActionDialog: 'ef',
             SelectorTreeStrategy: './ui',
             TreeRichSelector: './ui',
-            tableRichSelector: './ui',
+            TableRichSelector: './ui',
             RichSelector: './ui',
-            ToggleButton: './ui'
+            ToggleButton: './ui',
+            AuthPanel: './ui'
         };
 
         var extensionModulePrefix = {

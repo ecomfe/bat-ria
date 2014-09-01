@@ -53,10 +53,12 @@
     }
 }
 
+// esui/Pager
 .ui-pager-main li {
     font-family: inherit;
 }
 
+// esui/Table
 .ui-table-cell-editable {
     .ellipsis();
 }
@@ -74,6 +76,7 @@
     margin: 0 auto;
 }
 
+// esui/Dialog
 .ui-dialog-title {
     font-size: 12px;
 }
@@ -94,6 +97,7 @@
     padding: 10px 0 10px 6px
 }
 
+// esui/Button
 .skin-spring-button {
     height: 26px;
     line-height: 26px;
@@ -110,6 +114,15 @@ button.skin-link-button {
 button.skin-link-button:active,
 button.skin-link-button:hover {
     height: 26px;
+}
+
+.skin-spring-button-disabled {
+    &,
+    &:hover,
+    &:active {
+        .linear-gradient-background(top, #a9d796, #a9d796);
+        border-color: #8ac971;
+    }
 }
 
 .skin-spring-add-disabled {
@@ -133,20 +146,12 @@ button.skin-link-button:hover {
         top, #f6f6f6, #FFF, "../img/esui-btn-download.png", 9px, center, #f6f6f6);
 }
 
+// esui/RangeCalendar
 .ui-rangecalendar {
     .linear-gradient-background (top, #ffffff, #f6f6f6, #ffffff);
 }
 
-.ui-uploader {
-    display: inline-block;
-    *width: 150px;
-    white-space: normal;
-}
-
-.ui-uploader-input-container {
-    *float: left;
-}
-
+// esui/BoxGroup
 .ui-checkbox,
 .ui-radio,
 .ui-boxgroup-checkbox,
@@ -156,6 +161,7 @@ button.skin-link-button:hover {
     }
 }
 
+// esui/Textbox
 .ui-textbox {
     &,
     & input,
@@ -164,6 +170,7 @@ button.skin-link-button:hover {
     }
 }
 
+// esui/Tab
 .ui-tab-horizontal {
     .ui-tab-navigator {
         .clearfix();
@@ -190,6 +197,7 @@ button.skin-link-button:hover {
     }
 }
 
+// esui/Toast
 .ui-toast-content {
     padding: 0 10px;
     font-size: 12px;
@@ -215,6 +223,7 @@ button.skin-link-button:hover {
     }
 }
 
+// esui/Select
 .ui-select-validity-label-invalid {
     display: inline-block;
     margin: 0;
@@ -224,6 +233,7 @@ button.skin-link-button:hover {
     color: #C00;
 }
 
+// esui/Wizard
 .skin-default-wizard {
     .ui-wizard-node {
         padding-right: 8px;
@@ -267,5 +277,57 @@ button.skin-link-button:hover {
 
     .ui-wizard-node-done span {
         background-color: @bat-bg-blue;
-    }    
+    }
+}
+
+// esui/Crumb
+.ui-crumb-node-last {
+    font-weight: 700;
+}
+
+
+// bat-ria/Uploader
+.ui-uploader {
+    display: inline-block;
+    *width: 150px;
+    white-space: normal;
+}
+
+.ui-uploader-input-container {
+    *float: left;
+}
+
+// bat-ria/RichSelector inside esui/Sidebar
+.ui-sidebar {
+    .ui-richselector-empty-text {
+        padding: 0 10px;
+        line-height: 30px;
+    }
+
+    .ui-tree-richselector {
+
+        .ui-tree-node-indicator-level-0 {
+            display: none;
+        }
+
+        .ui-richselector-query-list {
+            .ui-tree-item-content {
+                color: @bat-link-color;
+            }
+
+            .ui-tree-content-wrapper-selected {
+                .ui-tree-item-content {
+                    color: @bat-link-color;
+                    font-weight: 700;
+                }
+            }
+        }
+
+        .ui-richselector-query-list {
+            .ui-tree-content-wrapper-selected,
+            .ui-tree-content-wrapper:hover {
+                background: @bat-bg-light-blue;
+            }
+        }
+    }
 }

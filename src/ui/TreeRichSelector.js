@@ -100,6 +100,11 @@ define(
             // 其中包含父节点信息，以及节点选择状态
             var indexData = {};
             if (this.allData && this.allData.children) {
+                indexData[this.allData.id] = {
+                    parentId: null,
+                    node: this.allData,
+                    isSelected: false
+                };
                 walkTree(
                     this.allData,
                     this.allData.children,
@@ -121,8 +126,8 @@ define(
          */
         TreeRichSelector.prototype.refreshContent = function () {
             var treeData = this.isQuery() ? this.queriedData : this.allData;
-            if (!treeData 
-                || !treeData.children 
+            if (!treeData
+                || !treeData.children
                 || !treeData.children.length) {
                 this.addState('empty');
             }
@@ -270,7 +275,7 @@ define(
 
         /**
          * 撤销选择当前项
-         * @param {ui.TreeRichSelector} control 类实例       
+         * @param {ui.TreeRichSelector} control 类实例
          * @ignore
          */
         function unselectCurrent(control) {

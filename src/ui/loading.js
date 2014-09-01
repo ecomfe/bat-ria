@@ -38,7 +38,9 @@ define(function (require) {
         properties = u.extend(properties, options);
         globalLoading.setProperties(properties);
         globalLoading.show();
+        globalLoading.main.style.zIndex = parseInt(globalLoading.main.style.zIndex, 10) + 1;
         loadingCount++;
+        loadingTimer && clearTimeout(loadingTimer);
         return globalLoading;
     }
     function hideLoading() {

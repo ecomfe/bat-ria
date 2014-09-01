@@ -81,7 +81,8 @@ define(function (require) {
                 if (status === 'SUCCESS') {
                     return {
                         success: true,
-                        result: data.result
+                        message: data.message,
+                        result: data.result || data.page
                     };
                 }
                 else {
@@ -207,7 +208,8 @@ define(function (require) {
         var defaults = {
             url: url,
             data: data,
-            dataType: 'json'
+            dataType: 'json',
+            charset: 'utf-8'
         };
 
         options = options

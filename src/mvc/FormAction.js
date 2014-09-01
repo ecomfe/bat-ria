@@ -219,7 +219,7 @@ define(function (require) {
      * @return {meta.Promise}
      */
     FormAction.prototype.submit = function (submitData) {
-        var handleBeforeSubmit = this.fire('beforesubmit');
+        var handleBeforeSubmit = this.fire('beforesubmit', { submitData: submitData });
         if (!handleBeforeSubmit.isDefaultPrevented()) {
             try {
                 var submitRequester = this.model.submitRequester;
@@ -286,7 +286,7 @@ define(function (require) {
      * beforeValidate ->
      * validate ->
      * afterValidate ->
-     * sumbmit ->
+     * submit ->
      * enableSubmit
      *
      * 可针对业务需求扩展beforeValidate、afterValidate
@@ -299,9 +299,9 @@ define(function (require) {
 
         require('er/Deferred')
             .when(this.beforeValidate(submitData))
-            .then(u.bind(u.partial(this.validate, submitData), this))
-            .then(u.bind(u.partial(this.afterValidate, submitData), this))
-            .then(u.bind(u.partial(this.submit, submitData), this))
+            .then(u.bind(this.validate, this, submitData))
+            .then(u.bind(this.afterValidate, this, submitData))
+            .then(u.bind(this.submit, this, submitData))
             .ensure(u.bind(this.view.enableSubmit, this.view));
     };
 

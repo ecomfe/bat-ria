@@ -77,8 +77,8 @@ define(
                         showMode: 'over',
                         delayTime: 200,
                         positionOpt: {
-                            bottom: 'bottom',
-                            left: 'left'
+                            top: 'top',
+                            right: 'left'
                         }
                     };
                     tip.attachTo(options);
@@ -94,7 +94,8 @@ define(
                 return;
             }
 
-            var elements = document.querySelectorAll('.table-operation');
+            // 根据Table主元素来限定范围
+            var elements = this.target.main.querySelectorAll('.table-operation');
 
             u.chain(elements)
                 .groupBy(getTipType)
@@ -109,7 +110,7 @@ define(
         TableTip.prototype.activate = function () {
             Extension.prototype.activate.apply(this, arguments);
 
-            this.target.on('afterrender', this.initTips, this);
+            this.target.on('bodyChange', this.initTips, this);
         };
 
         /**
@@ -118,7 +119,7 @@ define(
          * @override
          */
         TableTip.prototype.inactivate = function () {
-            this.target.un('afterrender', this.initTips, this);
+            this.target.un('bodyChange', this.initTips, this);
 
             Extension.prototype.inactivate.apply(this, arguments);
         };
@@ -128,4 +129,4 @@ define(
 
         return TableTip;
     }
-);        
+);

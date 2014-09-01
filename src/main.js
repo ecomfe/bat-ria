@@ -9,6 +9,7 @@ define(
         var config = {};
         var u = require('underscore');
         var util = require('./util');
+        var Deferred = require('er/Deferred');
 
         /**
          * 初始化API请求器
@@ -28,14 +29,27 @@ define(
         /**
          * 初始化系统启动
          *
+         * @param {Array} [extra] 额外的请求发送器
+         *
          * @ignore
          */
-        function loadData() {
-            var Deferred = require('er/Deferred');
+        function loadData(extra) {
+            extra = extra ? u.map(extra, function (api) {
+                if (typeof api === 'string') {
+                    return util.genRequesters(api);
+                }
+                else {
+                    return api;
+                }
+            }) : [];
 
-            return Deferred.all(
-                Deferred.when(config.api.user()),
-                Deferred.when(config.api.constants())
+            var requests = [ config.api.user, config.api.constants ].concat(extra || []);
+
+            return Deferred.all.apply(
+                Deferred,
+                u.map(requests, function (requester) {
+                    return Deferred.when(requester());
+                })
             );
         }
 
@@ -53,6 +67,15 @@ define(
             var consts = require('./system/constants');
             var localConstants = require('common/constants');
             consts.init(u.extend(localConstants, constants));
+
+            // 返回其余请求结果
+            var extra = [].slice.call(arguments).slice(2);
+            return Deferred.all.apply(
+                Deferred,
+                u.map(extra, function (result) {
+                    return Deferred.resolved(result);
+                })
+            );
         }
 
         /**
@@ -71,9 +94,12 @@ define(
         /**
          * RIA启动入口
          *
+         * @param {Object} riaConfig RIA配置
+         * @param {Array} requesters 初始化数据需要的请求发送器
+         * @param {Function} callback 初始化请求返回后的回调函数
          * @ignore
          */
-        function start(riaConfig) {
+        function start(riaConfig, requesters, callback) {
 
             config = riaConfig;
 
@@ -95,8 +121,9 @@ define(
             initApiConfig();
 
             // 读取必要信息后初始化系统
-            return loadData()
+            return loadData(requesters)
                 .then(initData)
+                .then(callback)
                 .then(init);
         }
 

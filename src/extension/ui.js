@@ -10,6 +10,7 @@ define(
     function (require) {
         var u = require('underscore');
         var lib = require('esui/lib');
+        var Control = require('esui/Control');
 
         /**
          * 加载并配置验证规则
@@ -18,8 +19,10 @@ define(
          */
         function initializeValidationRules() {
             // 加载所有验证规则
-            var MaxLengthRule = require('esui/validator/MaxLengthRule');
-            var MinLengthRule = require('esui/validator/MinLengthRule');
+            require('esui/validator/MaxByteLengthRule');
+            require('esui/validator/MinByteLengthRule');
+            require('esui/validator/MaxLengthRule');
+            require('esui/validator/MinLengthRule');
             var RequiredRule = require('esui/validator/RequiredRule');
             var PatternRule = require('esui/validator/PatternRule');
             var MaxRule = require('esui/validator/MaxRule');
@@ -67,68 +70,32 @@ define(
             }
 
             var Rule = require('esui/validator/Rule');
+            var defaultGetErrorMessage = Rule.prototype.getErrorMessage;
 
-            MaxLengthRule.prototype.getErrorMessage = function (control) {
-                if (control.get('maxErrorMessage')) {
-                    var getErrorMessage = Rule.prototype.getErrorMessage;
-                    getErrorMessage.apply(this, arguments);
+            function getErrorMessage(control) {
+                if (control.get(this.type + 'ErrorMessage')) {
+                    return defaultGetErrorMessage.apply(this, arguments);
                 }
                 var rangeErrorMessage = getRangeErrorMessage(control);
                 if (rangeErrorMessage) {
                     return rangeErrorMessage;
                 }
-                return Rule.prototype.getErrorMessage.apply(this, arguments);
-            };
 
-            MinLengthRule.prototype.getErrorMessage = function (control) {
-                if (control.get('maxErrorMessage')) {
-                    var getErrorMessage = Rule.prototype.getErrorMessage;
-                    getErrorMessage.apply(this, arguments);
-                }
-                var rangeErrorMessage = getRangeErrorMessage(control);
-                if (rangeErrorMessage) {
-                    return rangeErrorMessage;
-                }
-                return Rule.prototype.getErrorMessage.apply(this, arguments);
-            };
-            
-            MaxRule.prototype.getErrorMessage = function (control) {
-                if (control.get('maxErrorMessage')) {
-                    var getErrorMessage = Rule.prototype.getErrorMessage;
-                    getErrorMessage.apply(this, arguments);
-                }
-                var rangeErrorMessage = getRangeErrorMessage(control);
-                if (rangeErrorMessage) {
-                    return rangeErrorMessage;
-                }
-                return Rule.prototype.getErrorMessage.apply(this, arguments);
-            };
+                return defaultGetErrorMessage.apply(this, arguments);
+            }
 
-            MinRule.prototype.getErrorMessage = function (control) {
-                if (control.get('maxErrorMessage')) {
-                    var getErrorMessage = Rule.prototype.getErrorMessage;
-                    getErrorMessage.apply(this, arguments);
-                }
-                var rangeErrorMessage = getRangeErrorMessage(control);
-                if (rangeErrorMessage) {
-                    return rangeErrorMessage;
-                }
-                return Rule.prototype.getErrorMessage.apply(this, arguments);
-            };
-
+            MaxRule.prototype.getErrorMessage = getErrorMessage;
+            MinRule.prototype.getErrorMessage = getErrorMessage;
             PatternRule.prototype.getErrorMessage = function (control) {
                 var pattern = control.get('pattern') + '';
-                if (control.get('patternErrorMessage')
-                    || !NUMBER_REGEX.hasOwnProperty(pattern)
-                ) {
-                    var getErrorMessage = Rule.prototype.getErrorMessage;
-                    getErrorMessage.apply(this, arguments);
+                if (control.get('patternErrorMessage') || !NUMBER_REGEX.hasOwnProperty(pattern)) {
+                    return defaultGetErrorMessage.apply(this, arguments);
                 }
                 var rangeErrorMessage = getRangeErrorMessage(control);
                 if (rangeErrorMessage) {
                     return rangeErrorMessage;
                 }
-                return Rule.prototype.getErrorMessage.apply(this, arguments);
+                return defaultGetErrorMessage.apply(this, arguments);
             };
         }
 
@@ -179,7 +146,7 @@ define(
         function initializeGlobalExtensions() {
             var ui = require('esui');
             var globalExtensions = [
-                { type: 'CustomData', options: {} }
+                // { type: 'CustomData', options: {} }
             ];
 
             u.each(globalExtensions, function (extension) {
@@ -264,12 +231,47 @@ define(
             };
         }
 
+        function addTreeNodeTitle() {
+            var Tree = require('esui/Tree');
+
+            Tree.prototype.itemTemplate = '<span title="${text}">${text}</span>';
+        }
+
+        function fixSidebarHide() {
+            var Sidebar = require('esui/Sidebar');
+
+            /**
+             * 隐藏控件
+             *
+             * @return {boolean}
+             */
+            Sidebar.prototype.hide = function () {
+                Control.prototype.hide.call(this);
+
+                var mat = lib.g(this.helper.getId('mat'));
+                if (mat) {
+                    mat.style.display = 'none';
+                }
+
+                // 隐藏主区域
+                this.main.style.display = 'none';
+
+                // minibar
+                var miniBar = lib.g(this.helper.getId('minibar'));
+                if (miniBar) {
+                    miniBar.style.display = 'none';
+                }
+            };
+        }
+
         function activate() {
             initializeValidationRules();
             addControlLinkMode();
             initializeGlobalExtensions();
             addRegionExtension();
             addCrumbGlobalRedirect();
+            addTreeNodeTitle();
+            fixSidebarHide();
         }
 
         return {
