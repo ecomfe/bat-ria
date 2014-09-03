@@ -3,7 +3,7 @@
  * Copyright 2014 Baidu Inc. All rights reserved.
  *
  * @ignore
- * @file 树的数据交互策略类
+ * @file 搜索树的数据交互策略类
  * @author chestnutchen(chenli11@baidu.com)
  */
 

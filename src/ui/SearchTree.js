@@ -1,9 +1,9 @@
 /**
- * ADM 2.0
+ * JN 2.0
  * Copyright 2014 Baidu Inc. All rights reserved.
  *
  * @ignore
- * @file 树形选择控件
+ * @file 搜索树控件
  * @author loutongbing(loutongbing@baidu.com)
  */
 
@@ -32,7 +32,7 @@ define(
         lib.inherits(SearchTree, InputControl);
 
         SearchTree.prototype.type = 'SearchTree';
-        SearchTree.prototype.styleType = 'RichSelector';
+        SearchTree.prototype.styleType = 'SearchTree';
 
         SearchTree.prototype.initOptions = function (options) {
             var properties = {
@@ -161,7 +161,7 @@ define(
 
             lib.addClass(
                 this.main,
-                'ui-tree-richselector'
+                'ui-searchtree'
             );
         };
 
@@ -213,7 +213,6 @@ define(
         };
         /**
          * 获取结果列表承载容器控件，列表在它里面
-         * @param {ui.RichSelector} richSelector 类实例
          * @return {ui.Panel}
          * @ignore
          */
@@ -266,6 +265,7 @@ define(
         SearchTree.prototype.isQuery = function () {
             return this.hasState('queried');
         };
+
         /**
          * 调整高度。
          * 出现搜索信息时，结果区域的高度要变小，才能使整个控件高度不变
@@ -303,10 +303,10 @@ define(
             }
 
         };
+
         /**
          * 手动刷新
          *
-         * @param {ui.RichSelector} richSelector 类实例
          * @ignore
          */
         SearchTree.prototype.refresh = function () {
@@ -337,6 +337,7 @@ define(
             // 更新高度
             this.adjustHeight();
         };
+
         /**
          * 重新渲染视图
          * 仅当生命周期处于RENDER时，该方法才重新渲染
@@ -356,7 +357,6 @@ define(
         /**
          * 适配数据，创建一个全集扁平索引
          *
-         * @param {ui.SearchTree} treeForSelector 类实例
          * @ignore
          */
         SearchTree.prototype.adaptData = function () {
