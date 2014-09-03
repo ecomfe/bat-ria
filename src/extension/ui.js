@@ -175,7 +175,7 @@ define(
             };
 
             Region.prototype.isAllSelected = function () {
-                if (this.mode == 'multi') {
+                if (this.mode === 'multi') {
                     return this.getMaxRegionSize() === this.getRawValue().length;
                 }
                 // 不是多选就直接返回false吧
