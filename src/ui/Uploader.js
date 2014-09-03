@@ -512,7 +512,7 @@ define(
             //    "message" : {},
             //    "result" : {
             //        "keywordPackagePath" : "231"
-            //    } 
+            //    }
             // }
             //
             // 如果上传失败，`options`必须是以下格式
