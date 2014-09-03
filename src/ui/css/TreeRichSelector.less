@@ -10,7 +10,6 @@
             &:hover {
                 background: @TreeRichSelector-treeItem-bacground-hover;
             }
-            cursor: pointer;
         }
 
         .ui-tree-node-indicator {
@@ -31,16 +30,14 @@
         }
 
         .ui-tree-node-empty .ui-tree-content-wrapper-selected {
+            border-left: 4px solid @bat-border-blue;
+            padding: 0;
             background: #fffaee;
             cursor: default;
             .ui-tree-item-content {
                 color: #333;
             }
         }
-    }
-
-    &.ui-richselector-load {
-
     }
 }
 

@@ -1,0 +1,172 @@
+/**
+  * JN 2.0
+  * Copyright 2014 Baidu Inc. All rights reserved.
+  *
+  * @ignore
+  * @file 搜索树
+  * @author chestnutchen(chenli11@baidu.com)
+  */
+
+@ui-searchtree-frame-border: 1px solid #ebebeb;
+.ui-searchtree {
+    font-size: 12px;
+    .box-sizing(border-box);
+
+    .ui-tree-node-indicator-level-0 {
+        display: none;
+    }
+}
+
+@ui-searchtree-head-bg: #ebebeb;
+@ui-searchtree-head-border-bottom: 1px solid #ebebeb;
+@ui-searchtree-batch-action-link-color: #67c1a5;
+.ui-searchtree-head {
+    height: 26px;
+    line-height: 26px;
+    padding: 0 10px;
+    border-bottom: @ui-searchtree-head-border-bottom;
+    background: @ui-searchtree-head-bg;
+
+    h3 {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        font-size: 12px;
+        float: left;
+    }
+
+    .ui-searchtree-batch-action-link {
+        float: right;
+        text-decoration: none;
+        cursor: pointer;
+        color: @ui-searchtree-batch-action-link-color;
+    }
+}
+
+@ui-searchtree-body-bg: #fcfcfc;
+.ui-searchtree-body {
+    overflow-x: hidden;
+    clear: both;
+}
+
+.ui-searchtree-search-wrapper {
+    height: 25px;
+    padding: 10px 5px;
+}
+
+// 搜索结果概要
+.ui-searchtree-query-result-general {
+    background: none repeat scroll 0 0 #FFFDD8;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    display: none;
+
+    .ui-searchtree-clear-query-link {
+        text-decoration: underline;
+        color: blue;
+        cursor: pointer;
+        line-height: 30px;
+        float: right;
+    }
+}
+
+.ui-searchtree-content-wrapper {
+    overflow-x: hidden;
+}
+
+.ui-searchtree-empty-text {
+    display: none;
+}
+
+.ui-searchtree-query-list {
+    .ui-tree-content-wrapper-selected {
+        .ui-tree-item-content {
+            color: @bat-link-color;
+            font-weight: 700;
+        }
+    }
+
+    .ui-tree-content-wrapper {
+        border-left: medium none;
+        padding: 0 5px;
+        line-height: 24px;
+        cursor: pointer;
+        .clearfix();
+        &:hover {
+            background: transparent;
+        }
+    }
+
+    .ui-tree-node-indicator {
+        float: left;
+        margin-top: 5px;
+    }
+
+    .ui-tree-item-content {
+        color: @bat-link-color;
+        position: relative;
+        display: block;
+        padding-right: 50px;
+        .ellipse-overflow();
+    }
+
+    .ui-tree-node-empty {
+        .ui-tree-content-wrapper-selected {
+            border-left: 4px solid @bat-border-blue;
+            padding: 0;
+            cursor: default;
+        }
+    }
+
+    .ui-tree-content-wrapper-selected,
+    .ui-tree-content-wrapper:hover {
+        background: @bat-bg-light-blue;
+    }
+}
+
+.ui-searchtree-foot {
+    height: 25px;
+    color: #555;
+    line-height: 25px;
+    background: #f9f9f9;
+    padding: 0 10px;
+}
+
+.ui-searchtree-validity-invalid {
+    border: 1px solid red;
+}
+.ui-searchtree-validity-label {
+    display:block;
+    margin-top: 5px;
+}
+.ui-searchtree-validity-label-invalid {
+    background: url('../img/icon-alert.png') no-repeat scroll 15px center #FEDBDC;
+    border: 1px solid #F0CCCC;
+    color: #dd6767;
+    padding: 5px 0 5px 50px;
+}
+
+// 搜索状态
+.ui-searchtree-queried {
+    .ui-searchtree-query-result-general {
+        display: block;
+    }
+}
+
+// 无结果状态
+.ui-searchtree-empty {
+    .ui-searchtree-empty-text {
+        display: block;
+        padding: 0 10px;
+        line-height: 30px;
+    }
+
+    .ui-searchtree-query-list {
+        display: none;
+    }
+
+    .ui-searchtree-query-result-general {
+        display: none;
+    }
+}
