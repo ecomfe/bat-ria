@@ -195,6 +195,7 @@ define(function (require) {
      * @param {Object} link 链接配置
      * @param {string} [link.className="list-operation"] 链接的className
      * @param {string} link.url 链接的目标URL
+     * @param {string} [link.disabled] 链接是否禁用
      * @param {string} [link.target] 链接的target属性
      * @param {string} link.text 链接文本
      * @param {Object} [link.extra] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
@@ -206,6 +207,11 @@ define(function (require) {
         };
 
         link = u.defaults(link, defaults);
+
+        if (link.disabled) {
+            return '<span class="' + u.escape(link.className) + ' auth-disabled">'
+                + u.escape(link.text) + '</span>';
+        }
 
         var attrs = {
             href: link.url,
@@ -237,6 +243,7 @@ define(function (require) {
      * @param {string} [command.className="list-operation"] 操作按钮的className
      * @param {string} [command.tagName="span"] 操作按钮的HTML元素类型
      * @param {string} command.type 操作按钮点击时触发的事件类型
+     * @param {string} command.disabled 操作按钮是否禁用
      * @param {string} [command.args] 操作按钮点击后触发事件所带的参数
      * @param {string} command.text 操作按钮显示的文本
      * @param {Object} [command.extra] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
@@ -248,6 +255,12 @@ define(function (require) {
             className: 'list-operation'
         };
         command = u.defaults(command, defaults);
+
+        if (command.disabled) {
+            return '<' + tagName + ' class="' + u.escape(command.className) + ' auth-disabled">'
+                + u.escape(command.text) + '</' + tagName + '>';
+        }
+
         var attrs = {
             'class': command.className,
             'data-command': command.type
