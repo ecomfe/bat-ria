@@ -261,12 +261,7 @@ define(
             document.body.appendChild(form);
 
             var input = this.helper.getPart('input');
-            this.helper.addDOMEvent(input, 'change', function () {
-                if (input.value !== '') {
-                        this.receiveFile();
-                    }
-                }
-            );
+            this.helper.addDOMEvent(input, 'change', lib.bind(this.receiveFile, this));
         };
 
         /**
@@ -275,29 +270,31 @@ define(
          * @param {Object} info 成功结果
          */
         function setStateToComplete(info) {
-            this.removeState('busy');
-            this.addState('complete');
+            if (info) {
+                this.removeState('busy');
+                this.addState('complete');
 
-            // 下次再上传的提示文字要变掉
-            this.addState('uploaded');
-            var button = this.helper.getPart('button');
-            button.innerHTML = u.escape(this.overrideText);
+                // 下次再上传的提示文字要变掉
+                this.addState('uploaded');
+                var button = this.helper.getPart('button');
+                button.innerHTML = u.escape(this.overrideText);
 
-            var label = this.helper.getPart('label');
-            // 各种兼容。。。
-            label.innerHTML = u.escape(this.getFileName()
-                || info.url
-                || info.previewUrl
-                || ''
-            );
+                var label = this.helper.getPart('label');
+                // 各种兼容。。。
+                label.innerHTML = u.escape(this.getFileName()
+                    || info.url
+                    || info.previewUrl
+                    || ''
+                );
 
-            // 清掉可能存在的错误信息
-            var validity = new Validity();
-            this.showValidity(validity);
+                // 清掉可能存在的错误信息
+                var validity = new Validity();
+                this.showValidity(validity);
 
-            this.fire('change');
-            if (this.preview) {
-                this.showPreview(info);
+                this.fire('change');
+                if (this.preview) {
+                    this.showPreview(info);
+                }
             }
         }
 
@@ -376,12 +373,7 @@ define(
             // 更新子节点
             this.main.firstChild.replaceChild(newInput, input);
             // 注册事件
-            this.helper.addDOMEvent(input, 'change', function () {
-                if (input.value !== '') {
-                        this.receiveFile();
-                    }
-                }
-            );
+            this.helper.addDOMEvent(newInput, 'change', lib.bind(this.receiveFile, this));
         }
 
         /**
@@ -398,15 +390,17 @@ define(
                     if (args) {
                         var html = [];
                         var extraArgs = buildExtraArgs(args);
-                        u.each(extraArgs, function (arg) {
-                            html.push(
-                                '<input type="hidden" name="' + arg.name + '" ',
-                                    'value="' + arg.value + '"',
-                                '/>'
-                            );
-                        });
-                        var extraArgsWrapper = uploader.helper.getPart('extraArgs');
-                        extraArgsWrapper.innerHTML = html.join('');
+                        if (extraArgs.length) {
+                            u.each(extraArgs, function (arg) {
+                                html.push(
+                                    '<input type="hidden" name="' + arg.name + '" ',
+                                        'value="' + arg.value + '"',
+                                    '/>'
+                                );
+                            });
+                            var extraArgsWrapper = uploader.helper.getPart('extraArgs');
+                            extraArgsWrapper.innerHTML = html.join('');
+                        }
                     }
                 }
             },
@@ -497,7 +491,7 @@ define(
                         uploader.rawValue = rawValue;
                         uploader.fileInfo[uploader.outputType || 'url'] = rawValue;
                     }
-                    else {
+                    else if (fileInfo) {
                         uploader.fileInfo = fileInfo;
                         uploader.rawValue = fileInfo[uploader.outputType || 'url'];
                     }
@@ -582,7 +576,7 @@ define(
         Uploader.prototype.receiveFile = function () {
             var input = this.helper.getPart('input');
             var fileName = input.value;
-            if (this.checkFileFormat(fileName)) {
+            if (fileName && this.checkFileFormat(fileName)) {
                 this.fire('receive');
                 if (this.autoUpload) {
                     this.submit();
