@@ -17,7 +17,7 @@ define(
 
         require('./Image');
 
-        var FILE_TYPES = ['auto', 'image', 'flash'];
+        // var FILE_TYPES = ['auto', 'image', 'flash'];
 
         /**
          * Uploader控件
@@ -409,7 +409,11 @@ define(
                 paint: function (uploader, method, action) {
                     var form = uploader.helper.getPart('form');
                     form.method = method;
-                    action = addSearch(action, 'callback', uploader.callbackName);
+                    action = addSearch(
+                        action,
+                        'callback',
+                        'parent.esuiShowUploadResult["' + uploader.callbackName + '"]'
+                    );
                     form.action = uploader.filterAction(action, addSearch);
                 }
             },
