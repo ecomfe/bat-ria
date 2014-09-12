@@ -270,7 +270,7 @@ define(
          * @param {Object} info 成功结果
          */
         function setStateToComplete(info) {
-            if (info) {
+            if (info && u.size(info) > 0) {
                 this.removeState('busy');
                 this.addState('complete');
 
@@ -499,9 +499,12 @@ define(
                         uploader.fileInfo = fileInfo;
                         uploader.rawValue = fileInfo[uploader.outputType || 'url'];
                     }
-                    setStateToComplete.call(uploader, uploader.fileInfo);
-                    // 不需要停留在完成提示
-                    uploader.removeState('complete');
+
+                    if (u.size(uploader.fileInfo) > 0) {
+                        setStateToComplete.call(uploader, uploader.fileInfo);
+                        // 不需要停留在完成提示
+                        uploader.removeState('complete');
+                    }
                 }
             }
         );
