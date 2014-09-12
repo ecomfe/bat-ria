@@ -11,10 +11,11 @@ define(
         var u = require('underscore');
         var lib = require('esui/lib');
         var InputControl = require('esui/InputControl');
+        var BoxGroup = require('esui/BoxGroup');
 
         /**
          * 富单选或富复选框组控件
-         * 和BoxGroup的区别：``````选项的文本内容可以含有子控件```````
+         * 和BoxGroup的区别：**选项的文本内容可以含有子控件**
          *
          * @extends InputControl
          * @constructor
@@ -22,6 +23,8 @@ define(
         function RichBoxGroup() {
             InputControl.apply(this, arguments);
         }
+
+        lib.inherits(RichBoxGroup, BoxGroup);
 
         /**
          * 控件类型，始终为`"RichBoxGroup"`
@@ -99,31 +102,6 @@ define(
                 options.rawValue = values;
             }
         }
-
-        /**
-         * 初始化参数
-         *
-         * @param {Object} [options] 构造函数传入的参数
-         * @protected
-         * @override
-         */
-        RichBoxGroup.prototype.initOptions = function (options) {
-            var properties = {
-                datasource: [],
-                orientation: 'horizontal',
-                boxType: 'radio'
-            };
-            u.extend(properties, options);
-
-            if (!properties.datasource.length) {
-                extractDatasourceFromDOM(this.main, properties);
-            }
-            if (!properties.rawValue && !properties.value) {
-                properties.rawValue = [];
-            }
-
-            this.setProperties(properties);
-        };
 
         /**
          * 同步值
@@ -205,36 +183,6 @@ define(
         }
 
         /**
-         * 批量更新属性并重绘
-         *
-         * @param {Object} properties 需更新的属性
-         * @override
-         * @fires change
-         */
-        RichBoxGroup.prototype.setProperties = function (properties) {
-            // 修改了`datasource`或`boxType`，且没给新的`rawValue`或`value`的时候，
-            // 要把`rawValue`清空。由于上层`setProperties`是全等判断，
-            // 如果当前`rawValue`正好也是空的，就不要改值了，以免引起`change`事件
-            if ((properties.datasource || properties.boxType)
-                && (!properties.rawValue && !properties.value)
-                && (!this.rawValue || !this.rawValue.length)
-            ) {
-                properties.rawValue = [];
-            }
-
-            var changes =
-                InputControl.prototype.setProperties.apply(this, arguments);
-            if (changes.hasOwnProperty('rawValue')) {
-                /**
-                 * @event change
-                 *
-                 * 值变化时触发
-                 */
-                this.fire('change');
-            }
-        };
-
-        /**
          * 重渲染
          *
          * @method
@@ -312,38 +260,6 @@ define(
                 }
             }
         );
-
-        /**
-         * 将字符串类型的值转换成原始格式
-         *
-         * @param {string} value 字符串值
-         * @return {string[]}
-         * @protected
-         * @override
-         */
-        RichBoxGroup.prototype.parseValue = function (value) {
-            /**
-             * @property {string} [value=""]
-             *
-             * `RichBoxGroup`的字符串形式的值为逗号分隔的多个值
-             */
-            return value.split(',');
-        };
-
-        // 保护函数区域
-
-        /**
-         * 获取内部的输入元素
-         *
-         * @return {HTMLElement[]}
-         * @protected
-         */
-        RichBoxGroup.prototype.getBoxElements = function () {
-            return u.where(
-                this.main.getElementsByTagName('input'),
-                { type: this.boxType }
-            );
-        };
 
         lib.inherits(RichBoxGroup, InputControl);
         require('esui/main').register(RichBoxGroup);

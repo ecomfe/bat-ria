@@ -715,6 +715,8 @@ define(
 
         /**
          * 清空input文件内容
+         *
+         * @deprecated
          */
         Uploader.prototype.clear = function () {
             this.set('fileInfo', {});
