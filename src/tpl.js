@@ -49,7 +49,8 @@ define(
             RichSelector: './ui',
             ToggleButton: './ui',
             AuthPanel: './ui',
-            SearchTree: './ui'
+            SearchTree: './ui',
+            RichBoxGroup: './ui'
         };
 
         var extensionModulePrefix = {

@@ -13,6 +13,7 @@ define(
         var Validity = require('esui/validator/Validity');
         var ValidityState = require('esui/validator/ValidityState');
         var InputControl = require('esui/InputControl');
+        var URI = require('urijs');
         var u = require('underscore');
 
         require('./Image');
@@ -33,7 +34,7 @@ define(
 
         Uploader.prototype.type = 'Uploader';
 
-        var mimeTypes = {
+        var extentionTypes = {
             image: {
                 '.jpg': true, '.jpeg': true, '.gif': true,
                 '.bmp': true, '.tif': true, '.tiff': true, '.png': true
@@ -53,15 +54,12 @@ define(
         Uploader.defaultProperties = {
             width: 80,
             height: 25,
-            /* uploader提交的地址 */
-            action: '',
+            action: '',                // uploader提交的地址
             fileType: 'auto',
             dataKey: 'filedata',
-            /* 在post参数中添加额外内容 */
-            args: {},
+            args: {},                  // 在post参数中添加额外内容
             fileInfo: {},
-            /* 满足两种场景，`url`表示最后提交的是一个路径，`content`表示最后输出是文件内容 */
-            outputType: 'url',
+            outputType: 'url',         // `url|previewUrl`表示提交一个路径，`content`表示提交文件内容
             method: 'POST',
             text: '点击上传',
             overrideText: '重新上传',
@@ -70,7 +68,7 @@ define(
             placeholder: '未选择文件',
             preview: false,
             autoUpload: true,
-            mimeTypes: mimeTypes
+            extentionTypes: extentionTypes
         };
 
         /**
@@ -89,10 +87,9 @@ define(
          * 可以通过该方法添加get的参数
          *
          * @param {string} action 文件发送的表单action URL
-         * @param {function} addSearch 添加search的工具方法
          * @return {string} 修改后的URL
          */
-        Uploader.prototype.filterAction = function (action, addSearch) {
+        Uploader.prototype.filterAction = function (action) {
             return action;
         };
 
@@ -299,53 +296,12 @@ define(
         }
 
         /**
-         * 给url添加get的参数
-         *
-         * @param {string} action form提交的地址
-         * @param {string|object} key 参数名或者传入一个 { key: value } 的对象
-         * @param {string} value 参数值
-         */
-        function addSearch(action, key, value) {
-            if (typeof action === 'string') {
-                if (typeof key === 'object') {
-                    u.each(key, function (value, name) {
-                        addSearch(action, name, value);
-                    });
-                }
-                else if (typeof key === 'string') {
-                    var indexOfHash = action.indexOf('#');
-                    if (action.indexOf('?') > 0) {
-                        var and = (action.indexOf('=') > 0) ? '&' : '';
-                        if (indexOfHash > 0) {
-                            action = action.slice(0, indexOfHash)
-                                + and + key + '=' + value
-                                + action.slice(indexOfHash);
-                        }
-                        else {
-                            action += and + key + '=' + value;
-                        }
-                    }
-                    else {
-                        if (indexOfHash > 0) {
-                            action = action.slice(0, indexOfHash)
-                                + '?' + key + '=' + value
-                                + action.slice(indexOfHash);
-                        }
-                        else {
-                            action += '?' + key + '=' + value;
-                        }
-                    }
-                }
-            }
-            return action;
-        }
-
-        /**
          * 清空上传图像
          *
          * 清空操作主要做两件事
-         * 1. 清空Uploader的fileInfo
-         * 2. 清空input的value
+         * 1. 清空各类状态
+         * 2. 清空Uploader的fileInfo
+         * 3. 清空input的value
          */
         function removeFile() {
             // 由于无法控制外部会在什么时候调用清空接口
@@ -353,13 +309,19 @@ define(
             this.removeState('busy');
             this.removeState('complete');
             this.removeState('uploaded');
+            var validity = new Validity();
+            var state = new ValidityState(true, '');
+            validity.addState('', state);
+            this.showValidity(validity);
+
             // 重置显示文字
             this.helper.getPart('button').innerHTML = u.escape(this.text);
             // 重置显示文字
             this.helper.getPart('label').innerHTML = u.escape(this.placeholder);
 
             // 清空上传记录
-            this.fileInfo = this.rawValue = '';
+            this.fileInfo = {};
+            this.rawValue = '';
 
             // <input type="file"/>的value在IE下无法直接通过操作属性清除，需要替换一个input控件
             // 复制节点属性
@@ -409,12 +371,10 @@ define(
                 paint: function (uploader, method, action) {
                     var form = uploader.helper.getPart('form');
                     form.method = method;
-                    action = addSearch(
-                        action,
-                        'callback',
-                        'parent.esuiShowUploadResult["' + uploader.callbackName + '"]'
-                    );
-                    form.action = uploader.filterAction(action, addSearch);
+                    action = URI(action).addQuery({
+                        'callback': 'parent.esuiShowUploadResult["' + uploader.callbackName + '"]'
+                    }).toString();
+                    form.action = uploader.filterAction(action);
                 }
             },
             {
@@ -482,25 +442,29 @@ define(
                 }
             },
             {
-                name: [ 'rawValue', 'fileInfo' ],
-                paint: function (uploader, rawValue, fileInfo) {
-                    if (!rawValue && u.isEqual(fileInfo, {})) {
+                name: 'rawValue',
+                paint: function (uploader, rawValue) {
+                    if (rawValue) {
+                        uploader.fileInfo = {};
+                        uploader.rawValue = rawValue;
+                        uploader.fileInfo[uploader.outputType] = rawValue;
+                        setStateToComplete.call(uploader, uploader.fileInfo);
+                        // 不需要停留在完成提示
+                        uploader.removeState('complete');
+                    }
+                }
+            },
+            {
+                name: 'fileInfo',
+                paint: function (uploader, fileInfo) {
+                    if (u.isEqual(fileInfo, {})) {
                         // 允许用户使用 set('fileInfo', {}) 方式清空上传内容
                         removeFile.call(uploader);
                         return;
                     }
-
-                    if (rawValue) {
-                        uploader.fileInfo = {};
-                        uploader.rawValue = rawValue;
-                        uploader.fileInfo[uploader.outputType || 'url'] = rawValue;
-                    }
-                    else if (fileInfo) {
+                    else if (u.isObject(fileInfo)) {
                         uploader.fileInfo = fileInfo;
-                        uploader.rawValue = fileInfo[uploader.outputType || 'url'];
-                    }
-
-                    if (u.size(uploader.fileInfo) > 0) {
+                        uploader.rawValue = fileInfo[uploader.outputType] || fileInfo['previewUrl'];
                         setStateToComplete.call(uploader, uploader.fileInfo);
                         // 不需要停留在完成提示
                         uploader.removeState('complete');
@@ -534,8 +498,8 @@ define(
 
                     // image/*之类的，表示一个大类
                     if (acceptPattern.slice(-1)[0] === '*') {
-                        var mimeType = acceptPattern.split('/')[0];
-                        var targetExtensions = this.mimeTypes[mimeType];
+                        var extensionType = acceptPattern.split('/')[0];
+                        var targetExtensions = this.extentionTypes[extensionType];
                         if (targetExtensions
                             && targetExtensions.hasOwnProperty(extension)
                         ) {
@@ -633,7 +597,6 @@ define(
 
             var result = options.result;
             if (options.success === false || options.success === 'false') {
-                this.fire('fail', options.message);
                 this.notifyFail(options.message);
             }
             else if (result) {
@@ -651,12 +614,8 @@ define(
          * @protected
          */
         Uploader.prototype.notifyFail = function (message) {
-            message = message.upload || '上传失败';
-            var validity = new Validity();
-            var state = new ValidityState(false, message);
-            validity.addState('upload', state);
-            this.showValidity(validity);
-            this.removeState('busy');
+            this.clear();
+            this.fire('fail', message);
         };
 
         /**
