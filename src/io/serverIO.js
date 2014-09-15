@@ -36,6 +36,11 @@ define(function (require) {
      */
     io.hooks = {};
 
+    /**
+     * 后端返回的结果代码对应的类型
+     *
+     * @enum {string}
+     */
     var CODE_MAP = {
         0: 'SUCCESS',
         1: 'GLOBAL',
@@ -44,6 +49,12 @@ define(function (require) {
         4: 'NO_SESSION'
     };
 
+    /**
+     * 最小的自定义错误代码
+     * 小于此代码的均保留为预定义类型，大于等于此代码作为自定义处理
+     *
+     * @type {number}
+     */
     var MINIMAL_CUSTOM_FAIL_CODE = 100;
 
     var SERVER_ERROR = getGlobalError('服务器错误');
@@ -51,6 +62,12 @@ define(function (require) {
     var SCHEMA_ERROR = getGlobalError('数据格式错误');
     var UNKNOWN_ERROR = getGlobalError('未知错误');
 
+    /**
+     * 生成全局错误对象
+     *
+     * @param {string} message 错误提示信息
+     * @return {Object} 全局错误对象
+     */
     function getGlobalError(message) {
         return {
             success: false,
@@ -60,7 +77,13 @@ define(function (require) {
         };
     }
 
-    function prepareResponse(data) {
+    /**
+     * 适配新NMP接口返回的结果
+     *
+     * @param {Object} data 后端返回的数据对象
+     * @return {Object} 转换过后符合前端逻辑的对象
+     */
+    io.prepareResponse = function (data) {
         if (typeof data.code !== 'undefined') { // 有code时认为是新版接口
             var status = CODE_MAP[data.code];
 
@@ -101,6 +124,9 @@ define(function (require) {
         }
     }
 
+    /**
+     * 跳转到主页
+     */
     function gotoIndex() {
         var url = '/index.html';
 
@@ -111,6 +137,12 @@ define(function (require) {
         document.location.href = url;
     }
 
+    /**
+     * 处理服务端响应成功的情况
+     *
+     * @param {Object} rawData 转换后的后端响应对象
+     * @return {meta.Promise} 处理后的Promise
+     */
     function requestSuccessHandler(rawData) {
         var data = prepareResponse(rawData);
 
@@ -183,6 +215,13 @@ define(function (require) {
         }
     }
 
+    /**
+     * 处理服务端响应失败的情况
+     * 转换为成功响应，返回错误提示处理
+     *
+     * @param {meta.Promise} fakeXHR 请求的Promise
+     * @return {meta.Promise} 处理后的Promise
+     */
     function requestFailureHandler(fakeXHR) {
         var status = fakeXHR.status;
 
@@ -197,6 +236,13 @@ define(function (require) {
         return requestSuccessHandler(error);
     }
 
+    /**
+     * 处理服务端响应完成的情况
+     * 不管成功失败均执行
+     *
+     * @param {Object|meta.Promise} data 成功时为返回的数据对象，失败时为请求Promise
+     * @return {Mixed} 处理后的输入参数
+     */
     function requestCompleteHandler(data) {
         if (typeof io.hooks.afterComplete === 'function') {
             data = io.hooks.afterComplete(data) || data;
@@ -204,6 +250,14 @@ define(function (require) {
         return data;
     }
 
+    /**
+     * 向服务端发起请求
+     *
+     * @param {string} url 请求URL
+     * @param {Object} data 请求参数
+     * @param {Object} options 请求选项
+     * @return {meta.Promise} 请求Promise
+     */
     io.request = function(url, data, options) {
         var defaults = {
             url: url,
@@ -227,6 +281,14 @@ define(function (require) {
             );
     };
 
+    /**
+     * 以GET方式向服务端发起请求
+     *
+     * @param {string} url 请求URL
+     * @param {Object} data 请求参数
+     * @param {Object} options 请求选项
+     * @return {meta.Promise} 请求Promise
+     */
     io.get = function(url, data, options) {
         u.extend(options, {
             method: 'GET'
@@ -234,6 +296,14 @@ define(function (require) {
         return this.request(url, data, options);
     };
 
+    /**
+     * 以POST方式向服务端发起请求
+     *
+     * @param {string} url 请求URL
+     * @param {Object} data 请求参数
+     * @param {Object} options 请求选项
+     * @return {meta.Promise} 请求Promise
+     */
     io.post = function(url, data, options) {
         u.extend(options, {
             method: 'POST'

@@ -243,7 +243,7 @@ define(function (require) {
      * @param {string} [command.className="list-operation"] 操作按钮的className
      * @param {string} [command.tagName="span"] 操作按钮的HTML元素类型
      * @param {string} command.type 操作按钮点击时触发的事件类型
-     * @param {string} command.disabled 操作按钮是否禁用
+     * @param {string} [command.disabled] 操作按钮是否禁用
      * @param {string} [command.args] 操作按钮点击后触发事件所带的参数
      * @param {string} command.text 操作按钮显示的文本
      * @param {Object} [command.extra] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
