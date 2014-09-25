@@ -579,24 +579,37 @@ define(
         Uploader.prototype.showUploadResult = function (options) {
             // 如果成功，`options`格式为：
             // {
-            //    "success" : "true",
+            //    "success" : "true" | true,
             //    "message" : {},
             //    "result" : {
-            //        "content": "231"
-            //        "previewUrl": "http://"
+            //        "keywordPackagePath" : "231"
+            //    }
+            // }
+            //
+            // 或`code`版
+            //
+            // {
+            //    "code" : 0,
+            //    "message" : {},
+            //    "result" : {
+            //        "keywordPackagePath" : "231"
             //    }
             // }
             //
             // 如果上传失败，`options`必须是以下格式
             // {
-            //    "success" : "false",
-            //    "message" : {
-            //         "upload": "error message"
-            //    }
+            //    "success" : "false" | false,
+            //    "message" : "错误信息"
             // }
-
+            //
+            // 或`code`版
+            //
+            // {
+            //    "code" : 1,
+            //    "message" : "错误信息"
+            // }
             var result = options.result;
-            if (options.success === false || options.success === 'false') {
+            if (options.success === false || options.success === 'false' || options.code === 1) {
                 this.notifyFail(options.message);
             }
             else if (result) {
