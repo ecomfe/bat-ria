@@ -13,11 +13,12 @@ define(
         var Validity = require('esui/validator/Validity');
         var ValidityState = require('esui/validator/ValidityState');
         var InputControl = require('esui/InputControl');
+        var URI = require('urijs');
         var u = require('underscore');
 
         require('./Image');
 
-        var FILE_TYPES = ['auto', 'image', 'flash'];
+        // var FILE_TYPES = ['auto', 'image', 'flash'];
 
         /**
          * Uploader控件
@@ -33,6 +34,17 @@ define(
 
         Uploader.prototype.type = 'Uploader';
 
+        var extentionTypes = {
+            image: {
+                '.jpg': true, '.jpeg': true, '.gif': true,
+                '.bmp': true, '.tif': true, '.tiff': true, '.png': true
+            },
+
+            flash: {
+                '.flv': true, '.swf': true
+            }
+        };
+
         /**
          * 默认属性
          *
@@ -42,15 +54,21 @@ define(
         Uploader.defaultProperties = {
             width: 80,
             height: 25,
-            fileType: 'image',
+            action: '',                // uploader提交的地址
+            fileType: 'auto',
+            dataKey: 'filedata',
+            args: {},                  // 在post参数中添加额外内容
+            fileInfo: {},
+            outputType: 'url',         // `url|previewUrl`表示提交一个路径，`content`表示提交文件内容
             method: 'POST',
             text: '点击上传',
             overrideText: '重新上传',
             busyText: '正在上传...',
             completeText: '上传完成',
-            unloadText: '未选择文件',
-            preview: true,
-            autoUpload: true
+            placeholder: '未选择文件',
+            preview: false,
+            autoUpload: true,
+            extentionTypes: extentionTypes
         };
 
         /**
@@ -66,6 +84,7 @@ define(
 
         /**
          * 修改action属性的过滤器（扩展点）
+         * 可以通过该方法添加get的参数
          *
          * @param {string} action 文件发送的表单action URL
          * @return {string} 修改后的URL
@@ -73,6 +92,42 @@ define(
         Uploader.prototype.filterAction = function (action) {
             return action;
         };
+
+        /**
+         * 处理额外的参数配置
+         *
+         * @param {Mixed} args 额外的参数配置，
+         *                     可以是一个序列化的参数串，或者是一个 { key: value } 的对象
+         */
+        function buildExtraArgs(args) {
+            // 会存在一些额外的参数配置
+            var extraArgs = [];
+            // 现在开始解析args
+            var keyAndValues = [];
+            if (args) {
+                if (typeof args === 'string') {
+                    keyAndValues = args.split('&');
+                    u.each(keyAndValues, function (keyAndValue) {
+                        keyAndValue = keyAndValue.split('=');
+                        if (keyAndValue.length === 2) {
+                            extraArgs.push({
+                                name: u.escape(keyAndValue[0]),
+                                value: u.escape(keyAndValue[1])
+                            });
+                        }
+                    });
+                }
+                else if (typeof args === 'object') {
+                    for (var key in args) {
+                        extraArgs.push({
+                            name: u.escape(key),
+                            value: u.escape(args[key])
+                        });
+                    }
+                }
+            }
+            return extraArgs;
+        }
 
         /**
          * 初始化参数
@@ -112,39 +167,6 @@ define(
                 properties.autoUpload = false;
             }
 
-            // 会存在一些额外的参数配置
-            properties.extraArgs = [];
-            function buildExtraArgs(key, value) {
-                // 如果有也是直接覆盖，args的优先级最高
-                properties[key] = value;
-                properties.extraArgs.push({
-                    name: key,
-                    value: value
-                });
-            }
-            // 现在开始解析args
-            var keyAndValues = [];
-            if (properties.args) {
-                if (typeof properties.args === 'string') {
-                    keyAndValues = properties.args.split('&');
-                    u.each(keyAndValues, function (keyAndValue) {
-                        keyAndValue = keyAndValue.split('=');
-                        if (keyAndValue.length === 2) {
-                            buildExtraArgs(keyAndValue[0], keyAndValue[1]);
-                        }
-                    });
-                }
-                else if (typeof properties.args === 'object') {
-                    for (var key in properties.args) {
-                        buildExtraArgs(key, properties.args[key]);
-                    }
-                }
-            }
-
-            if (!properties.hasOwnProperty('title') && this.main.title) {
-                properties.title = this.main.title;
-            }
-
             this.setProperties(properties);
         };
 
@@ -156,7 +178,7 @@ define(
          */
         Uploader.prototype.initStructure = function () {
             if (this.main.nodeName.toLowerCase() !== 'form') {
-                helper.replaceMain(this);
+                this.helper.replaceMain();
             }
 
             // 往全局下加个函数，用于上传成功后回调
@@ -167,98 +189,76 @@ define(
             }
             window.esuiShowUploadResult[this.callbackName] = lib.bind(this.showUploadResult, this);
 
-            var inputContainerClasses =
-                helper.getStateClasses(this, 'input-container').join(' ');
-            var indicatorClasses =
-                helper.getStateClasses(this, 'indicator').join(' ');
-            var buttonClasses =
-                helper.getStateClasses(this, 'button').join(' ');
-            var labelClasses =
-                helper.getStateClasses(this, 'label').join(' ');
-            var iframeId = helper.getId(this, 'iframe');
+            var containerClasses = this.helper.getPartClassName('input-container');
+            var indicatorClasses = this.helper.getPartClassName('indicator');
+            var buttonClasses = this.helper.getPartClassName('button');
+            var iframeId = this.helper.getId('iframe');
+            var labelClasses = this.helper.getPartClassName('label');
+            var extraArgClasses = this.helper.getPartClassName('extra-args');
 
             var html = [
-                '<div id="' + helper.getId(this, 'input-container') + '" ',
-                    'class="' + inputContainerClasses + '">',
+                '<div id="' + this.helper.getId('input-container') + '" ',
+                    'class="' + containerClasses + '">',
                     // 按钮
-                    '<span id="' + helper.getId(this, 'button') + '" ',
+                    '<span id="' + this.helper.getId('button') + '" ',
                         'class="' + buttonClasses + '">',
                     '</span>',
-                    // 回调函数名
-                    '<input type="hidden" name="callback" ',
-                        'value="' + 'parent.esuiShowUploadResult[\'' + this.callbackName + '\']" ',
-                    '/>',
                     // sessionToken
                     // '<input type="hidden" name="sessionToken" ',
                     //     'value="' + this.getSessionToken() + '" ',
                     // '/>',
                     // 文件上传框
                     '<input type="file" ',
-                        'id="' + helper.getId(this, 'input') + '" ',
-                        'size="1" ',
-                        'name="' + (this.dataKey ? this.dataKey : 'filedata') + '" ',
-                    '/>',
-                    // 类型字段
-                    '<input type="hidden" name="type" ',
-                        'value="' + this.typeIndex + '"',
+                    'id="' + this.helper.getId('input') + '" ',
+                    (this.dataKey ? 'name="' + u.escape(this.dataKey) + '" ' : ' '),
                     '/>'
             ];
             // 从附加参数里构造
-            if (this.extraArgs) {
-                u.each(this.extraArgs, function (arg) {
+            var extraArgs = buildExtraArgs(this.args);
+            if (extraArgs.length) {
+                html.push(
+                    '<div id="' + this.helper.getId('extraArgs') + '"',
+                        'class="' + extraArgClasses + '">'
+                );
+                u.each(extraArgs, function (arg) {
                     html.push(
                         '<input type="hidden" name="' + arg.name + '" ',
                             'value="' + arg.value + '"',
                         '/>'
                     );
                 });
+                html.push(
+                    '</div>'
+                );
             }
             html.push(
                 '</div>',
                 // 指示器
                 // 虽然`<progress>`更合适，但基本无法写样式，所以改用`<span>`
-                '<div id="' + helper.getId(this, 'indicator-wrapper') + '"',
+                '<div id="' + this.helper.getId('indicator-wrapper') + '"',
                     'class="' + indicatorClasses + '">',
-                    '<span id="' + helper.getId(this, 'indicator') + '">',
+                    '<span id="' + this.helper.getId('indicator') + '">',
                     '</span>',
                 '</div>',
-                '<div id="' + helper.getId(this, 'label') +
+                '<div id="' + this.helper.getId('label') +
                     '"',
-                    'class="' + labelClasses + '">' + this.unloadText +
+                    'class="' + labelClasses + '">' + this.placeholder +
                 '</div>',
                 // 用来偷偷上传的`<iframe>`元素
                 '<iframe id="' + iframeId + '" name="' + iframeId + '"',
                 ' src="about:blank"></iframe>'
             );
 
-
-            // IE是不允许在一个`<form>`里有另一个`<form>`，
-            // 并且设置内层`<form>`的`innerHTML`的，因此先移出去，设完了再回来
-            // var nextSibling = this.main.nextSibling;
-            // var parent = this.main.parentNode;
-            // parent.removeChild(this.main);
             this.main.innerHTML = html.join('');
-            // parent.insertBefore(this.main, nextSibling);
 
             // 放个表单在远放，有用
-            var form = document.createElement('form');
-            form.className = this.helper.getPartClassName('form');
-            form.id = helper.getId(this, 'form');
+            var form = this.helper.createPart('form', 'form');
             form.setAttribute('enctype', 'multipart/form-data');
             form.target = iframeId;
             document.body.appendChild(form);
 
-            var input = lib.g(helper.getId(this, 'input'));
-            helper.addDOMEvent(
-                this,
-                input,
-                'change',
-                function () {
-                    if (input.value !== '') {
-                        this.receiveFile();
-                    }
-                }
-            );
+            var input = this.helper.getPart('input');
+            this.helper.addDOMEvent(input, 'change', lib.bind(this.receiveFile, this));
         };
 
         /**
@@ -267,28 +267,75 @@ define(
          * @param {Object} info 成功结果
          */
         function setStateToComplete(info) {
+            if (info && u.size(info) > 0) {
+                this.removeState('busy');
+                this.addState('complete');
+
+                // 下次再上传的提示文字要变掉
+                this.addState('uploaded');
+                var button = this.helper.getPart('button');
+                button.innerHTML = u.escape(this.overrideText);
+
+                var label = this.helper.getPart('label');
+                // 各种兼容。。。
+                label.innerHTML = u.escape(this.getFileName()
+                    || info.url
+                    || info.previewUrl
+                    || ''
+                );
+
+                // 清掉可能存在的错误信息
+                var validity = new Validity();
+                this.showValidity(validity);
+
+                this.fire('change');
+                if (this.preview) {
+                    this.showPreview(info);
+                }
+            }
+        }
+
+        /**
+         * 清空上传图像
+         *
+         * 清空操作主要做两件事
+         * 1. 清空各类状态
+         * 2. 清空Uploader的fileInfo
+         * 3. 清空input的value
+         */
+        function removeFile() {
+            // 由于无法控制外部会在什么时候调用清空接口
+            // 因此需要将所有状态移除
             this.removeState('busy');
-            this.fire('complete');
-            this.addState('complete');
-
-            // 下次再上传的提示文字要变掉
-            this.addState('uploaded');
-            var button = lib.g(helper.getId(this, 'button'));
-            button.innerHTML = lib.encodeHTML(this.overrideText);
-
-            var label = lib.g(helper.getId(this, 'label'));
-            label.innerHTML = lib.encodeHTML(this.getFileName() || info.url);
-
-            // 清掉可能存在的错误信息
+            this.removeState('complete');
+            this.removeState('uploaded');
             var validity = new Validity();
+            var state = new ValidityState(true, '');
+            validity.addState('', state);
             this.showValidity(validity);
 
-            this.fire('change');
-            if (this.preview) {
-                this.showPreview(info);
-            }
+            // 重置显示文字
+            this.helper.getPart('button').innerHTML = u.escape(this.text);
+            // 重置显示文字
+            this.helper.getPart('label').innerHTML = u.escape(this.placeholder);
 
-            window.up = this;
+            // 清空上传记录
+            this.fileInfo = {};
+            this.rawValue = '';
+
+            // <input type="file"/>的value在IE下无法直接通过操作属性清除，需要替换一个input控件
+            // 复制节点属性
+            var newInput = document.createElement('input');
+            newInput.type = 'file';
+            newInput.id = this.helper.getId('input');
+            newInput.name = this.dataKey;
+            // 清理注册事件
+            var input = this.helper.getPart('input');
+            this.helper.removeDOMEvent(input, 'change');
+            // 更新子节点
+            this.main.firstChild.replaceChild(newInput, input);
+            // 注册事件
+            this.helper.addDOMEvent(newInput, 'change', lib.bind(this.receiveFile, this));
         }
 
         /**
@@ -300,37 +347,60 @@ define(
         Uploader.prototype.repaint = helper.createRepaint(
             InputControl.prototype.repaint,
             {
-                name: ['method', 'action'],
+                name: 'args',
+                paint: function (uploader, args) {
+                    if (args) {
+                        var html = [];
+                        var extraArgs = buildExtraArgs(args);
+                        if (extraArgs.length) {
+                            u.each(extraArgs, function (arg) {
+                                html.push(
+                                    '<input type="hidden" name="' + arg.name + '" ',
+                                        'value="' + arg.value + '"',
+                                    '/>'
+                                );
+                            });
+                            var extraArgsWrapper = uploader.helper.getPart('extraArgs');
+                            extraArgsWrapper.innerHTML = html.join('');
+                        }
+                    }
+                }
+            },
+            {
+                name: [ 'method', 'action' ],
                 paint: function (uploader, method, action) {
                     var form = uploader.helper.getPart('form');
                     form.method = method;
+                    action = URI(action).addQuery({
+                        'callback': 'parent.esuiShowUploadResult["' + uploader.callbackName + '"]'
+                    }).toString();
                     form.action = uploader.filterAction(action);
                 }
             },
             {
-                name: ['text', 'overrideText'],
+                name: [ 'text', 'overrideText' ],
                 paint: function (uploader, text, overrideText) {
-                    var button = lib.g(helper.getId(uploader, 'button'));
+                    var button = uploader.helper.getPart('button');
                     var html = uploader.hasState('uploaded')
-                        ? lib.encodeHTML(overrideText)
-                        : lib.encodeHTML(text);
+                        ? u.escape(overrideText)
+                        : u.escape(text);
                     button.innerHTML = html;
                 }
             },
             {
-                name: ['busyText', 'completeText'],
+                name: [ 'busyText', 'completeText' ],
                 paint: function (uploader, busyText, completeText) {
-                    var indicator = lib.g(helper.getId(uploader, 'indicator'));
+                    var indicator = uploader.helper.getPart('indicator');
                     var html = uploader.hasState('busy')
-                        ? lib.encodeHTML(busyText)
-                        : lib.encodeHTML(completeText);
+                        ? u.escape(busyText)
+                        : u.escape(completeText);
                     indicator.innerHTML = html;
                 }
             },
             {
                 name: 'accept',
                 paint: function (uploader, accept) {
-                    var input = lib.g(helper.getId(uploader, 'input'));
+                    var input = uploader.helper.getPart('input');
                     if (accept) {
                         lib.setAttribute(input, 'accept', accept.join(','));
                     }
@@ -340,69 +410,68 @@ define(
                 }
             },
             {
-                name: ['disabled', 'readOnly'],
+                name: [ 'disabled', 'readOnly' ],
                 paint: function (uploader, disabled, readOnly) {
-                    var input = lib.g(helper.getId(uploader, 'input'));
+                    var input = uploader.helper.getPart('input');
                     input.disabled = disabled;
-                    input.readOnly = readOnly;
+                    if (readOnly && (readOnly !== 'false' || readOnly !== false)) {
+                        input.disabled = 'disabled';
+                    }
                 }
             },
             {
-                name: ['width', 'height'],
+                name: [ 'width', 'height' ],
                 paint: function (uploader, width, height) {
                     var widthWithUnit = width + 'px';
                     var heightWithUnit = height + 'px';
 
                     uploader.main.style.height = heightWithUnit;
 
-                    var container = lib.g(helper.getId(uploader, 'input-container'));
-                    container.style.width = widthWithUnit;
+                    var container = uploader.helper.getPart('input-container');
                     container.style.height = heightWithUnit;
+                    container.style.width = widthWithUnit;
 
-                    var button = lib.g(helper.getId(uploader, 'button'));
+                    var button = uploader.helper.getPart('button');
                     button.style.lineHeight = heightWithUnit;
 
-                    var indicatorWrapper = lib.g(helper.getId(uploader, 'indicator-wrapper'));
-                    indicatorWrapper.style.width = widthWithUnit;
-
-                    var indicator = lib.g(helper.getId(uploader, 'indicator'));
+                    var indicator = uploader.helper.getPart('indicator');
                     indicator.style.lineHeight = heightWithUnit;
 
-                    var label = lib.g(helper.getId(uploader, 'label'));
+                    var label = uploader.helper.getPart('label');
                     label.style.lineHeight = heightWithUnit;
                 }
             },
             {
                 name: 'rawValue',
                 paint: function (uploader, rawValue) {
-                    if (!rawValue) {
+                    if (rawValue) {
+                        uploader.fileInfo = {};
+                        uploader.rawValue = rawValue;
+                        uploader.fileInfo[uploader.outputType] = rawValue;
+                        setStateToComplete.call(uploader, uploader.fileInfo);
+                        // 不需要停留在完成提示
+                        uploader.removeState('complete');
+                    }
+                }
+            },
+            {
+                name: 'fileInfo',
+                paint: function (uploader, fileInfo) {
+                    if (u.isEqual(fileInfo, {})) {
+                        // 允许用户使用 set('fileInfo', {}) 方式清空上传内容
+                        removeFile.call(uploader);
                         return;
                     }
-
-                    var type = uploader.fileType;
-
-                    uploader.fileInfo = {
-                        url: rawValue,
-                        type: type
-                    };
-
-                    setStateToComplete.call(uploader, uploader.fileInfo);
-                    // 不需要停留在完成提示
-                    uploader.removeState('complete');
+                    else if (u.isObject(fileInfo)) {
+                        uploader.fileInfo = fileInfo;
+                        uploader.rawValue = fileInfo[uploader.outputType] || fileInfo['previewUrl'];
+                        setStateToComplete.call(uploader, uploader.fileInfo);
+                        // 不需要停留在完成提示
+                        uploader.removeState('complete');
+                    }
                 }
             }
         );
-
-        var mimeTypes = {
-            image: {
-                '.jpg': true, '.jpeg': true, '.gif': true,
-                '.bmp': true, '.tif': true, '.tiff': true, '.png': true
-            },
-
-            flash: {
-                '.flv': true, '.swf': true
-            }
-        };
 
         /**
          * 检查文件格式是否正确，不正确时直接提示
@@ -429,8 +498,8 @@ define(
 
                     // image/*之类的，表示一个大类
                     if (acceptPattern.slice(-1)[0] === '*') {
-                        var mimeType = acceptPattern.split('/')[0];
-                        var targetExtensions = mimeTypes[mimeType];
+                        var extensionType = acceptPattern.split('/')[0];
+                        var targetExtensions = this.extentionTypes[extensionType];
                         if (targetExtensions
                             && targetExtensions.hasOwnProperty(extension)
                         ) {
@@ -476,9 +545,9 @@ define(
          * @protected
          */
         Uploader.prototype.receiveFile = function () {
-            var input = lib.g(helper.getId(this, 'input'));
-            var filename = input.value;
-            if (this.checkFileFormat(filename)) {
+            var input = this.helper.getPart('input');
+            var fileName = input.value;
+            if (fileName && this.checkFileFormat(fileName)) {
                 this.fire('receive');
                 if (this.autoUpload) {
                     this.submit();
@@ -493,10 +562,12 @@ define(
          */
         Uploader.prototype.showUploading = function () {
             this.removeState('complete');
-            this.addState('busy');
+            if (this.busyText) {
+                this.addState('busy');
 
-            var indicator = lib.g(helper.getId(this, 'indicator'));
-            indicator.innerHTML = lib.encodeHTML(this.busyText);
+                var indicator = this.helper.getPart('indicator');
+                indicator.innerHTML = u.escape(this.busyText);
+            }
         };
 
         /**
@@ -508,7 +579,17 @@ define(
         Uploader.prototype.showUploadResult = function (options) {
             // 如果成功，`options`格式为：
             // {
-            //    "success" : "true",
+            //    "success" : "true" | true,
+            //    "message" : {},
+            //    "result" : {
+            //        "keywordPackagePath" : "231"
+            //    }
+            // }
+            //
+            // 或`code`版
+            //
+            // {
+            //    "code" : 0,
             //    "message" : {},
             //    "result" : {
             //        "keywordPackagePath" : "231"
@@ -517,26 +598,24 @@ define(
             //
             // 如果上传失败，`options`必须是以下格式
             // {
-            //    "success" : "false",
-            //    "message" : {
-            //         "upload" : "error message"
-            //    }
+            //    "success" : "false" | false,
+            //    "message" : "错误信息"
             // }
-
+            //
+            // 或`code`版
+            //
+            // {
+            //    "code" : 1,
+            //    "message" : "错误信息"
+            // }
             var result = options.result;
-            if (options.success === false || options.success === 'false') {
+            if (options.success === false || options.success === 'false' || options.code === 1) {
                 this.notifyFail(options.message);
             }
             else if (result) {
-                if (!options.hasOwnProperty('type')) {
-                    options.result.type = this.fileType;
-                }
-                else if (typeof options.type === 'number') {
-                    options.result.type = FILE_TYPES[options.result.type];
-                }
-
                 this.fileInfo = result;
-                this.rawValue = result.url || result.previewUrl || '';
+                this.rawValue = result.content || result.url || result.previewUrl || '';
+                this.fire('complete');
                 this.notifyComplete(options.result);
             }
         };
@@ -548,14 +627,8 @@ define(
          * @protected
          */
         Uploader.prototype.notifyFail = function (message) {
+            this.clear();
             this.fire('fail', message);
-            message = message.upload || '上传失败';
-            var validity = new Validity();
-            var state = new ValidityState(false, message);
-            validity.addState('upload', state);
-            this.showValidity(validity);
-            this.removeState('busy');
-            this.reset();
         };
 
         /**
@@ -567,9 +640,11 @@ define(
         Uploader.prototype.notifyComplete = function (info) {
             setStateToComplete.call(this, info);
 
-            // 提示已经完成
-            var indicator = lib.g(helper.getId(this, 'indicator'));
-            indicator.innerHTML = lib.encodeHTML(this.completeText);
+            if (this.completeText) {
+                // 提示已经完成
+                var indicator = this.helper.getPart('indicator');
+                indicator.innerHTML = u.escape(this.completeText);
+            }
             // 一定时间后回到可上传状态
             this.timer = setTimeout(
                 lib.bind(this.removeState, this, 'complete'),
@@ -604,14 +679,13 @@ define(
             }
         };
 
-        // /**
-        //  * 获取作为`InputControl`时的数据，只需返回上传成功后得到的URL即可
-        //  *
-        //  * @return {string} 上传成功文件的URL
-        //  */
-        // Uploader.prototype.getRawValue = function () {
-        //     return this.fileInfo.url || this.fileInfo.previewUrl || '';
-        // };
+        /**
+         * 获取后端返回的信息
+         * @return {object} 后端返回的结构体
+         */
+        Uploader.prototype.getFileInfo = function () {
+            return this.fileInfo || null;
+        };
 
         Uploader.prototype.getRawValueProperty = Uploader.prototype.getRawValue;
 
@@ -620,36 +694,16 @@ define(
          *
          * @return {string}
          */
-        Uploader.prototype.getFileName = function (url) {
-            var input = lib.g(helper.getId(this, 'input'));
-            var value;
-            if (url) {
-                value = url;
+        Uploader.prototype.getFileName = function () {
+            if (this.fileInfo && this.fileInfo.fileName) {
+                return this.fileInfo.fileName;
             }
             else {
+                var input = this.helper.getPart('input');
+                var value;
                 value = input.value;
+                return value.split('\\').pop() || '';
             }
-            return value.split('\\').pop() || '';
-        };
-
-        /**
-         * 获取上传的文件的宽度，只有成功上传后才能获取
-         *
-         * @return {number}
-         * @protected
-         */
-        Uploader.prototype.getFileWidth = function () {
-            return this.fileInfo ? this.fileInfo.width : -1;
-        };
-
-        /**
-         * 获取上传的文件的高度，只有成功上传后才能获取
-         *
-         * @return {number}
-         * @protected
-         */
-        Uploader.prototype.getFileHeight = function () {
-            return this.fileInfo ? this.fileInfo.height : -1;
         };
 
         /**
@@ -668,19 +722,24 @@ define(
          * @return {string}
          * @protected
          */
-        Uploader.prototype.getSessionToken = function () {
-            return '';
+        // Uploader.prototype.getSessionToken = function () {
+        //     return '';
+        // };
+
+        /**
+         * 清空input文件内容
+         *
+         * @deprecated
+         */
+        Uploader.prototype.clear = function () {
+            this.set('fileInfo', {});
         };
 
         /**
          * 清空input文件内容
+         * 兼容之前的版本
          */
-        Uploader.prototype.reset = function () {
-            var input = lib.g(helper.getId(this, 'input'));
-            input.value = '';
-
-            return;
-        };
+        Uploader.prototype.reset = Uploader.prototype.clear;
 
         /**
          * 销毁控件

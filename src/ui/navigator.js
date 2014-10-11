@@ -273,7 +273,7 @@ define(function (require) {
 
                 element.className = 'nav-' + isSub + 'item';
                 element.innerHTML = '<a href="' + url + '"' + target + '>'
-                                        + '<span>' + u.escape(item.text) + '</span>'
+                                        + '<span>' + item.text + '</span>'
                                     + '</a>';
 
                 nav.appendChild(element);
