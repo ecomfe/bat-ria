@@ -8,6 +8,7 @@ define(function (require) {
     var Deferred = require('er/Deferred');
     var Dialog = require('esui/Dialog');
     var u = require('underscore');
+    var loc = require('../location');
 
     var io = {};
 
@@ -41,7 +42,7 @@ define(function (require) {
      *
      * @enum {string}
      */
-    var CODE_MAP = {
+    var CodeType = {
         0: 'SUCCESS',
         1: 'GLOBAL',
         2: 'FIELD',
@@ -85,7 +86,7 @@ define(function (require) {
      */
     io.prepareResponse = function (data) {
         if (typeof data.code !== 'undefined') { // 有code时认为是新版接口
-            var status = CODE_MAP[data.code];
+            var status = CodeType[data.code];
 
             if (!status) {
                 if (data.code < MINIMAL_CUSTOM_FAIL_CODE) { // 非预定义类型，未知错误
@@ -102,11 +103,13 @@ define(function (require) {
             }
             else {
                 if (status === 'SUCCESS') {
-                    return {
+                    var result = {
                         success: true,
                         message: data.message,
                         result: data.result || data.page
                     };
+
+                    return u.purify(result);
                 }
                 else {
                     return {
@@ -134,7 +137,7 @@ define(function (require) {
             url = io.hooks.filterIndexUrl(url) || url;
         }
 
-        document.location.href = url;
+        loc.assign(url);
     }
 
     /**
@@ -144,7 +147,7 @@ define(function (require) {
      * @return {meta.Promise} 处理后的Promise
      */
     function requestSuccessHandler(rawData) {
-        var data = prepareResponse(rawData);
+        var data = io.prepareResponse(rawData);
 
         if (typeof io.hooks.afterResponse === 'function') {
             data = io.hooks.afterResponse(data) || data;
@@ -171,11 +174,11 @@ define(function (require) {
                     title = '登录超时';
                     content = '登录超时，请重新登录！';
                     onok = function() {
-                        window.location.reload(true);
+                        loc.reload(true);
                     };
                 }
                 else {
-                    window.location.href = message.redirect;
+                    loc.assign(message.redirect);
                     return;
                 }
             }
@@ -190,11 +193,11 @@ define(function (require) {
             }
 
             if (needAlert) {
-                Dialog.alert({
+                Dialog.alert(u.purify({
                     title: title,
                     content: content,
                     onok: onok
-                });
+                }));
             }
 
             if (typeof io.hooks.afterFailure === 'function') {
@@ -269,6 +272,8 @@ define(function (require) {
         options = options
             ? u.defaults(options, defaults)
             : defaults;
+
+        options.data = u.extend(options.data, data);
 
         if (typeof io.hooks.beforeRequest === 'function') {
             options = io.hooks.beforeRequest(options) || options;

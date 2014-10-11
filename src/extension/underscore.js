@@ -32,13 +32,13 @@ define(function (require) {
         u.each(
             object,
             function (value, key) {
-                var isDefaultNull = 
+                var isDefaultNull =
                     value == null || value === '';
-                var isInDefaults = 
+                var isInDefaults =
                     defaults.hasOwnProperty(key) && defaults[key] === value;
                 if (!isDefaultNull && !isInDefaults) {
                     if (deep && typeof value === 'object') {
-                        purifiedObject[key] = 
+                        purifiedObject[key] =
                             purify(value, defaults[key], deep);
                     }
                     else {
@@ -175,15 +175,23 @@ define(function (require) {
      */
     util.dasherize = function (s) {
         s = util.pascalize(s);
-        // 这里把ABCD这种连续的大写，转成AbcD这种形式。
+        // 这里把xABCDx这种连续的大写，转成xAbcDx这种形式。
         // 如果`encodeURIComponent`，会变成`encodeUriComponent`，
         // 然后加横线后就是`encode-uri-component`得到正确的结果
+        var keepLast = false;
+        if (/[A-Z]{2,}$/.test(s)) {
+            // 如果连续的大写出现在最后，则不单独处理最后的字母
+            keepLast = true;
+        }
         s = s.replace(
             /[A-Z]{2,}/g,
             function (match) {
                 return match.charAt(0)
-                    + match.slice(1, -1).toLowerCase()
-                    + match.charAt(match.length - 1);
+                    + (keepLast
+                        ? match.slice(1).toLowerCase()
+                        : (match.slice(1, -1).toLowerCase()
+                            + match.charAt(match.length - 1))
+                    );
             }
         );
         // 大写字符之间用横线连起来
@@ -194,7 +202,10 @@ define(function (require) {
             }
         );
         if (s.charAt(0) === '-') {
-            s = s.substring(1);
+            s = s.slice(1);
+        }
+        if (s.charAt(s.length - 1) === '-') {
+            s = s.slice(0, -1);
         }
         return s;
     };
@@ -208,7 +219,8 @@ define(function (require) {
      * @return {string}
      */
     util.constanize = function (s) {
-        s = util.pascalize(s);
+        s = util.dasherize(s);
+        s = s.replace(/-/g, '_');
         return s.toUpperCase();
     };
 
