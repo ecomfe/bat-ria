@@ -586,7 +586,7 @@ define(
             //    }
             // }
             //
-            // 或`code`版
+            // 或`code`格式
             //
             // {
             //    "code" : 0,
@@ -601,16 +601,35 @@ define(
             //    "success" : "false" | false,
             //    "message" : "错误信息"
             // }
+            // 及sdk兼容格式
+            // {
+            //    "success" : "false" | false,
+            //    "message" : {
+            //         "ERROR" : "错误信息"
+            //    }
+            // }
             //
-            // 或`code`版
+            // 或`code`格式:
             //
             // {
             //    "code" : 1,
             //    "message" : "错误信息"
             // }
+            // 及sdk兼容格式
+            // {
+            //    "code" : 1,
+            //    "message" : {
+            //         "ERROR" : "错误信息"
+            //    }
+            // }
             var result = options.result;
             if (options.success === false || options.success === 'false' || options.code === 1) {
-                this.notifyFail(options.message);
+                if (typeof options.message === 'object' && options.message.ERROR) {
+                    this.notifyFail(options.message.ERROR);
+                }
+                else {
+                    this.notifyFail(options.message);
+                }
             }
             else if (result) {
                 this.fileInfo = result;
@@ -628,7 +647,14 @@ define(
          */
         Uploader.prototype.notifyFail = function (message) {
             this.clear();
-            this.fire('fail', message);
+            var fail = this.fire('fail', message);
+            if (!fail.isDefaultPrevented()) {
+                var validity = new Validity();
+                var state = new ValidityState(false, message);
+                validity.addState('upload', state);
+                this.showValidity(validity);
+            }
+            this.removeState('busy');
         };
 
         /**
@@ -728,8 +754,6 @@ define(
 
         /**
          * 清空input文件内容
-         *
-         * @deprecated
          */
         Uploader.prototype.clear = function () {
             this.set('fileInfo', {});
@@ -738,6 +762,8 @@ define(
         /**
          * 清空input文件内容
          * 兼容之前的版本
+         *
+         * @deprecated
          */
         Uploader.prototype.reset = Uploader.prototype.clear;
 
