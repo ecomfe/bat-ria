@@ -579,47 +579,49 @@ define(
         Uploader.prototype.showUploadResult = function (options) {
             // 如果成功，`options`格式为：
             // {
-            //    "success" : "true" | true,
-            //    "message" : {},
-            //    "result" : {
-            //        "keywordPackagePath" : "231"
+            //    "success": "true" | true,
+            //    "message": {},
+            //    "result": {
+            //        "content": "231",
+            //        "url": "http://baidu.com"
             //    }
             // }
             //
             // 或`code`格式
             //
             // {
-            //    "code" : 0,
-            //    "message" : {},
-            //    "result" : {
-            //        "keywordPackagePath" : "231"
+            //    "code": 0,
+            //    "message": {},
+            //    "result": {
+            //        "content": "231",
+            //        "url": "http://baidu.com"
             //    }
             // }
             //
             // 如果上传失败，`options`必须是以下格式
             // {
-            //    "success" : "false" | false,
-            //    "message" : "错误信息"
+            //    "success": "false" | false,
+            //    "message": "错误信息"
             // }
             // 及sdk兼容格式
             // {
-            //    "success" : "false" | false,
-            //    "message" : {
-            //         "ERROR" : "错误信息"
+            //    "success": "false" | false,
+            //    "message": {
+            //         "ERROR": "错误信息"
             //    }
             // }
             //
             // 或`code`格式:
             //
             // {
-            //    "code" : 1,
-            //    "message" : "错误信息"
+            //    "code": 1,
+            //    "message": "错误信息"
             // }
             // 及sdk兼容格式
             // {
-            //    "code" : 1,
-            //    "message" : {
-            //         "ERROR" : "错误信息"
+            //    "code": 1,
+            //    "message": {
+            //         "ERROR": "错误信息"
             //    }
             // }
             var result = options.result;
