@@ -38,7 +38,7 @@ define(function (require) {
     function activate(options) {
 
         // 设定默认值
-        hooks = u.extend(options);
+        u.extend(hooks, options);
 
         var io = require('../io/serverIO');
 

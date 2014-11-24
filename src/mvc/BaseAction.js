@@ -26,6 +26,8 @@ define(function (require) {
     BaseAction.prototype.createModel = function (args) {
         var model = Action.prototype.createModel.apply(this, arguments);
 
+        window.console.log(model);
+
         // `Action`基类的默认返回值是一个空对象`{}`，
         // 但是普通的`Model`对象因为方法和属性全在`prototype`上，也会被判断为空
         var Model = require('er/Model');
@@ -59,10 +61,10 @@ define(function (require) {
             this.redirect(url);
         }
         else if (isForce) {
-            window.history.back();
+            require('../location').back();
         }
     };
-    
+
     return BaseAction;
 });
 

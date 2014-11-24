@@ -173,7 +173,7 @@ define(function (require) {
                 });
 
                 it('should have default options including `charset` and `dataType`', function () {
-                    io.request('//fakeUrl', {});
+                    io.request('//fakeURL', {});
 
                     var options = ajax.request.calls.mostRecent().args[0];
                     expect(options.charset).toBe('utf-8');
@@ -181,7 +181,7 @@ define(function (require) {
                 });
 
                 it('should use specified options over default ones', function () {
-                    io.request('//fakeUrl', {}, {
+                    io.request('//fakeURL', {}, {
                         charset: 'gbk'
                     });
 
@@ -458,6 +458,8 @@ define(function (require) {
             it('should be able to change ajax options before request', function () {
                 spyOn(ajax, 'request').and.callFake(fakeRequest);
 
+                var before = io.hooks.beforeRequest;
+
                 io.hooks.beforeRequest = function (options) {
                     return u.extend(options, {
                         data: {}
@@ -467,7 +469,7 @@ define(function (require) {
                 io.request('//fakeURL');
                 expect(ajax.request.calls.mostRecent().args[0].data).toEqual({});
 
-                io.hooks.beforeRequest = null;
+                io.hooks.beforeRequest = before;
             });
 
             it('should be able to change response data after response', function (done) {
@@ -479,6 +481,8 @@ define(function (require) {
                 };
 
                 spyOn(ajax, 'request').and.returnValue(Deferred.resolved(result));
+
+                var after = io.hooks.afterResponse;
 
                 io.hooks.afterResponse = function (data) {
                     return u.extend(data, {
@@ -494,7 +498,7 @@ define(function (require) {
                         expect(message.global).toBe('ERROR');
                     })
                     .ensure(function () {
-                        io.hooks.afterResponse = null;
+                        io.hooks.afterResponse = after;
                     })
                     .ensure(done);
 
@@ -512,6 +516,8 @@ define(function (require) {
                 spyOn(ajax, 'request').and.returnValue(Deferred.resolved(result));
                 spyOn(loc, 'assign').and.callFake(u.noop);
 
+                var filter = io.hooks.filterIndexUrl;
+
                 io.hooks.filterIndexUrl = function (url) {
                     return url + '?id=1';
                 };
@@ -528,7 +534,7 @@ define(function (require) {
                         expect(loc.assign).toHaveBeenCalledWith('/index.html?id=1');
                     })
                     .ensure(function () {
-                        io.hooks.filterIndexUrl = null;
+                        io.hooks.filterIndexUrl = filter;
                     })
                     .ensure(done);
             });
@@ -543,6 +549,8 @@ define(function (require) {
 
                 spyOn(ajax, 'request').and.returnValue(Deferred.resolved(result));
 
+                var after = io.hooks.afterSuccess;
+
                 io.hooks.afterSuccess = function (data) {
                     return u.extend(data, {
                         result: {
@@ -556,7 +564,7 @@ define(function (require) {
                         expect(data.id).toBe(1024);
                     })
                     .ensure(function () {
-                        io.hooks.afterSuccess = null;
+                        io.hooks.afterSuccess = after;
                     })
                     .ensure(done);
 
@@ -572,6 +580,8 @@ define(function (require) {
 
                 spyOn(ajax, 'request').and.returnValue(Deferred.resolved(result));
 
+                var after = io.hooks.afterFailure;
+
                 io.hooks.afterFailure = function (message) {
                     return u.extend(message, {
                         global: 'OOPS'
@@ -583,7 +593,7 @@ define(function (require) {
                         expect(message.global).toBe('OOPS');
                     })
                     .ensure(function () {
-                        io.hooks.afterFailure = null;
+                        io.hooks.afterFailure = after;
                     })
                     .ensure(done);
             });
@@ -597,6 +607,8 @@ define(function (require) {
                 };
 
                 spyOn(ajax, 'request').and.returnValue(Deferred.resolved(result));
+
+                var after = io.hooks.afterComplete;
 
                 io.hooks.afterComplete = function (data) {
                     if (data.global) {
@@ -616,7 +628,7 @@ define(function (require) {
                         expect(data.id).toBe(1024);
                     })
                     .ensure(function () {
-                        io.hooks.afterComplete = null;
+                        io.hooks.afterComplete = after;
                     })
                     .ensure(done);
             });
@@ -630,6 +642,8 @@ define(function (require) {
                 };
 
                 spyOn(ajax, 'request').and.returnValue(Deferred.resolved(result));
+
+                var after = io.hooks.afterComplete;
 
                 io.hooks.afterComplete = function (data) {
                     if (data.global) {
@@ -649,7 +663,7 @@ define(function (require) {
                         expect(message.global).toBe('OOPS');
                     })
                     .ensure(function () {
-                        io.hooks.afterComplete = null;
+                        io.hooks.afterComplete = after;
                     })
                     .ensure(done);
             });

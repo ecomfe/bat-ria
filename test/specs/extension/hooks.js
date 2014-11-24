@@ -20,27 +20,19 @@ define(function (require) {
         return deferred.promise;
     }
 
-    describe('`hooks` not activated', function () {
+    describe('`hooks` activated', function () {
         beforeEach(function () {
             spyOn(ajax, 'request').and.callFake(fakeRequest);
             spyOn(loading, 'show').and.callFake(u.noop);
         });
 
-        it('should not show loading dialog upon request', function () {
-            io.request('//fakeURL');
-            expect(loading.show).not.toHaveBeenCalled();
+        afterEach(function () {
+            loading.show.calls.reset();
         });
-    });
 
-    describe('`hooks` activated', function () {
         require('extension/hooks').activate();
 
         describe('`SHOW_LOADING`', function () {
-            beforeEach(function () {
-                spyOn(ajax, 'request').and.callFake(fakeRequest);
-                spyOn(loading, 'show').and.callFake(u.noop);
-            })
-
             it('should show loading dialog before any server request', function () {
                 io.request('//fakeURL');
                 expect(loading.show).toHaveBeenCalled();

@@ -1,8 +1,9 @@
 /**
- * @file 封装window.location部分操作
+ * @file 封装window.location和window.history部分操作
  * @author Justineo
  */
 define(function(require) {
+
     var loc = {};
 
     loc.assign = function (url) {
@@ -17,6 +18,18 @@ define(function(require) {
 
     loc.reload = function (isForce) {
         window.location.reload(isForce);
+    };
+
+    loc.back = function () {
+        window.history.back();
+    };
+
+    loc.forward = function () {
+        window.history.forward();
+    };
+
+    loc.forward = function (step) {
+        window.history.go(step);
     };
 
     return loc;
