@@ -1,6 +1,9 @@
 * 0.2.2
     - 增加了 `SearchTree` 控件
     - `util` 列表生成操作时支持配置为禁用的功能
+    - 增加了部分单测 case
+    - 将 `window` / `history` 相关的逻辑封装到 `location` 模块中
+    - 升级了 `system/constants` 模块的逻辑，更健壮
 
 * 0.2.1
     - 优化了样式
