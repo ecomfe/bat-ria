@@ -11,10 +11,10 @@ define(function (require) {
     /**
      * 业务`Model`基类
      *
-     * @param {Object=} context 初始化时的数据
+     * @param {Object} [context] 初始化时的数据
      *
      * @constructor
-     * @extends ef/UIModel
+     * @extends ef.UIModel
      */
     function BaseModel(context) {
         UIModel.call(this, context);

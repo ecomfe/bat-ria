@@ -1,11 +1,8 @@
 /**
- * JN 2.0
- * Copyright 2014 Baidu Inc. All rights reserved.
- *
- * @ignore
  * @file 锦囊进行权限验证的基础容器
  * @author Justineo(justice360@gmail.com)
  */
+
 define(function (require) {
     var u = require('underscore');
     var lib = require('esui/lib');
@@ -15,8 +12,8 @@ define(function (require) {
     /**
      * 锦囊权限编辑器权限节点
      *
-     * @param {Object=} options 初始化参数
-     * @extends esui/Panel
+     * @param {Object} [options] 初始化参数
+     * @extends esui.Panel
      * @constructor
      * @public
      */
@@ -44,7 +41,7 @@ define(function (require) {
     };
 
     /**
-     * @inheritDoc
+     * @override
      */
     AuthPanel.prototype.initOptions = function (options) {
         var properties = {};
@@ -60,7 +57,7 @@ define(function (require) {
      */
     AuthPanel.prototype.initAuth = function (root) {
         var me = this;
-        var root = root || me.main;
+        root = root || me.main;
 
         // 可以通过设置disabled属性禁用的控件
         // 见 http://www.w3.org/html/wg/drafts/html/master/disabled-elements.html

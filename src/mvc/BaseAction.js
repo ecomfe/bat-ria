@@ -21,12 +21,10 @@ define(function (require) {
     util.inherits(BaseAction, Action);
 
     /**
-     * @inheritDoc
+     * @override
      */
     BaseAction.prototype.createModel = function (args) {
         var model = Action.prototype.createModel.apply(this, arguments);
-
-        window.console.log(model);
 
         // `Action`基类的默认返回值是一个空对象`{}`，
         // 但是普通的`Model`对象因为方法和属性全在`prototype`上，也会被判断为空
@@ -67,4 +65,3 @@ define(function (require) {
 
     return BaseAction;
 });
-

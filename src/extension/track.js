@@ -4,6 +4,7 @@
  * er track，用来统计er应用的信息
  * https://github.com/ecomfe/er-track
  **/
+
 define(function(require) {
     var u = require('underscore');
 

@@ -10,7 +10,7 @@ define(function (require) {
     /**
      * 404页 Action
      *
-     * @extends er/Action
+     * @extends er.Action
      * @constructor
      */
     function NotFoundAction() {
@@ -24,4 +24,3 @@ define(function (require) {
 
     return NotFoundAction;
 });
-

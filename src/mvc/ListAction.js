@@ -43,7 +43,7 @@ define(function (require) {
             .purify(defaultArgs)
             .value();
 
-        var event = this.fire('search', { args: args });
+        var event = this.fire('search', {args: args});
         if (!event.isDefaultPrevented()) {
             this.redirectForSearch(args);
         }
@@ -98,7 +98,7 @@ define(function (require) {
      * @ignore
      */
     function forwardToPage(e) {
-        var event = this.fire('pagechange', { page: e.page });
+        var event = this.fire('pagechange', {page: e.page});
         if (!event.isDefaultPrevented()) {
             var url = this.getURLForPage(e.page);
             this.loadList(url);
@@ -108,19 +108,19 @@ define(function (require) {
     /**
      * 根据新的URL参数刷新列表
      *
-     * @param {er/URL} [url] 新的URL对象，没有时按当前URL刷新
-     * @return {er/Promise=} 返回请求的Promise对象
+     * @param {er.URL} [url] 新的URL对象，没有时按当前URL刷新
+     * @return {er.Promise} 返回请求的Promise对象
      */
     ListAction.prototype.loadList = function (url) {
         if (this.redirectAfterChange) {
-            this.redirect(url, { force: true });
+            this.redirect(url, {force: true});
         }
         else {
             var me = this;
             url = url || me.model.get('url');
 
             return me.model.loadData(url).then(function () {
-                me.redirect(url, { silent: true });
+                me.redirect(url, {silent: true});
                 me.view.refresh();
             });
         }

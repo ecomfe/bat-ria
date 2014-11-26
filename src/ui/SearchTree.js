@@ -31,6 +31,13 @@ define(
         }
         lib.inherits(SearchTree, InputControl);
 
+        /**
+         * 控件类型，始终为`"SearchTree"`
+         *
+         * @type {string}
+         * @readonly
+         * @override
+         */
         SearchTree.prototype.type = 'SearchTree';
         SearchTree.prototype.styleType = 'SearchTree';
 
@@ -72,7 +79,11 @@ define(
 
         };
 
+        /**
+         * @override
+         */
         SearchTree.prototype.initStructure = function () {
+            /* eslint-disable fecs-indent */
             var tpl = [
                 // 内容
                 '<div data-ui="type:Panel;childName:body;"',
@@ -91,6 +102,7 @@ define(
                     '</div>',
                 '</div>'
             ];
+            /* eslint-enable fecs-indent */
 
             var helper = this.helper;
             var searchInput = '';
@@ -184,6 +196,7 @@ define(
 
         /**
          * 清除搜索结果
+         * @return {false} 阻止默认行为
          * @ignore
          */
         SearchTree.prototype.clearQuery = function () {
@@ -461,8 +474,6 @@ define(
 
         };
 
-
-
         /**
          * 撤销选择当前项
          * @param {ui.SearchTree} control 类实例
@@ -478,12 +489,12 @@ define(
             }
         }
 
-
         /**
          * 获取指定状态的叶子节点，递归
          *
          * @param {Array=} data 检测的数据源
          * @param {boolean} isSelected 选择状态还是未选状态
+         * @return {Array} 子节点数组
          * @ignore
          */
         SearchTree.prototype.getLeafItems = function (data, isSelected) {
@@ -579,8 +590,7 @@ define(
         /**
          * 搜索含有关键字的结果
          *
-         * @param {String} keyword 关键字
-         * @return {Array} 结果集
+         * @param {string} keyword 关键字
          */
         SearchTree.prototype.queryItem = function (keyword) {
             var filteredTreeData = [];
@@ -599,7 +609,7 @@ define(
         /**
          * 供递归调用的搜索方法
          *
-         * @param {String} keyword 关键字
+         * @param {string} keyword 关键字
          * @param {Object} node 节点对象
          * @return {Array} 结果集
          */

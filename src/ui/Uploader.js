@@ -13,7 +13,7 @@ define(
         var Validity = require('esui/validator/Validity');
         var ValidityState = require('esui/validator/ValidityState');
         var InputControl = require('esui/InputControl');
-        var URI = require('urijs');
+        var uri = require('urijs');
         var u = require('underscore');
 
         require('./Image');
@@ -96,8 +96,8 @@ define(
         /**
          * 处理额外的参数配置
          *
-         * @param {Mixed} args 额外的参数配置，
-         *                     可以是一个序列化的参数串，或者是一个 { key: value } 的对象
+         * @param {*} args 额外的参数配置，可以是一个序列化的参数串或一个{ key: value }对象
+         * @return {Array} 额外参数的数组
          */
         function buildExtraArgs(args) {
             // 会存在一些额外的参数配置
@@ -119,10 +119,12 @@ define(
                 }
                 else if (typeof args === 'object') {
                     for (var key in args) {
-                        extraArgs.push({
-                            name: u.escape(key),
-                            value: u.escape(args[key])
-                        });
+                        if (args.hasOwnProperty(key)) {
+                            extraArgs.push({
+                                name: u.escape(key),
+                                value: u.escape(args[key])
+                            });
+                        }
                     }
                 }
             }
@@ -196,6 +198,7 @@ define(
             var labelClasses = this.helper.getPartClassName('label');
             var extraArgClasses = this.helper.getPartClassName('extra-args');
 
+            /* eslint-disable fecs-indent */
             var html = [
                 '<div id="' + this.helper.getId('input-container') + '" ',
                     'class="' + containerClasses + '">',
@@ -213,6 +216,7 @@ define(
                     (this.dataKey ? 'name="' + u.escape(this.dataKey) + '" ' : ' '),
                     '/>'
             ];
+            /* eslint-enable fecs-indent */
             // 从附加参数里构造
             var extraArgs = buildExtraArgs(this.args);
             if (extraArgs.length) {
@@ -367,18 +371,18 @@ define(
                 }
             },
             {
-                name: [ 'method', 'action' ],
+                name: ['method', 'action'],
                 paint: function (uploader, method, action) {
                     var form = uploader.helper.getPart('form');
                     form.method = method;
-                    action = URI(action).addQuery({
+                    action = uri(action).addQuery({
                         'callback': 'parent.esuiShowUploadResult["' + uploader.callbackName + '"]'
                     }).toString();
                     form.action = uploader.filterAction(action);
                 }
             },
             {
-                name: [ 'text', 'overrideText' ],
+                name: ['text', 'overrideText'],
                 paint: function (uploader, text, overrideText) {
                     var button = uploader.helper.getPart('button');
                     var html = uploader.hasState('uploaded')
@@ -388,7 +392,7 @@ define(
                 }
             },
             {
-                name: [ 'busyText', 'completeText' ],
+                name: ['busyText', 'completeText'],
                 paint: function (uploader, busyText, completeText) {
                     var indicator = uploader.helper.getPart('indicator');
                     var html = uploader.hasState('busy')
@@ -410,7 +414,7 @@ define(
                 }
             },
             {
-                name: [ 'disabled', 'readOnly' ],
+                name: ['disabled', 'readOnly'],
                 paint: function (uploader, disabled, readOnly) {
                     var input = uploader.helper.getPart('input');
                     input.disabled = disabled;
@@ -420,7 +424,7 @@ define(
                 }
             },
             {
-                name: [ 'width', 'height' ],
+                name: ['width', 'height'],
                 paint: function (uploader, width, height) {
                     var widthWithUnit = width + 'px';
                     var heightWithUnit = height + 'px';
@@ -464,7 +468,7 @@ define(
                     }
                     else if (u.isObject(fileInfo)) {
                         uploader.fileInfo = fileInfo;
-                        uploader.rawValue = fileInfo[uploader.outputType] || fileInfo['previewUrl'];
+                        uploader.rawValue = fileInfo[uploader.outputType] || fileInfo.previewUrl;
                         setStateToComplete.call(uploader, uploader.fileInfo);
                         // 不需要停留在完成提示
                         uploader.removeState('complete');
@@ -709,7 +713,7 @@ define(
 
         /**
          * 获取后端返回的信息
-         * @return {object} 后端返回的结构体
+         * @return {Object} 后端返回的结构体
          */
         Uploader.prototype.getFileInfo = function () {
             return this.fileInfo || null;

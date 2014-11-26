@@ -140,7 +140,7 @@ define(
 
         /**
          * 更新备选区
-         * 
+         *
          * @override
          */
         TableRichSelector.prototype.refreshContent = function () {
@@ -166,7 +166,7 @@ define(
         /**
          * 创建表头
          *
-         * public
+         * @param {esui.Control} control 控件自身
          * @return {string} 表头html
          */
         function createTableHead(control) {
@@ -196,6 +196,8 @@ define(
         /**
          * 创建表格体
          * @param {ui.TableForSelector} control 类实例
+         * @param {Object} data 表数据
+         * @return {string} 表格HTML
          * @ignore
          */
         function createTableContent(control, data) {
@@ -240,6 +242,7 @@ define(
          * @param {Object} item 每行的数据
          * @param {number} index 行索引
          * @param {HTMLElement} tr 容器节点
+         * @return {string} 行HTML
          * @ignore
          */
         function createRow(control, item, index, tr) {
@@ -271,7 +274,7 @@ define(
             });
 
             // 最后一列添加箭头
-            var arrowClasses = 
+            var arrowClasses =
                 control.helper.getPartClassName('row-action-icon');
             var arrowHTML = '<span class="' + arrowClasses + '"></span>';
             if (tr) {
@@ -342,7 +345,7 @@ define(
         };
 
         function actionForAdd(control, row, item) {
-            var selectedClasses = 
+            var selectedClasses =
                 control.helper.getPartClassName('row-selected');
             var fire = false;
             // 点击已选中的，在单选模式下，执行取消选择
@@ -471,7 +474,7 @@ define(
         function actionForDelete(control, row, item) {
             deleteItem(control, item.id);
             // 外部需要知道什么数据被删除了
-            control.fire('delete', { items: [item] });
+            control.fire('delete', {items: [item]});
         }
 
         /**
@@ -502,12 +505,12 @@ define(
         TableRichSelector.prototype.deleteAll = function () {
             var items = u.clone(this.datasource);
             this.set('datasource', []);
-            this.fire('delete', { items: items });
+            this.fire('delete', {items: items});
         };
 
 
         function actionForLoad(control, row, item) {
-            var selectedClasses = 
+            var selectedClasses =
                 control.helper.getPartClassName('row-selected');
             // 点击未选中的，执行
             if (!lib.hasClass(row, selectedClasses)) {
@@ -519,10 +522,10 @@ define(
 
         /**
          * 搜索含有关键字的结果，默认以name为目标搜索
-         * 
+         *
          * 可重写
          *
-         * @param {String} keyword 关键字
+         * @param {string} keyword 关键字
          * @public
          */
         TableRichSelector.prototype.queryItem = function (keyword) {

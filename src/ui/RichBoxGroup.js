@@ -35,74 +35,6 @@ define(
          */
         RichBoxGroup.prototype.type = 'RichBoxGroup';
 
-        /*
-         * 从已有的DOM中分析出数据源
-         *
-         * @param {HTMLElement} element 供分析的DOM元素
-         * @param {Object} options 输入的配置项
-         * @param {string|undefined} options.name 输入控件的名称
-         * @param {string} options.boxType 选项框的类型，参考`unknownTypes`
-         * @ignore
-         */
-        function extractDatasourceFromDOM(element, options) {
-            // 提取符合以下条件的子`<input>`控件：
-            //
-            // - `type`属性已知（基本就是`radio`和`checkbox`）
-            // - 二选一：
-            //     - 当前控件和`<input>`控件都没有`name`属性
-            //     - `<input>`和当前控件的`name`属性相同
-            //
-            // 根据以下优先级获得`title`属性：
-            //
-            // 1. 有一个`for`属性等于`<input>`的`id`属性的`<label>`元素，则取其文字
-            // 2. 取`<input>`的`title`属性
-            // 3. 取`<input>`的`value`
-            var boxes = element.getElementsByTagName('input');
-            var labels = element.getElementsByTagName('label');
-
-            // 先建个索引方便取值
-            var labelIndex = {};
-            for (var i = labels.length - 1; i >= 0; i--) {
-                var label = labels[i];
-                var forAttribute = lib.getAttribute(label, 'for');
-                if (forAttribute) {
-                    labelIndex[forAttribute] = label;
-                }
-            }
-
-            var datasource = [];
-            var values = [];
-            for (var i = 0, length = boxes.length; i < length; i++) {
-                var box = boxes[i];
-                if (box.type === options.boxType
-                    && (options.name || '') === box.name // DOM的`name`是字符串
-                ) {
-                    // 提取`value`和`title`
-                    var item = { value: box.value };
-                    var label = box.id && labelIndex[box.id];
-                    item.title = label ? lib.getText(label) : '';
-                    if (!item.title) {
-                        item.title =
-                            box.title || (box.value === 'on' ? box.value : '');
-                    }
-                    datasource.push(item);
-
-                    // firefox下的autocomplete机制在reload页面时,
-                    // 可能导致box.checked属性不符合预期,
-                    // 所以这里采用getAttribute
-                    // 参考：http://t.cn/zRTdrVR
-                    if (box.getAttribute('checked') !== null) {
-                        values.push(box.value);
-                    }
-                }
-            }
-
-            options.datasource = datasource;
-            if (!options.rawValue && !options.value) {
-                options.rawValue = values;
-            }
-        }
-
         /**
          * 同步值
          *
@@ -110,7 +42,7 @@ define(
          */
         function syncValue() {
             var result = u.chain(this.getBoxElements())
-                .where({ checked: true })
+                .where({checked: true})
                 .pluck('value')
                 .value();
 
@@ -118,6 +50,7 @@ define(
             this.fire('change');
         }
 
+        /* eslint-disable fecs-indent */
         var itemTemplate = [
             '<div class="${wrapperClass}">',
                 '<input id="${id}" class="${className}" name=${name} ${checked}',
@@ -125,6 +58,7 @@ define(
                 '<label class="${contentClassName}" for="${id}">${title}</label>',
             '</div>'
         ];
+        /* eslint-enable fecs-indent */
         itemTemplate = itemTemplate.join('');
 
         /**

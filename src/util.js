@@ -5,6 +5,7 @@
  * @file BAT工具模块
  * @author Justineo
  */
+
 define(function (require) {
     var u = require('underscore');
     var moment = require('moment');
@@ -13,7 +14,6 @@ define(function (require) {
     /**
      * 工具模块
      *
-     * @class util
      * @singleton
      */
     var util = {};
@@ -23,9 +23,9 @@ define(function (require) {
      *
      * 传入一个字符串时，只返回一个发送器函数；传入数组或对象时，递归；传入函数时
      *
-     * @param {string|Array.<string>|Object.<string, string>|Function} url 请求路径或多个请求路径的集合，或是取值函数
-     * @param {Function(string):boolean} isRequester 判断是否是需要生成请求发送器的路径
-     * @return {Function|Array.<Function>|Object.<string, Function>} 将对应的路径转换为发送器后返回
+     * @param {string|Array.<string>|Object.<string, string>|function} url 请求路径或多个请求路径的集合，或是取值函数
+     * @param {function(string):boolean} isRequester 判断是否是需要生成请求发送器的路径
+     * @return {function|Array.<function>|Object.<string, function>} 将对应的路径转换为发送器后返回
      */
     util.genRequesters = function (url, isRequester) {
         if (u.typeOf(url) === 'String') {
@@ -168,7 +168,6 @@ define(function (require) {
         var item;
         var k;
         var map = {};
-        var converter = converter;
 
         for (i = list.length; i--;) {
             item = list[i];
@@ -255,6 +254,7 @@ define(function (require) {
             className: 'list-operation'
         };
         command = u.defaults(command, defaults);
+        var tagName = u.escape(command.tagName);
 
         if (command.disabled) {
             return '<' + tagName + ' class="' + u.escape(command.className) + ' auth-disabled">'
@@ -280,7 +280,6 @@ define(function (require) {
             return key + '="' + u.escape(val) + '"';
         });
 
-        var tagName = u.escape(command.tagName);
         return '<' + tagName + ' ' + attrs.join(' ') + '>'
             + u.escape(command.text) + '</' + tagName + '>';
     };
@@ -318,20 +317,22 @@ define(function (require) {
         var divId = '__DownloadContainer__';
         var formId = '__DownloadForm__';
         var iframeId = '__DownloadIframe__';
+        /* eslint-disable fecs-indent */
         var tpl = [
             '<form action="${url}" method="post" id="${formId}" ',
                 'name="${formId}" target="${iframeId}"></form>',
             '<iframe src="about:blank" id="${iframeId}" name="${iframeId}">',
             '</iframe>'
         ].join('');
+        /* eslint-enable fecs-indent */
 
         function getUrlWithAderId() {
-            var URI = require('urijs');
+            var uri = require('urijs');
             var user = require('./system/user');
             var aderId = user.ader && user.ader.id
-                || URI.parseQuery(document.location.search).aderId;
-            var query = aderId ? { aderId: aderId } : {};
-            return URI(url).addQuery(query).toString();
+                || uri.parseQuery(document.location.search).aderId;
+            var query = aderId ? {aderId: aderId} : {};
+            return uri(url).addQuery(query).toString();
         }
 
         function getDownloadContainer() {

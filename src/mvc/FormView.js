@@ -16,9 +16,9 @@ define(function (require) {
      * - 所有触发提交的按钮，会触发`form`的`submit`事件
      * - 可以使用`Form`控件的`data-ui-auto-validate`属性，
      *   设置为`true`可以在submit之前自动校验含有`name`属性的`InputControl`
-     * 
+     *
      * 可选：
-     * 
+     *
      * - 可以有一个id为`cancel`的按钮，点击后会触发`cancel`事件
      * - 可以有一个id为`reset`的按钮，点击后会触发`reset`事件
 
@@ -102,9 +102,9 @@ define(function (require) {
      * 然后在FormAction中提供了异步的beforeValidate、validate、afterValidate的扩展点
      * 因此FormView必须自己调validate
      * 这个方法会在FormAction.validite中和FormModel的校验一起做
-     * (还不是一堆蛋疼需求导致的。。。。
+     * (还不是一堆蛋疼需求导致的...
      *
-     * return {boolean} 校验是否成功
+     * @return {boolean} 校验是否成功
      */
     FormView.prototype.validate = function () {
         var form = this.get('form');
@@ -158,6 +158,8 @@ define(function (require) {
 
     /**
      * 进入提交前的处理
+     *
+     * @param {Event} e 事件对象
      */
     function submit(e) {
         e.preventDefault();
@@ -188,7 +190,7 @@ define(function (require) {
         var form = this.get('form');
         u.some(form.getInputControls(), function (input) {
             if (input.hasState('validity-invalid')) {
-                var e = me.fire('scrolltofirsterror', { firstErrValidity: input });
+                var e = me.fire('scrolltofirsterror', {firstErrValidity: input});
                 if (!e.isDefaultPrevented()) {
                     scrollTo(input.main);
                 }
@@ -220,7 +222,7 @@ define(function (require) {
 
         BaseView.prototype.bindEvents.apply(this, arguments);
     };
-    
+
     /**
      * 禁用提交操作
      */

@@ -10,10 +10,10 @@ define(function (require) {
     /**
      * 403页 Model
      *
-     * @param {Object=} context 初始化时的数据
+     * @param {Object} [context] 初始化时的数据
      *
      * @constructor
-     * @extends er/Model
+     * @extends er.Model
      */
     function ForbiddenModel(context) {
         Model.call(this, context);

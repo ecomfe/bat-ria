@@ -20,6 +20,11 @@ define(
             config.api = util.genRequesters(config.api);
         }
 
+        /**
+         * 初始化ER 配置
+         *
+         * @ignore
+         */
         function initErConfigs() {
             var erConfig = require('er/config');
             erConfig.indexURL = config.index;
@@ -30,7 +35,7 @@ define(
          * 初始化系统启动
          *
          * @param {Array} [extra] 额外的请求发送器
-         *
+         * @return {er.Promise} 处理完毕的Promise
          * @ignore
          */
         function loadData(extra) {
@@ -43,7 +48,7 @@ define(
                 }
             }) : [];
 
-            var requests = [ config.api.user, config.api.constants ].concat(extra || []);
+            var requests = [config.api.user, config.api.constants].concat(extra || []);
 
             return Deferred.all.apply(
                 Deferred,
@@ -56,7 +61,9 @@ define(
         /**
          * 默认读取用户信息和系统常量后初始化对应模块
          *
-         * @ignore
+         * @param {Object} session 用户信息
+         * @param {Object} constants 服务器端常量
+         * @return {er.Promise} 处理完毕的Promise
          */
         function initData(session, constants) {
             // 初始化用户信息
@@ -97,6 +104,7 @@ define(
          * @param {Object} riaConfig RIA配置
          * @param {Array} requesters 初始化数据需要的请求发送器
          * @param {Function} callback 初始化请求返回后的回调函数
+         * @return {er.Promise} 处理完毕的Promise
          * @ignore
          */
         function start(riaConfig, requesters, callback) {

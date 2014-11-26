@@ -9,7 +9,6 @@ define(function (require) {
     /**
      * underscore扩展模块
      *
-     * @class underscore
      * @singleton
      */
     var util = {};
@@ -51,10 +50,18 @@ define(function (require) {
     };
 
     /**
+     * `filterObject`用来判断是否过滤的方法
+     * @callback underscore~filterCallback
+     * @param {Object} obj 需要过滤的对象
+     * @param {string} key 对应的键
+     * @return {boolean} 是否过滤，如为falsy值则过滤
+     */
+
+    /**
      * 根据指定条件过滤对象中的键值对
      *
      * @param {Object} obj 输入的对象
-     * @param {Function(Object, string):boolean} predicate 判断是否要保留某键值对，返回falsy value则过滤
+     * @param {filterCallback} predicate 判断是否要保留某键值对，返回falsy value则过滤
      * @param {*} [context] 判断函数的`this`
      * @return {Object} 过滤的结果
      */
@@ -72,10 +79,18 @@ define(function (require) {
     };
 
     /**
+     * `mapObject`用来处理映射逻辑的方法
+     * @callback underscore~mapObjectCallback
+     * @param {*} original 处理前值
+     * @return {*} 处理后结果
+     */
+
+    /**
      * 根据指定的映射关系修改对象的键值
      *
      * @param {Object} obj 输入的对象
-     * @param {Function} iterator 每个键值的映射函数
+     * @param {mapObjectCallback} iterator 每个键值的映射函数
+     * @param {*} [context] 判断函数的`this`
      * @return {Object} context 映射函数的this
      */
     util.mapObject = function (obj, iterator, context) {

@@ -49,7 +49,7 @@ define(function (require) {
      * 显示toast提示信息，这个方法会控制一个单例，以免信息叠在一起
      *
      * @param {string} content 显示的内容
-     * @param {Object=} options 配置
+     * @param {Object} [options] 配置
      * @return {esui.Toast}
      */
     BaseView.prototype.showToast = function (content, options) {
@@ -62,7 +62,10 @@ define(function (require) {
             // 因为这个控件不能属于任何一个业务模块的ViewContext，
             // 不然会随着跳转被销毁，造成下次用不了
             var Toast = require('esui/Toast');
-            var toastOptions = { disposeOnHide: false, autoShow: false };
+            var toastOptions = {
+                disposeOnHide: false,
+                autoShow: false
+            };
             globalToast = new Toast(toastOptions);
             globalToast.render();
         }
@@ -120,7 +123,7 @@ define(function (require) {
     /**
      * 等待一个`Dialog`触发`ok`或`cancel`事件，触发后一定会自动关闭
      *
-     * @param {esui.Dialog=} dialog 指定的对话框控件，未指定则通过`popDialog`创建新对话框
+     * @param {esui.Dialog} [dialog] 指定的对话框控件，未指定则通过`popDialog`创建新对话框
      * @param {Object} options 参数
      * @return {er.Promise} 一个`Promise`对象，
      * 默认为点击确定按钮时进入`resolved`状态，
@@ -174,10 +177,10 @@ define(function (require) {
      * 显示一个`Dialog`，并指定触发`ok`与`cancel`事件（默认状态下为点击确定、取消按钮后触发）
      * 后的处理函数，可以手动指定阻止自动关闭
      *
-     * @param {esui.Dialog=} dialog 指定的对话框控件，未指定则通过`popDialog`创建新对话框
+     * @param {esui.Dialog} [dialog] 指定的对话框控件，未指定则通过`popDialog`创建新对话框
      * @param {Object} options 参数
-     * @param {function=} options.onOk `ok`事件处理函数，`this`指向对应的`Dialog`对象
-     * @param {function=} options.onCancel `cancel`事件处理函数，`this`指向对应的`Dialog`对象
+     * @param {function} [options.onOk] `ok`事件处理函数，`this`指向对应的`Dialog`对象
+     * @param {function} [options.onCancel] `cancel`事件处理函数，`this`指向对应的`Dialog`对象
      * @return {esui.Dialog} 显示的`Dialog`对象
      *
      * `onOk`或`onCancel`的返回值如果为`false`，则不执行默认的关闭动作；

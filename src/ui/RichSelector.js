@@ -30,8 +30,18 @@ define(
 
         lib.inherits(RichSelector, InputControl);
 
+        /**
+         * 控件类型，始终为`"RichSelector"`
+         *
+         * @type {string}
+         * @readonly
+         * @override
+         */
         RichSelector.prototype.type = 'RichSelector';
 
+        /**
+         * @override
+         */
         RichSelector.prototype.initOptions = function (options) {
             var properties = {
                 height: '200',
@@ -92,6 +102,11 @@ define(
             this.setProperties(properties);
         };
 
+        /**
+         * 获取头部HTML
+         *
+         * @return {string} 头部HTML代码
+         */
         RichSelector.prototype.getHeadHTML = function () {
             var helper = this.helper;
             var actionLink = '';
@@ -127,6 +142,11 @@ define(
             return head;
         };
 
+        /**
+         * 获取底部HTML
+         *
+         * @return {string} 底部HTML代码
+         */
         RichSelector.prototype.getFootHTML = function () {
             return [
                 '<div data-ui="type:Panel;childName:foot;"',
@@ -137,7 +157,11 @@ define(
             ].join('\n');
         };
 
+        /**
+         * @override
+         */
         RichSelector.prototype.initStructure = function () {
+            /* eslint-disable fecs-indent */
             var tpl = [
                 // 表头
                 '${head}',
@@ -160,6 +184,7 @@ define(
                 // 腿部概要信息
                 '${footInfo}'
             ];
+            /* eslint-enable fecs-indent */
 
             var helper = this.helper;
             var head = '';
@@ -269,16 +294,15 @@ define(
             );
         };
 
-
         /**
          * 点击行为分发器
          * @param {Event} e 事件对象
+         * @return {false} 阻止默认行为
          * @ignore
          */
         RichSelector.prototype.eventDispatcher = function (e) {
             return false;
         };
-
 
         /**
          * 根据关键词搜索结果
@@ -308,6 +332,7 @@ define(
         /**
          * 清除搜索结果
          * @param {ui.RichSelector} richSelector 类实例
+         * @return {false} 阻止默认行为
          * @ignore
          */
         RichSelector.prototype.clearQuery = function () {
@@ -413,6 +438,7 @@ define(
          * 批量操作事件处理
          * 可重写
          *
+         * @return {false} 阻止默认行为
          */
         RichSelector.prototype.batchAction = function () {
             if (this.mode === 'delete') {
@@ -540,7 +566,7 @@ define(
          * 重新渲染视图
          * 仅当生命周期处于RENDER时，该方法才重新渲染
          *
-         * @param {Array=} 变更过的属性的集合
+         * @param {Array} 变更过的属性的集合
          * @override
          */
         RichSelector.prototype.repaint = painter.createRepaint(

@@ -104,7 +104,7 @@ define(function (require) {
      * 处理本地的验证错误
      * 没有name的controls请自行扩展处理
      *
-     * @param {object | string} errors 本地验证得到的错误信息
+     * @param {Object|string} errors 本地验证得到的错误信息
      *        object视为`FieldError`，string视为`GlobalError`
      *        object的格式：
      *        {
@@ -215,11 +215,11 @@ define(function (require) {
     /**
      * 提交表单
      *
-     * @param {object} submitData 表单数据
-     * @return {meta.Promise}
+     * @param {Object} submitData 表单数据
+     * @return {er.Promise}
      */
     FormAction.prototype.submit = function (submitData) {
-        var handleBeforeSubmit = this.fire('beforesubmit', { submitData: submitData });
+        var handleBeforeSubmit = this.fire('beforesubmit', {submitData: submitData});
         if (!handleBeforeSubmit.isDefaultPrevented()) {
             try {
                 var submitRequester = this.model.submitRequester;
@@ -236,31 +236,36 @@ define(function (require) {
     };
 
     /**
-     * 校验表单前可扩展的操作，在提交之前做`异步`的校验
+     * 校验表单前可扩展的操作，在提交之前做*异步*的校验
      * 比如弹个框“提交有风险，是否要提交”之类
      *
-     * @param {object} submitData 最终要提交的数据
-     * @return {Mixed}
+     * @param {Object} submitData 最终要提交的数据
+     * @return {*}
      *      当且仅当返回Deferred.rejected()阻止后续流程
      *      其他任意返回结果均与Deferred.resolved()等效
      */
-    FormAction.prototype.beforeValidate = function (submitData) {};
+    FormAction.prototype.beforeValidate = function (submitData) {
+        return true;
+    };
 
     /**
-     * 校验表单后可扩展的动作，在校验之后做`异步`的处理
+     * 校验表单后可扩展的动作，在校验之后做*异步*的处理
      * 比如弹个框“提交仍有风险，是否要提交”之类
      *
-     * @param {object} submitData 最终要提交的数据
-     * @return {Mixed}
+     * @param {Object} submitData 最终要提交的数据
+     * @return {*}
      *      当且仅当返回Deferred.rejected()阻止后续流程
      *      其他任意返回结果均与Deferred.resolved()等效
      */
-    FormAction.prototype.afterValidate = function (submitData) {};
+    FormAction.prototype.afterValidate = function (submitData) {
+        return true;
+    };
 
     /**
      * 进行校验，如果设置了Form的`autoValidate`则先进行表单控件自校验，否则只做自定义校验
      *
-     * @return {meta.Promise}
+     * @param {Object} submitData 最终要提交的数据
+     * @return {er.Promise} 处理完毕的Promise
      */
     FormAction.prototype.validate = function (submitData) {
         var localViewValidationResult = this.view.validate();
@@ -317,6 +322,6 @@ define(function (require) {
         this.view.on('cancel', this.cancelEdit, this);
         this.view.on('reset', this.reset, this);
     };
-    
+
     return FormAction;
 });

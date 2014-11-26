@@ -340,8 +340,6 @@ define(
 
             /**
              * 隐藏控件
-             *
-             * @return {boolean}
              */
             Sidebar.prototype.hide = function () {
                 Control.prototype.hide.call(this);

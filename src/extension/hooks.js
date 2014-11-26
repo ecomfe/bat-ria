@@ -5,7 +5,7 @@
 
 define(function (require) {
     var u = require('underscore');
-    var URI = require('urijs');
+    var uri = require('urijs');
     var loading = require('../ui/loading');
 
     function getAderArgMap() {
@@ -44,14 +44,14 @@ define(function (require) {
 
         if (hooks.ADD_ADER_ID) {
             io.hooks.filterIndexUrl = function(url) {
-                return URI(url).addQuery(getAderArgMap()).toString();
+                return uri(url).addQuery(getAderArgMap()).toString();
             };
 
             var Uploader = require('../ui/Uploader');
             Uploader.prototype.filterAction = function (action) {
                 var argMap = getAderArgMap();
                 if (argMap) {
-                    action = URI(action).addQuery(argMap).toString();
+                    action = uri(action).addQuery(argMap).toString();
                 }
                 return action;
             };
@@ -62,7 +62,7 @@ define(function (require) {
                 var url = options.url;
                 var argMap = getAderArgMap();
                 if (argMap) {
-                    options.url = URI(url).addQuery(argMap).toString();
+                    options.url = uri(url).addQuery(argMap).toString();
                 }
             }
 

@@ -23,6 +23,66 @@ define(function (require) {
 
     auth.AuthType = AuthType;
 
+
+    /**
+     * 已经注册的权限类型转换器
+     * @type {Object.<string, Function>}
+     * @private
+     */
+    var filters = {
+        rtoe: function(type) {
+            return type === AuthType.READONLY
+                   ? AuthType.EDITABLE
+                   : type;
+        },
+
+        rton: function(type) {
+            return type === AuthType.READONLY
+                   ? AuthType.NONE
+                   : type;
+        },
+
+        ntor: function(type) {
+            return type === AuthType.NONE
+                   ? AuthType.READONLY
+                   : type;
+        },
+
+        up: function(type) {
+            return type === AuthType.NONE
+                   ? AuthType.READONLY
+                   : AuthType.EDITABLE;
+        },
+
+        max: function(types) {
+            var max = AuthType.NONE;
+            u.each(types, function(type) {
+                if (type === AuthType.EDITABLE) {
+                    max = type;
+                    return false;
+                }
+                else if (type === AuthType.READONLY) {
+                    max = type;
+                }
+            });
+            return max;
+        },
+
+        min: function(types) {
+            var min = AuthType.EDITABLE;
+            u.each(types, function(type) {
+                if (type === AuthType.NONE) {
+                    min = type;
+                    return false;
+                }
+                else if (type === AuthType.READONLY) {
+                    min = type;
+                }
+            });
+            return min;
+        }
+    };
+
     /**
      * 获取某个权限模块在某个权限集合中的权限类型
      * @param {string} authName 权限模块的名字
@@ -131,65 +191,6 @@ define(function (require) {
      */
     auth.permit = function(authName, authMap) {
         return auth.get(authName, authMap) !== AuthType.NONE;
-    };
-
-    /**
-     * 已经注册的权限类型转换器
-     * @type {Object.<string, Function>}
-     * @private
-     */
-    var filters = {
-        rtoe: function(type) {
-            return type === AuthType.READONLY
-                   ? AuthType.EDITABLE
-                   : type;
-        },
-
-        rton: function(type) {
-            return type === AuthType.READONLY
-                   ? AuthType.NONE
-                   : type;
-        },
-
-        ntor: function(type) {
-            return type === AuthType.NONE
-                   ? AuthType.READONLY
-                   : type;
-        },
-
-        up: function(type) {
-            return type === AuthType.NONE
-                   ? AuthType.READONLY
-                   : AuthType.EDITABLE;
-        },
-
-        max: function(types) {
-            var max = AuthType.NONE;
-            u.each(types, function(type) {
-                if (type === AuthType.EDITABLE) {
-                    max = type;
-                    return false;
-                }
-                else if (type === AuthType.READONLY) {
-                    max = type;
-                }
-            });
-            return max;
-        },
-
-        min: function(types) {
-            var min = AuthType.EDITABLE;
-            u.each(types, function(type) {
-                if (type === AuthType.NONE) {
-                    min = type;
-                    return false;
-                }
-                else if (type === AuthType.READONLY) {
-                    min = type;
-                }
-            });
-            return min;
-        }
     };
 
     /**

@@ -23,7 +23,7 @@ define(function (require) {
 
             u.each(value, function(item) {
                 vlMap[item.v] = item.l;
-                vlDatasource.push(u.mapKey(item, { v: 'value', l: 'text' }));
+                vlDatasource.push(u.mapKey(item, {v: 'value', l: 'text'}));
             });
         }
     }

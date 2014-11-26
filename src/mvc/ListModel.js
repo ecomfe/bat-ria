@@ -12,10 +12,10 @@ define(function (require) {
     /**
      * 业务`Model`基类
      *
-     * @param {Object=} context 初始化时的数据
+     * @param {Object} [context] 初始化时的数据
      *
      * @constructor
-     * @extends ef/BaseModel
+     * @extends ef.BaseModel
      */
     function ListModel(context) {
         BaseModel.call(this, context);
@@ -51,7 +51,7 @@ define(function (require) {
      * @protected
      */
     ListModel.prototype.getDefaultArgs = function () {
-        return u.defaults(this.defaultArgs || {}, { pageNo: 1 });
+        return u.defaults(this.defaultArgs || {}, {pageNo: 1});
     };
 
     /**

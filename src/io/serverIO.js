@@ -125,7 +125,7 @@ define(function (require) {
         else {
             return SCHEMA_ERROR;
         }
-    }
+    };
 
     /**
      * 跳转到主页
