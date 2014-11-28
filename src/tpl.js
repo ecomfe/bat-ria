@@ -48,7 +48,9 @@ define(
             TableRichSelector: './ui',
             RichSelector: './ui',
             ToggleButton: './ui',
-            AuthPanel: './ui'
+            AuthPanel: './ui',
+            SearchTree: './ui',
+            RichBoxGroup: './ui'
         };
 
         var extensionModulePrefix = {
@@ -130,7 +132,6 @@ define(
          * - 对于ESUI扩展，必须写`data-ui-extension-xxx-type="Xxx"`的形式
          * - 业务ESUI扩展必须放置在`src/ui/extension`文件夹下
          *
-         * @class tpl
          * @singleton
          */
         var plugin = {
@@ -147,8 +148,8 @@ define(
              * 加载模板，AMD插件对象暴露的方法
              *
              * @param {string} resourceId 模板资源id
-             * @param {function} parentRequire 父级`require`函数
-             * @param {function} load 加载完成后调用
+             * @param {Function} parentRequire 父级`require`函数
+             * @param {Function} load 加载完成后调用
              */
             load: function (resourceId, parentRequire, load) {
                 function addTemplate(text) {

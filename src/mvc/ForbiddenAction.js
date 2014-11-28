@@ -10,7 +10,7 @@ define(function (require) {
     /**
      * 403页 Action
      *
-     * @extends er/Action
+     * @extends er.Action
      * @constructor
      */
     function ForbiddenAction() {
@@ -24,4 +24,3 @@ define(function (require) {
 
     return ForbiddenAction;
 });
-

@@ -10,10 +10,10 @@ define(function (require) {
     /**
      * 404页 Model
      *
-     * @param {Object=} context 初始化时的数据
+     * @param {Object} [context] 初始化时的数据
      *
      * @constructor
-     * @extends er/Model
+     * @extends er.Model
      */
     function NotFoundModel(context) {
         Model.call(this, context);

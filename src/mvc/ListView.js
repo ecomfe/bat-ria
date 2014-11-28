@@ -15,7 +15,7 @@ define(function (require) {
      * 列表`View`基类
      *
      * @constructor
-     * @extends ef/BaseView
+     * @extends ef.BaseView
      */
     function ListView() {
         BaseView.apply(this, arguments);
@@ -45,7 +45,7 @@ define(function (require) {
             args.order = e.order;
         }
 
-        this.fire('search', { args: args });
+        this.fire('search', {args: args});
     };
 
     /**
@@ -93,7 +93,7 @@ define(function (require) {
      */
     function updatePageIndex(e) {
         var page = e.target.get('page');
-        this.fire('pagechange', { page: page });
+        this.fire('pagechange', {page: page});
     }
 
     /**
@@ -250,7 +250,7 @@ define(function (require) {
                     page: model.get('pageNo'),
                     pageSize: model.get('pageSize')
                 },
-                { silent: true }
+                {silent: true}
             );
         }
     };

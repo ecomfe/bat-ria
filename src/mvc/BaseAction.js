@@ -21,7 +21,7 @@ define(function (require) {
     util.inherits(BaseAction, Action);
 
     /**
-     * @inheritDoc
+     * @override
      */
     BaseAction.prototype.createModel = function (args) {
         var model = Action.prototype.createModel.apply(this, arguments);
@@ -59,10 +59,9 @@ define(function (require) {
             this.redirect(url);
         }
         else if (isForce) {
-            window.history.back();
+            require('../location').back();
         }
     };
-    
+
     return BaseAction;
 });
-

@@ -9,7 +9,6 @@ define(function (require) {
     /**
      * underscore扩展模块
      *
-     * @class underscore
      * @singleton
      */
     var util = {};
@@ -32,13 +31,13 @@ define(function (require) {
         u.each(
             object,
             function (value, key) {
-                var isDefaultNull = 
+                var isDefaultNull =
                     value == null || value === '';
-                var isInDefaults = 
+                var isInDefaults =
                     defaults.hasOwnProperty(key) && defaults[key] === value;
                 if (!isDefaultNull && !isInDefaults) {
                     if (deep && typeof value === 'object') {
-                        purifiedObject[key] = 
+                        purifiedObject[key] =
                             purify(value, defaults[key], deep);
                     }
                     else {
@@ -51,10 +50,18 @@ define(function (require) {
     };
 
     /**
+     * `filterObject`用来判断是否过滤的方法
+     * @callback underscore~filterCallback
+     * @param {Object} obj 需要过滤的对象
+     * @param {string} key 对应的键
+     * @return {boolean} 是否过滤，如为falsy值则过滤
+     */
+
+    /**
      * 根据指定条件过滤对象中的键值对
      *
      * @param {Object} obj 输入的对象
-     * @param {Function(Object, string):boolean} predicate 判断是否要保留某键值对，返回falsy value则过滤
+     * @param {filterCallback} predicate 判断是否要保留某键值对，返回falsy value则过滤
      * @param {*} [context] 判断函数的`this`
      * @return {Object} 过滤的结果
      */
@@ -72,10 +79,18 @@ define(function (require) {
     };
 
     /**
+     * `mapObject`用来处理映射逻辑的方法
+     * @callback underscore~mapObjectCallback
+     * @param {*} original 处理前值
+     * @return {*} 处理后结果
+     */
+
+    /**
      * 根据指定的映射关系修改对象的键值
      *
      * @param {Object} obj 输入的对象
-     * @param {Function} iterator 每个键值的映射函数
+     * @param {mapObjectCallback} iterator 每个键值的映射函数
+     * @param {*} [context] 判断函数的`this`
      * @return {Object} context 映射函数的this
      */
     util.mapObject = function (obj, iterator, context) {
@@ -175,15 +190,23 @@ define(function (require) {
      */
     util.dasherize = function (s) {
         s = util.pascalize(s);
-        // 这里把ABCD这种连续的大写，转成AbcD这种形式。
+        // 这里把xABCDx这种连续的大写，转成xAbcDx这种形式。
         // 如果`encodeURIComponent`，会变成`encodeUriComponent`，
         // 然后加横线后就是`encode-uri-component`得到正确的结果
+        var keepLast = false;
+        if (/[A-Z]{2,}$/.test(s)) {
+            // 如果连续的大写出现在最后，则不单独处理最后的字母
+            keepLast = true;
+        }
         s = s.replace(
             /[A-Z]{2,}/g,
             function (match) {
                 return match.charAt(0)
-                    + match.slice(1, -1).toLowerCase()
-                    + match.charAt(match.length - 1);
+                    + (keepLast
+                        ? match.slice(1).toLowerCase()
+                        : (match.slice(1, -1).toLowerCase()
+                            + match.charAt(match.length - 1))
+                    );
             }
         );
         // 大写字符之间用横线连起来
@@ -194,7 +217,10 @@ define(function (require) {
             }
         );
         if (s.charAt(0) === '-') {
-            s = s.substring(1);
+            s = s.slice(1);
+        }
+        if (s.charAt(s.length - 1) === '-') {
+            s = s.slice(0, -1);
         }
         return s;
     };
@@ -208,7 +234,8 @@ define(function (require) {
      * @return {string}
      */
     util.constanize = function (s) {
-        s = util.pascalize(s);
+        s = util.dasherize(s);
+        s = s.replace(/-/g, '_');
         return s.toUpperCase();
     };
 

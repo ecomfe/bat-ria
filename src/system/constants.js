@@ -11,6 +11,23 @@ define(function (require) {
     var VL_MAP_SUFFIX = '_MAP';
     var VL_DATASOURCE_SUFFIX = '_DATASOURCE';
 
+    function handleVL(value, key) {
+        // 数组且只要数组元素都包含v、l两个key，就进行转换
+        if (
+            u.isArray(value)
+            && !u.contains(u.pluck(value, 'v'), undefined)
+            && !u.contains(u.pluck(value, 'l'), undefined)
+        ) {
+            var vlMap = map[key + VL_MAP_SUFFIX] = {};
+            var vlDatasource = map[key + VL_DATASOURCE_SUFFIX] = [];
+
+            u.each(value, function(item) {
+                vlMap[item.v] = item.l;
+                vlDatasource.push(u.mapKey(item, {v: 'value', l: 'text'}));
+            });
+        }
+    }
+
     var exports = {
         get: function (key) {
             return map[key];
@@ -18,6 +35,7 @@ define(function (require) {
 
         set: function (key, value) {
             map[key] = value;
+            handleVL(value, key);
         },
 
         remove: function (key) {
@@ -44,25 +62,10 @@ define(function (require) {
             //    如 { ACTIVE: '已启用', INACTIVE: '未启用' }
             // 2. 将v/l分别转换为value/text的数组，命名为`[原始常量名]_DATASOURCE`
             //    如 [ { value: 'ACTIVE', text: '已启用' }, { value: 'INACTIVE', text: '未启用' } ]
-            u.each(map, function (value, key) {
-                // 数组且只要数组元素都包含v、l两个key，就进行转换
-                if (
-                    u.isArray(value)
-                    && !u.contains(u.pluck(value, 'v'), undefined)
-                    && !u.contains(u.pluck(value, 'l'), undefined)
-                ) {
-                    var vlMap = map[key + VL_MAP_SUFFIX] = {};
-                    var vlDatasource = map[key + VL_DATASOURCE_SUFFIX] = [];
-
-                    u.each(value, function(item) {
-                        vlMap[item.v] = item.l;
-                        vlDatasource.push(u.mapKey(item, { v: 'value', l: 'text' }));
-                    });
-                }
-            });
+            u.each(map, handleVL);
         }
     };
-    
+
     // return模块
     return exports;
 });

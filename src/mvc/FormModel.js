@@ -27,7 +27,7 @@ define(function (require) {
      * @type {?function}
      */
     FormModel.prototype.formRequester = null;
-    
+
     /**
      * 表单提交请求器
      *
@@ -89,7 +89,8 @@ define(function (require) {
     /**
      * 获取最后提交使用的数据
      *
-     * @return {Object}
+     * @param {Object} formData 从表单中取得的数据
+     * @return {Object} 合并后用来提交的数据
      */
     FormModel.prototype.getSubmitData = function (formData) {
         var data = u.extend(formData, this.getExtraData());
@@ -107,10 +108,23 @@ define(function (require) {
     };
 
     /**
-     * 过滤提交数据
+     * 准备提交数据
      * 提交前可对所有数据进行操作，比如转换数据格式
      *
-     * @param {Object} data
+     * @param {Object} data 提交的数据
+     * @return {Object} 处理完毕的数据
+     */
+    FormModel.prototype.prepareData = function(data) {
+        return this.filterData(data);
+    };
+
+    /**
+     * 准备提交数据
+     * 提交前可对所有数据进行操作，比如转换数据格式
+     *
+     * @deprecated since v0.2.2 名字起得不好，后面使用`prepareData`替代
+     * @param {Object} data 提交的数据
+     * @return {Object} 处理完毕的数据
      */
     FormModel.prototype.filterData = function(data) {
         return data;
@@ -121,7 +135,7 @@ define(function (require) {
      * 如果需要提示已修改请按需实现此功能
      *
      * @param {Object} present 新表单数据
-     * @return {boolean}
+     * @return {boolean} 是否有变动
      */
     FormModel.prototype.isFormDataChanged = function (present) {
         return false;
@@ -131,7 +145,7 @@ define(function (require) {
      * 检验表单数据有效性，除了控件自动检测之外的逻辑可以在这里扩展
      *
      * @param {Object} submitData 提交的数据，包含extraData
-     * @return {object | true} 
+     * @return {Object|true}
      *         返回object形式为
      *         {
      *             name1: message1

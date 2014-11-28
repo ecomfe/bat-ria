@@ -15,8 +15,8 @@ define(
         /**
          * 图片类内容查看面板
          *
-         * @param {Object=} options 初始化参数
-         * @extends esui/Control
+         * @param {Object} [options] 初始化参数
+         * @extends esui.Control
          * @constructor
          */
         function Image(options) {
@@ -49,7 +49,7 @@ define(
         /**
          * 初始化参数
          *
-         * @param {Object=} options 构造函数传入的参数
+         * @param {Object} [options] 构造函数传入的参数
          * @override
          * @protected
          */
@@ -66,6 +66,7 @@ define(
          * @protected
          */
         Image.prototype.initStructure = function () {
+            /* eslint-disable fecs-indent */
             var html = [
                 this.helper.getPartHTML('content', 'div'),
                 this.helper.getPartBeginTag('footer', 'footer'),
@@ -74,6 +75,7 @@ define(
                     this.helper.getPartEndTag('magnifier', 'span'),
                 this.helper.getPartEndTag('footer', 'footer')
             ];
+            /* eslint-enable fecs-indent */
 
             this.main.innerHTML = html.join('');
 
@@ -149,6 +151,7 @@ define(
         imageTemplate = imageTemplate.join('');
 
         var flashTemplate = [
+            /* eslint-disable fecs-indent */
             '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ',
                 'align="middle" ',
                 '${widthAttribute} ${heightAttribute}>',
@@ -161,12 +164,14 @@ define(
                     '${widthAttribute} ${heightAttribute} ',
                     'type="application/x-shockwave-flash" />',
             '</object>'
+            /* eslint-enable fecs-indent */
         ];
         flashTemplate = flashTemplate.join('');
 
         /**
          * 获取预览的HTML
          *
+         * @return {string} 预览的HTML内容
          * @ignore
          */
         Image.prototype.getPreviewHTML = function () {

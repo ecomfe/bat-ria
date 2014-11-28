@@ -45,6 +45,10 @@
         margin: 0;
         width: 100px;
         cursor: pointer;
+
+        &::-webkit-file-upload-button {
+            cursor: pointer;
+        }
     }
 
     iframe {
@@ -58,7 +62,11 @@
         height: 100%;
         display: none;
         text-align: center;
-        padding-left: 10px;
+        padding-left: 18px;
+    }
+
+    .ui-uploader-extra-args {
+        display: none;
     }
 }
 
@@ -107,6 +115,7 @@
 }
 
 .ui-uploader-label {
+    height: 25px;
     margin-left: 10px;
     float: right;
     color: #666;
@@ -123,4 +132,21 @@
     float: left;
     margin-left: 10px;
     color: #CC0000
+}
+
+.ui-uploader-read-only,
+.ui-uploader-disabled {
+    cursor: not-allowed;
+
+    .ui-uploader-button {
+        background-image: none;
+        background-color: #f6f6f6;
+        color: #999;
+        cursor: not-allowed;
+    }
+
+    input,
+    input::-webkit-file-upload-button {
+        cursor: not-allowed;
+    }
 }
