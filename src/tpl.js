@@ -1,4 +1,4 @@
-tpl/**
+/**
  * @file tpl加载插件
  * @author otakustay
  */
