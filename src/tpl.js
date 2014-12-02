@@ -1,4 +1,4 @@
-/**
+tpl/**
  * @file tpl加载插件
  * @author otakustay
  */
@@ -50,6 +50,7 @@ define(
             ToggleButton: './ui',
             AuthPanel: './ui',
             SearchTree: './ui',
+            RichBoxGroup: './ui'
             LineChart: './ui',
             PieChart: './ui',
             BarChart: './ui'
