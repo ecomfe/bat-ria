@@ -90,7 +90,7 @@ define(
             var i = 0;
 
             while (matches[i] && matches[i] !== element) {
-               i++;
+                i++;
             }
 
             return matches[i] ? true : false;

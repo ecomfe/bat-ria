@@ -50,7 +50,7 @@ define(
             ToggleButton: './ui',
             AuthPanel: './ui',
             SearchTree: './ui',
-            RichBoxGroup: './ui'
+            RichBoxGroup: './ui',
             LineChart: './ui',
             PieChart: './ui',
             BarChart: './ui'

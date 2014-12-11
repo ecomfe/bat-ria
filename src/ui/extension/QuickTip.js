@@ -113,10 +113,6 @@ define(
             };
             tip.attachTo(attachOptions);
 
-            tip.on('hide', function () {
-                tip.dispose();
-            });
-
             tip.show(element, attachOptions.positionOpt);
         };
 
