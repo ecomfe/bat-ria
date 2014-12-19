@@ -109,6 +109,7 @@ define(function (require) {
      * 根据新的URL参数刷新列表
      *
      * @param {er.URL} [url] 新的URL对象，没有时按当前URL刷新
+     * @fires listchange 跳转后将URL通过事件传递出来，作为child的时候父action可以去修改address bar
      * @return {er.Promise} 返回请求的Promise对象
      */
     ListAction.prototype.loadList = function (url) {
@@ -122,6 +123,7 @@ define(function (require) {
             return me.model.loadData(url).then(function () {
                 me.redirect(url, {silent: true});
                 me.view.refresh();
+                me.fire('listchange', {url: url});
             });
         }
     };

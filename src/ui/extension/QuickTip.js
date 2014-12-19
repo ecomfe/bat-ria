@@ -68,7 +68,7 @@ define(
             // 引用目标控件的属性值
             if (content.charAt(0) === '@') {
                 var path = content.substring(1).split('.');
-                var data = this.get('data');
+                var data = this.data;
                 if (!data) {
                     return '';
                 }
@@ -112,6 +112,10 @@ define(
                 }
             };
             tip.attachTo(attachOptions);
+
+            tip.on('hide', function () {
+                tip.dispose();
+            });
 
             tip.show(element, attachOptions.positionOpt);
         };
