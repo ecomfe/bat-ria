@@ -7,16 +7,12 @@
 }
 
 .ui-image {
-    width: 300px;
-    height: 250px;
     padding: 25px;
     border: 1px solid #ddd;
     position: relative;
 }
 
 .ui-image-content {
-    width: 300px;
-    height: 250px;
     overflow: hidden;
 
     img,
@@ -27,6 +23,15 @@
         margin: 0 auto;
         vertical-align: middle;
         display: block;
+    }
+
+    img {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
     }
 }
 

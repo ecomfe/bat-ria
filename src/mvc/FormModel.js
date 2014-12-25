@@ -94,7 +94,7 @@ define(function (require) {
      */
     FormModel.prototype.getSubmitData = function (formData) {
         var data = u.extend(formData, this.getExtraData());
-        data = this.filterData(data);
+        data = this.prepareData(data);
         return data;
     };
 

@@ -32,7 +32,13 @@ define(
          * @public
          */
         Image.defaultProperties = {
-            imageType: 'auto'
+            imageType: 'auto',
+            containerWidth: 300,
+            containerHeight: 250,
+            width: '',
+            height: '',
+            maxWidth: '',
+            maxHeight: ''
         };
 
         /**
@@ -99,7 +105,24 @@ define(
                     }
 
                     var html = image.getPreviewHTML();
-                    image.helper.getPart('content').innerHTML = html;
+                    var content = image.helper.getPart('content');
+                    content.innerHTML = html;
+
+                    image.main.style.width
+                        = content.style.width = image.containerWidth + 'px';
+                    image.main.style.height
+                        = content.style.height = image.containerHeight + 'px';
+                    var img = image.helper.getPart('img');
+                    if (image.maxWidth) {
+                        img.style.maxWidth = image.maxWidth.indexOf('%') === -1
+                            ? image.maxWidth + 'px'
+                            : image.maxWidth;
+                    }
+                    if (image.maxHeight) {
+                        img.style.maxHeight = image.maxHeight.indexOf('%') === -1
+                            ? image.maxHeight + 'px'
+                            : image.maxHeight;
+                    }
                     image.removeState('empty');
                 }
             }
@@ -145,7 +168,7 @@ define(
         };
 
         var imageTemplate = [
-            '<img src="${url}" ',
+            '<img src="${url}" id="${id}" ',
             '${widthAttribute} ${heightAttribute} />'
         ];
         imageTemplate = imageTemplate.join('');
@@ -183,6 +206,7 @@ define(
 
             var data = {
                 url: this.url,
+                id: this.helper.getId('img'),
                 widthAttribute: this.width
                     ? 'width="' + this.width + '"'
                     : '',
