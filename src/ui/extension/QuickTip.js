@@ -62,7 +62,7 @@ define(
             return value;
         }
 
-        exports.getTipContent = function(element) {
+        exports.getTipContent = function (element) {
             var content = element.getAttribute('data-title');
 
             // 引用目标控件的属性值
@@ -86,21 +86,26 @@ define(
          *
          * @param {HTMLElement} element 需要`Tip`的元素
          */
-        exports.createAndAttachTip = function (element) {
+        exports.showTip = function (element) {
             var content = this.getTipContent(element);
-            var options = {
-                id: 'ui-tip-' + tipId++,
-                viewContext: this.target.viewContext,
-                arrow: true
-            };
-            if (typeof content !== 'string') {
+            content = typeof content === 'string' ? {content: content} : content;
+            var tip = this.current;
+
+            // 每个扩展只支持同时显示一个Tip
+            if (!tip) {
+                var options = {
+                    id: 'ui-tip-' + tipId++,
+                    viewContext: this.target.viewContext,
+                    arrow: true
+                };
                 u.extend(options, content);
+                tip = ui.create('TipLayer', options);
+                tip.appendTo(document.body);
+                this.current = tip;
             }
             else {
-                options.content = content;
+                tip.setProperties(content);
             }
-            var tip = ui.create('TipLayer', options);
-            tip.appendTo(document.body);
 
             var attachOptions = {
                 targetDOM: element,
@@ -112,26 +117,29 @@ define(
                 }
             };
             tip.attachTo(attachOptions);
-
-            tip.on('hide', function () {
-                tip.dispose();
-            });
-
             tip.show(element, attachOptions.positionOpt);
         };
 
+
+
         /**
-         * 初始化鼠标移入的逻辑
+         * 鼠标移入的逻辑
          *
          * @param {Event} evt 事件对象
          */
-        function mouseHandler(evt) {
-            var target = lib.event.getTarget(evt);
-            var related = lib.event.getRelatedTarget(evt);
+        function mouseEnterHandler(evt) {
+            var target = evt.target;
+            this.showTip(target);
+        }
 
-            // 无视从子元素移出子元素触发的事件
-            if (!lib.dom.contains(target, related)) {
-                this.createAndAttachTip(target);
+        /**
+         * 鼠标移出的逻辑
+         *
+         * @param {Event} evt 事件对象
+         */
+        function mouseLeaveHandler(evt) {
+            if (this.current) {
+                this.current.hide();
             }
         }
 
@@ -143,8 +151,10 @@ define(
         exports.activate = function () {
             Extension.prototype.activate.apply(this, arguments);
 
-            this.handler = u.bind(mouseHandler, this);
-            lib.on(this.target.main, '[data-title]', 'mouseover', this.handler);
+            this.mouseEnterHandler = u.bind(mouseEnterHandler, this);
+            this.mouseLeaveHandler = u.bind(mouseLeaveHandler, this);
+            lib.on(this.target.main, '[data-title]', 'mouseenter', this.mouseEnterHandler);
+            lib.on(this.target.main, '[data-title]', 'mouseleave', this.mouseLeaveHandler);
         };
 
         /**
@@ -153,7 +163,11 @@ define(
          * @override
          */
         exports.inactivate = function () {
-            lib.un(this.target.main, 'mouseover', this.handler);
+            if (this.current) {
+                this.current.dispose();
+            }
+            lib.un(this.target.main, 'mouseenter', this.mouseOverHandler);
+            lib.un(this.target.main, 'mouseleave', this.mouseLeaveHandler);
 
             Extension.prototype.inactivate.apply(this, arguments);
         };
