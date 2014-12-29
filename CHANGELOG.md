@@ -1,3 +1,7 @@
+* 0.2.4
+    - 修正 `QuickTip` 未能正确处理 `mouseenter` / `mouseleave` 的问题
+    - 在 `extension/ui/lib` 中为 `on` 在代理事件时增加了 `mouseenter` / `mouseleave` 的处理
+
 * 0.2.3
     - 增加 `QuickTip` 控件扩展
     - 增加多个 ECharts 图表的控件封装
