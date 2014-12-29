@@ -77,12 +77,12 @@ define(
          */
         dom.matches = function (element, selector) {
             // 按国内市场占有率排序
-            var matches = element.webkitMatchesSelector
+            var nativeMatches = element.webkitMatchesSelector
                 || element.msMatchesSelector
                 || element.matches
                 || element.mozMatchesSelector;
-            if (matches) {
-                return matches.call(element, selector);
+            if (nativeMatches) {
+                return nativeMatches.call(element, selector);
             }
 
             // polyfill form https://developer.mozilla.org/en-US/docs/Web/API/Element.matches#Polyfill
@@ -90,7 +90,7 @@ define(
             var i = 0;
 
             while (matches[i] && matches[i] !== element) {
-               i++;
+                i++;
             }
 
             return matches[i] ? true : false;

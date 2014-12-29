@@ -50,7 +50,7 @@ define(
             ToggleButton: './ui',
             AuthPanel: './ui',
             SearchTree: './ui',
-            RichBoxGroup: './ui'
+            RichBoxGroup: './ui',
             LineChart: './ui',
             PieChart: './ui',
             BarChart: './ui'
@@ -153,8 +153,8 @@ define(
              * 加载模板，AMD插件对象暴露的方法
              *
              * @param {string} resourceId 模板资源id
-             * @param {function} parentRequire 父级`require`函数
-             * @param {function} load 加载完成后调用
+             * @param {Function} parentRequire 父级`require`函数
+             * @param {Function} load 加载完成后调用
              */
             load: function (resourceId, parentRequire, load) {
                 function addTemplate(text) {
