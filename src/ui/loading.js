@@ -1,3 +1,8 @@
+/**
+ * @file 加载提示框，基于esui.Dialog实现
+ * @author Justineo(justice360@gmail.com)
+ */
+
 define(function (require) {
     var u = require('underscore');
 

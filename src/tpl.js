@@ -50,7 +50,10 @@ define(
             ToggleButton: './ui',
             AuthPanel: './ui',
             SearchTree: './ui',
-            RichBoxGroup: './ui'
+            RichBoxGroup: './ui',
+            LineChart: './ui',
+            PieChart: './ui',
+            BarChart: './ui'
         };
 
         var extensionModulePrefix = {
@@ -61,7 +64,8 @@ define(
             AutoSubmit: './ui/extension',
             TableTip: './ui/extension',
             TableSubrow: 'esui/extension',
-            WordCount: './ui/extension'
+            WordCount: './ui/extension',
+            QuickTip: './ui/extension'
         };
 
         /**
@@ -132,6 +136,7 @@ define(
          * - 对于ESUI扩展，必须写`data-ui-extension-xxx-type="Xxx"`的形式
          * - 业务ESUI扩展必须放置在`src/ui/extension`文件夹下
          *
+         * @class tpl
          * @singleton
          */
         var plugin = {
