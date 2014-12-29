@@ -36,15 +36,15 @@ define(function (require) {
      * @param {string} domId  dom元素id
      * @param {Array} config  配置数组
      *
-     * @cfg {string} [config.navId]  主导航dom元素id
-     * @cfg {string} [config.text]  导航文本
+     * @cfg {string} config.navId  主导航dom元素id
+     * @cfg {string} config.text  导航文本
      * @cfg {string} [config.url]  er.url，不包含参数
      * @cfg {string} [config.externalUrl]  外部路径，优先跳转
      * @cfg {Array} [config.include]  表示是否需要高亮该导航
      *      匹配目标均为`er.action.url`，不包含`~`的参数
      * @cfg {Array} [config.exclude]  和`include`相反的配置
      *      这里的逻辑`exclude`优先级比`include`高，但是也不要两个都配同个规则吧。。
-     * @cfg {Array} [config.tabs]  子导航，结构和一级导航config中每一项保持一致
+     * @cfg {Array} config.tabs  导航项，子导航结构和一级导航config中每一项保持一致
      * @cfg {string} [config.auth]  与er.permission对应的权限控制
      *
      * @sample:
@@ -191,8 +191,8 @@ define(function (require) {
      * 展示或隐藏二级导航
      *
      * @param {Object} navItems 缓存导航的集合，传入来记录当前高亮的索引
-     * @param {Object} element 要展示的子tab，不传表示隐藏所有
-     * @param {string} index 要展示的导航索引
+     * @param {Object} [element] 要展示的子tab，不传表示隐藏所有
+     * @param {string} [index] 要展示的导航索引
      */
     function toggleSubNav(navItems, element, index) {
         var className = 'nav-sub-current';
@@ -220,7 +220,7 @@ define(function (require) {
      * @param {Object} config globalconfig
      * @param {Object} navItems 缓存nav元素的对象
      * @param {Object} nav nav父元素
-     * @param {string} isSub {''|'sub-'}，主导航或二级子导航
+     * @param {string} [isSub] {''|'sub-'}，主导航或二级子导航
      */
     function createNavElements(config, navItems, nav, isSub) {
         isSub = isSub || '';

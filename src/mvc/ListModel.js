@@ -8,6 +8,7 @@ define(function (require) {
     var util = require('er/util');
     var BaseModel = require('./BaseModel');
     var batUtil = require('../util');
+    var Deferred = require('er/Deferred');
 
     /**
      * 业务`Model`基类
@@ -210,7 +211,25 @@ define(function (require) {
 
         return me.listRequester(me.getQuery())
             .then(function(data) {
+                function processError (ex) {
+                    var error = {
+                        success: false,
+                        name: '$prepare',
+                        options: {},
+                        error: ex
+                    };
+                    throw error;
+                }
+
                 me.fill(adaptData(data));
+
+                var preparing = me.prepare();
+                if (Deferred.isPromise(preparing)) {
+                    return preparing.fail(processError);
+                }
+                else {
+                    return preparing;
+                }
             });
     };
 
