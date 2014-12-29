@@ -1,3 +1,10 @@
+* 0.2.3
+    - 增加 `QuickTip` 控件扩展
+    - 增加多个 ECharts 图表的控件封装
+    - `Uploader` 控件现在成功上传的返回值可以为空对象
+    - `ListAction` 在局部刷新后会触发 `listchange` 事件
+    - `ListModel` 在局部刷新时会调用一次 `prepare` 方法
+
 * 0.2.2
     - 增加了 `SearchTree` 控件
     - 增加了 `RichBoxGroup` 控件
