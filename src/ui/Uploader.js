@@ -700,12 +700,13 @@ define(
                 }
 
                 var properties = {
-                    imageType: info ? info.type : (this.fileType || 'auto'),
+                    imageType: this.fileType,
                     url: this.getPreviewUrl(),
-                    width: info ? info.width : null,
-                    height: info ? info.height : null
+                    width: info.width || null,
+                    height: info.height || null
                 };
-                container.setProperties(properties);
+
+                container.setProperties(u.purify(properties));
             }
         };
 

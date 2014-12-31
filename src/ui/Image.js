@@ -25,6 +25,11 @@ define(
 
         Image.prototype.type = 'Image';
 
+        var extentionTypes = {
+            '.jpg': true, '.jpeg': true, '.gif': true,
+            '.bmp': true, '.tif': true, '.tiff': true, '.png': true
+        }
+
         /**
          * 默认属性
          *
@@ -33,8 +38,6 @@ define(
          */
         Image.defaultProperties = {
             imageType: 'auto',
-            containerWidth: 300,
-            containerHeight: 250,
             width: '',
             height: '',
             maxWidth: '',
@@ -72,20 +75,7 @@ define(
          * @protected
          */
         Image.prototype.initStructure = function () {
-            /* eslint-disable fecs-indent */
-            var html = [
-                this.helper.getPartHTML('content', 'div'),
-                this.helper.getPartBeginTag('footer', 'footer'),
-                    this.helper.getPartBeginTag('magnifier', 'span'),
-                        '放大显示',
-                    this.helper.getPartEndTag('magnifier', 'span'),
-                this.helper.getPartEndTag('footer', 'footer')
-            ];
-            /* eslint-enable fecs-indent */
-
-            this.main.innerHTML = html.join('');
-
-            this.helper.addDOMEvent('magnifier', 'click', this.displayFullSize);
+            this.helper.addDOMEvent(this.main, 'click', this.displayFullSize);
         };
 
         /**
@@ -105,24 +95,30 @@ define(
                     }
 
                     var html = image.getPreviewHTML();
-                    var content = image.helper.getPart('content');
-                    content.innerHTML = html;
+                    var main = image.main;
+                    main.innerHTML = html;
 
-                    image.main.style.width
-                        = content.style.width = image.containerWidth + 'px';
-                    image.main.style.height
-                        = content.style.height = image.containerHeight + 'px';
-                    var img = image.helper.getPart('img');
-                    if (image.maxWidth) {
-                        img.style.maxWidth = image.maxWidth.indexOf('%') === -1
-                            ? image.maxWidth + 'px'
-                            : image.maxWidth;
+                    var newImg = image.helper.getPart('img');
+                    if (newImg) {
+                        if (image.maxWidth) {
+                            main.style.maxWidth = image.maxWidth.indexOf('%') === -1
+                                ? image.maxWidth + 'px'
+                                : image.maxWidth;
+                        }
+                        else if (image.width) {
+                            main.style.height = image.height + 'px';
+                        }
+
+                        if (image.maxHeight) {
+                            main.style.maxHeight = image.maxHeight.indexOf('%') === -1
+                                ? image.maxHeight + 'px'
+                                : image.maxHeight;
+                        }
+                        else if (image.height) {
+                            main.style.width = image.width + 'px';
+                        }
                     }
-                    if (image.maxHeight) {
-                        img.style.maxHeight = image.maxHeight.indexOf('%') === -1
-                            ? image.maxHeight + 'px'
-                            : image.maxHeight;
-                    }
+
                     image.removeState('empty');
                 }
             }
@@ -132,64 +128,33 @@ define(
          * 恢复最初状态，即不显示任何内容
          */
         Image.prototype.restoreInitialState = function () {
-            // 如果外部调用`restoreInitialState`，则要清掉这3个，
-            // 如果是`painter`触发的，则这3个至少`url`已经是清掉了，再清一下不会太浪费
             this.url = null;
-            this.width = null;
-            this.height = null;
-
-            var content = this.helper.getPart('content');
-            content.innerHTML = '';
+            this.main.innerHTML = '';
             this.addState('empty');
         };
 
         /**
-         * 获取正确的媒体类型
+         * 校验是否为可预览类型
          *
-         * @return {string|null} 返回`flash`或`image`，返回空表示无法猜测类型
+         * @return {boolean} 返回是否能预览该扩展类型
          */
-        Image.prototype.getActualImageType = function () {
-            if (this.imageType !== 'auto') {
-                return this.imageType;
-            }
-
+        Image.prototype.checkExtension = function () {
             var match = /\.\w+$/.exec(this.url);
             if (!match) {
-                return null;
+                return false;
             }
 
-            var extension = [0];
-            if (extension === '.swf' && extension === '.flv') {
-                return 'flash';
+            var extension = match[0];
+
+            if (this.imageType !== 'auto') {
+                return extension === this.imageType;
             }
             else {
-                return 'image';
+                return !!extentionTypes[extension];
             }
         };
 
-        var imageTemplate = [
-            '<img src="${url}" id="${id}" ',
-            '${widthAttribute} ${heightAttribute} />'
-        ];
-        imageTemplate = imageTemplate.join('');
-
-        var flashTemplate = [
-            /* eslint-disable fecs-indent */
-            '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ',
-                'align="middle" ',
-                '${widthAttribute} ${heightAttribute}>',
-                '<param name="allowScriptAccess" value="never">',
-                '<param name="quality" value="high">',
-                '<param name="wmode" value="transparent">',
-                '<param name="movie" value="${url}">',
-                '<embed wmode="transparent" src="${url}" ',
-                    'quality="high" align="middle" allowScriptAccess="always" ',
-                    '${widthAttribute} ${heightAttribute} ',
-                    'type="application/x-shockwave-flash" />',
-            '</object>'
-            /* eslint-enable fecs-indent */
-        ];
-        flashTemplate = flashTemplate.join('');
+        var imageTemplate = '<img src="${url}" id="${id}"/>';
 
         /**
          * 获取预览的HTML
@@ -198,32 +163,18 @@ define(
          * @ignore
          */
         Image.prototype.getPreviewHTML = function () {
-            var type = this.getActualImageType();
+            var type = this.checkExtension();
 
             if (!type) {
                 return '<strong>无法预览该格式</strong>';
             }
 
             var data = {
-                url: this.url,
                 id: this.helper.getId('img'),
-                widthAttribute: this.width
-                    ? 'width="' + this.width + '"'
-                    : '',
-                heightAttribute: this.height
-                    ? 'height="' + this.height + '"'
-                    : ''
+                url: this.url
             };
 
-            if (type === 'image') {
-                return lib.format(imageTemplate, data);
-            }
-            else if (type === 'flash') {
-                return lib.format(flashTemplate, data);
-            }
-            else {
-                return '<strong>无法预览该格式</strong>';
-            }
+            return lib.format(imageTemplate, data);
         };
 
         /**
@@ -240,13 +191,6 @@ define(
             var content = this.helper.createPart('full-size-content');
             content.innerHTML = this.getPreviewHTML();
 
-            // 有宽高的情况下居中显示，否则靠边
-            if (this.width && this.height) {
-                content.style.top = '50%';
-                content.style.left = '50%';
-                content.style.marginLeft = -Math.round(this.width / 2) + 'px';
-                content.style.marginTop = -Math.round(this.height / 2) + 'px';
-            }
             document.body.appendChild(content);
 
             var close = this.helper.createPart('full-size-close');
