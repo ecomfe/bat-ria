@@ -55,7 +55,6 @@ define(
             width: 80,
             height: 25,
             action: '',                // uploader提交的地址
-            fileType: 'auto',
             dataKey: 'filedata',
             args: {},                  // 在post参数中添加额外内容
             fileInfo: {},
@@ -700,7 +699,6 @@ define(
                 }
 
                 var properties = {
-                    imageType: this.fileType,
                     url: this.getPreviewUrl(),
                     width: info.width || null,
                     height: info.height || null

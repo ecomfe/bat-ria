@@ -37,11 +37,11 @@ define(
          * @public
          */
         Image.defaultProperties = {
-            imageType: 'auto',
             width: '',
             height: '',
             maxWidth: '',
-            maxHeight: ''
+            maxHeight: '',
+            extentionTypes: extentionTypes
         };
 
         /**
@@ -145,13 +145,7 @@ define(
             }
 
             var extension = match[0];
-
-            if (this.imageType !== 'auto') {
-                return extension === this.imageType;
-            }
-            else {
-                return !!extentionTypes[extension];
-            }
+            return !!this.extentionTypes[extension];
         };
 
         var imageTemplate = '<img src="${url}" id="${id}"/>';
