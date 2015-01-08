@@ -78,6 +78,7 @@ define(function (require) {
             totalCount: 0,
             pageNo: 0,
             pageSize: 0,
+            extra: {},
             tableData: []
         };
     }
@@ -246,7 +247,7 @@ define(function (require) {
                     }
                 },
                 function () {
-                    me.fill(fetchFail())
+                    me.fill(fetchFail());
                 }
             );
     };
