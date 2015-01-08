@@ -224,7 +224,7 @@ define(function (require) {
 
         return me.listRequester(me.getQuery())
             .then(
-                function(data) {
+                function (data) {
                     function processError(ex) {
                         var error = {
                             success: false,
@@ -245,7 +245,9 @@ define(function (require) {
                         return preparing;
                     }
                 },
-                u.bind(me.fill, me, fetchFail(), {})
+                function () {
+                    me.fill(fetchFail())
+                }
             );
     };
 
