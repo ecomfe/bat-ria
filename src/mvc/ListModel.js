@@ -75,6 +75,9 @@ define(function (require) {
      */
     function fetchFail() {
         return {
+            totalCount: 0,
+            pageNo: 0,
+            pageSize: 0,
             tableData: []
         };
     }
@@ -86,8 +89,7 @@ define(function (require) {
         listPage: {
             retrieve: function (model) {
                 return model.listRequester(model.getQuery())
-                    .then(adaptData)
-                    .fail(fetchFail);
+                    .then(adaptData, fetchFail);
             },
             dump: true
         },
@@ -221,28 +223,30 @@ define(function (require) {
         me.fill(urlQuery);
 
         return me.listRequester(me.getQuery())
-            .then(function(data) {
-                function processError (ex) {
-                    var error = {
-                        success: false,
-                        name: '$prepare',
-                        options: {},
-                        error: ex
-                    };
-                    throw error;
-                }
+            .then(
+                function(data) {
+                    function processError(ex) {
+                        var error = {
+                            success: false,
+                            name: '$prepare',
+                            options: {},
+                            error: ex
+                        };
+                        throw error;
+                    }
 
-                me.fill(adaptData(data));
+                    me.fill(adaptData(data));
 
-                var preparing = me.prepare();
-                if (Deferred.isPromise(preparing)) {
-                    return preparing.fail(processError);
-                }
-                else {
-                    return preparing;
-                }
-            })
-            .fail(fetchFail);
+                    var preparing = me.prepare();
+                    if (Deferred.isPromise(preparing)) {
+                        return preparing.fail(processError);
+                    }
+                    else {
+                        return preparing;
+                    }
+                },
+                u.bind(me.fill, me, fetchFail(), {})
+            );
     };
 
     return ListModel;
