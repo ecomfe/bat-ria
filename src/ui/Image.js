@@ -28,7 +28,7 @@ define(
         var extentionTypes = {
             '.jpg': true, '.jpeg': true, '.gif': true,
             '.bmp': true, '.tif': true, '.tiff': true, '.png': true
-        }
+        };
 
         /**
          * 默认属性
@@ -94,7 +94,7 @@ define(
                         return;
                     }
 
-                    var html = image.getPreviewHTML();
+                    var html = image.getPreviewHTML(image.helper.getId('img'));
                     var main = image.main;
                     main.innerHTML = html;
 
@@ -152,11 +152,11 @@ define(
 
         /**
          * 获取预览的HTML
-         *
+         * @param  {string} id img的id
          * @return {string} 预览的HTML内容
          * @ignore
          */
-        Image.prototype.getPreviewHTML = function () {
+        Image.prototype.getPreviewHTML = function (id) {
             var type = this.checkExtension();
 
             if (!type) {
@@ -164,7 +164,7 @@ define(
             }
 
             var data = {
-                id: this.helper.getId('img'),
+                id: id,
                 url: this.url
             };
 
@@ -183,7 +183,7 @@ define(
             document.body.appendChild(mask);
 
             var content = this.helper.createPart('full-size-content');
-            content.innerHTML = this.getPreviewHTML();
+            content.innerHTML = this.getPreviewHTML(this.helper.getId('img-full-size'));
 
             document.body.appendChild(content);
 
@@ -191,23 +191,29 @@ define(
             close.innerHTML = '×';
             document.body.appendChild(close);
 
+            this.helper.addDOMEvent(content, 'click', this.cancelFullSize);
             this.helper.addDOMEvent(mask, 'click', this.cancelFullSize);
             this.helper.addDOMEvent(close, 'click', this.cancelFullSize);
         };
 
         /**
          * 取消全尺寸显示
+         * @param {Object} e 点击事件
          */
-        Image.prototype.cancelFullSize = function () {
-            var mask = this.helper.getPart('full-size-mask');
-            lib.removeNode(mask);
+        Image.prototype.cancelFullSize = function (e) {
+            if (e.target.nodeName !== 'IMG') {
+                var mask = this.helper.getPart('full-size-mask');
+                this.helper.clearDOMEvents(mask);
+                lib.removeNode(mask);
 
-            var content = this.helper.getPart('full-size-content');
-            lib.removeNode(content);
+                var content = this.helper.getPart('full-size-content');
+                this.helper.clearDOMEvents(content);
+                lib.removeNode(content);
 
-            var close = this.helper.getPart('full-size-close');
-            this.helper.clearDOMEvents(close);
-            lib.removeNode(close);
+                var close = this.helper.getPart('full-size-close');
+                this.helper.clearDOMEvents(close);
+                lib.removeNode(close);
+            }
         };
 
         lib.inherits(Image, Control);

@@ -70,13 +70,24 @@ define(function (require) {
     }
 
     /**
+     * 列表数据请求失败
+     * @return {Object} 空数组，表示没有数据
+     */
+    function fetchFail() {
+        return {
+            tableData: []
+        };
+    }
+
+    /**
      * @inheritDoc
      */
     ListModel.prototype.defaultDatasource = {
         listPage: {
             retrieve: function (model) {
                 return model.listRequester(model.getQuery())
-                    .then(adaptData);
+                    .then(adaptData)
+                    .fail(fetchFail);
             },
             dump: true
         },
@@ -230,7 +241,8 @@ define(function (require) {
                 else {
                     return preparing;
                 }
-            });
+            })
+            .fail(fetchFail);
     };
 
     return ListModel;

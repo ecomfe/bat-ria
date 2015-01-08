@@ -66,11 +66,11 @@ define(function (require) {
                 else {
                     var formRequester = model.formRequester;
                     if (formRequester) {
-                        return formRequester(model.getDefaultArgs());
+                        return formRequester(model.getDefaultArgs()).fail(function () {
+                            return {};
+                        });
                     }
-                    else {
-                        return {};
-                    }
+                    return {};
                 }
             },
             dump: false
