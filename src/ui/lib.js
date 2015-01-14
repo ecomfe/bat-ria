@@ -42,7 +42,7 @@ define(
          * 本方法 *不处理* DOM事件执行顺序
          *
          * @param {HTMLElement|string} element DOM元素或其id
-         * @param {string} [selecotr] 选择器，在代理事件时用来选择被代理元素
+         * @param {string} [selector] 选择器，在代理事件时用来选择被代理元素
          * @param {string} type 事件类型， *不能* 带有`on`前缀
          * @param {Function} listener 事件处理函数
          */
@@ -53,11 +53,41 @@ define(
             }
             // function (element, selector, type, listener)
             else if (arguments.length === 4) {
-                lib.on(element, type, function (evt) {
-                    if (dom.matches(event.getTarget(evt), selector)) {
-                        listener.call(element, evt);
-                    }
-                });
+                if (type === 'mouseenter' || type === 'mouseleave') {
+                    var actualType = {
+                        mouseenter: 'mouseover',
+                        mouseleave: 'mouseout'
+                    }[type];
+                    lib.on(element, actualType, function (evt) {
+                        var target = event.getTarget(evt);
+                        var related = event.getRelatedTarget(evt);
+                        var match;
+
+                        while (target && !(match = dom.matches(target, selector)) && target !== element) {
+                            target = target.parentNode;
+                        }
+
+                        if ( match && target !== related && !lib.dom.contains(target, related) ) {
+                            listener.call(element, {
+                                target: target,
+                                relatedTarget: related,
+                                stopPropagation: function () {
+                                    lib.event.stopPropagation(evt);
+                                },
+                                preventDefault: function () {
+                                    lib.event.preventDefault(evt);
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    lib.on(element, type, function (evt) {
+                        if (dom.matches(event.getTarget(evt), selector)) {
+                            listener.call(element, evt);
+                        }
+                    });
+                }
             }
         };
 
@@ -77,12 +107,12 @@ define(
          */
         dom.matches = function (element, selector) {
             // 按国内市场占有率排序
-            var matches = element.webkitMatchesSelector
+            var nativeMatches = element.webkitMatchesSelector
                 || element.msMatchesSelector
                 || element.matches
                 || element.mozMatchesSelector;
-            if (matches) {
-                return matches.call(element, selector);
+            if (nativeMatches) {
+                return nativeMatches.call(element, selector);
             }
 
             // polyfill form https://developer.mozilla.org/en-US/docs/Web/API/Element.matches#Polyfill
