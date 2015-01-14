@@ -31,6 +31,7 @@ define(
 
         /**
          * 获得提示层的title
+         * @param {Array} params 一个点上的数据
          */
         BaseChart.prototype.getTipTitleHtml = function (params) {
         };
@@ -38,7 +39,8 @@ define(
         /**
          * 提示层格式器
          *
-         * @param {Array} params 数据
+         * @param {Array}  params     数据
+         * @param {number} axisIndex  索引
          * @return {string} 格式化后的弹出层html
          * =========================
          * 2013-12-04 星期三
@@ -140,7 +142,7 @@ define(
                 max: max,
                 splitNumber: splitNumber,
                 scale: true,
-                splitArea: { show: true }
+                splitArea: {show: true}
             };
         };
 
@@ -252,6 +254,7 @@ define(
                  * 这里将chart单独封装在一个层里是考虑，
                  * 未来可能会在控件中封装其它图表外的操作按钮。
                  */
+                /* eslint-disable fecs-indent */
                 '<div class="${className}">',
                     '<div id="${chartId}" style="height:${height};width:${width};"></div>',
                     '<div id="${yAxis1Name}" class="${yAxis1NameClass}"></div>',
@@ -259,6 +262,7 @@ define(
                     '<div id="${loadingMaskId}" style="line-height:${height};"',
                     ' class="${loadingMask}">${loadingText}</div>',
                 '</div>'
+                /* eslint-enable fecs-indent */
             ];
             var chartId = helper.getId(this, 'main');
             var loadingMaskId = helper.getId(this, 'loading-mask');
