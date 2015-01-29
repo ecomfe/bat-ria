@@ -290,7 +290,9 @@ define(
             var validity = new Validity();
             this.showValidity(validity);
 
-            this.fire('change');
+            this.fire('change', {
+                fileInfo: this.fileInfo
+            });
             if (this.preview) {
                 this.showPreview(info);
             }
@@ -637,7 +639,9 @@ define(
             else if (result) {
                 this.fileInfo = result;
                 this.rawValue = result.content || result.url || result.previewUrl || '';
-                this.fire('complete');
+                this.fire('complete', {
+                    fileInfo: this.fileInfo
+                });
                 this.notifyComplete(options.result);
             }
         };
@@ -650,7 +654,9 @@ define(
          */
         Uploader.prototype.notifyFail = function (message) {
             this.clear();
-            var fail = this.fire('fail', message);
+            var fail = this.fire('fail', {
+                message: message
+            });
             if (!fail.isDefaultPrevented()) {
                 var validity = new Validity();
                 var state = new ValidityState(false, message);

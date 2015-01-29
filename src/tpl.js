@@ -37,6 +37,7 @@ define(
             TextLine: 'esui',
             Tip: 'esui',
             TipLayer: 'esui',
+            Toast: 'esui',
             Tree: 'esui',
             Uploader: './ui',
             Validity: 'esui',

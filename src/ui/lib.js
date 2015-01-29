@@ -13,32 +13,6 @@ define(
         var libx = {};
 
         /**
-         * Events
-         */
-        var event = {};
-
-        /**
-         * 获取事件对象
-         * @param {Event|undefined} evt 事件对象
-         * @return {HTMLElement} 事件对象
-         */
-        event.getEvent = function (evt) {
-            return evt || window.event;
-        };
-
-        /**
-         * 获取事件相关目标对象
-         * @param {Event|undefined} evt 事件对象
-         * @return {HTMLElement} 事件相关目标对象
-         */
-        event.getRelatedTarget = function (evt) {
-            evt = event.getEvent(evt);
-            return evt.relatedTarget || evt.fromElement || evt.toElement;
-        };
-
-        u.defaults(event, lib.event);
-
-        /**
          * DOM
          */
         var dom = {};
@@ -72,6 +46,32 @@ define(
         };
 
         u.defaults(dom, lib.dom);
+
+        /**
+         * Events
+         */
+        var event = {};
+
+        /**
+         * 获取事件对象
+         * @param {Event|undefined} evt 事件对象
+         * @return {HTMLElement} 事件对象
+         */
+        event.getEvent = function (evt) {
+            return evt || window.event;
+        };
+
+        /**
+         * 获取事件相关目标对象
+         * @param {Event|undefined} evt 事件对象
+         * @return {HTMLElement} 事件相关目标对象
+         */
+        event.getRelatedTarget = function (evt) {
+            evt = event.getEvent(evt);
+            return evt.relatedTarget || evt.fromElement || evt.toElement;
+        };
+
+        u.defaults(event, lib.event);
 
         /**
          * 为DOM元素添加事件，支持代理
