@@ -30,33 +30,33 @@ define(function (require) {
      * @private
      */
     var filters = {
-        rtoe: function(type) {
+        rtoe: function (type) {
             return type === AuthType.READONLY
                    ? AuthType.EDITABLE
                    : type;
         },
 
-        rton: function(type) {
+        rton: function (type) {
             return type === AuthType.READONLY
                    ? AuthType.NONE
                    : type;
         },
 
-        ntor: function(type) {
+        ntor: function (type) {
             return type === AuthType.NONE
                    ? AuthType.READONLY
                    : type;
         },
 
-        up: function(type) {
+        up: function (type) {
             return type === AuthType.NONE
                    ? AuthType.READONLY
                    : AuthType.EDITABLE;
         },
 
-        max: function(types) {
+        max: function (types) {
             var max = AuthType.NONE;
-            u.each(types, function(type) {
+            u.each(types, function (type) {
                 if (type === AuthType.EDITABLE) {
                     max = type;
                     return false;
@@ -68,9 +68,9 @@ define(function (require) {
             return max;
         },
 
-        min: function(types) {
+        min: function (types) {
             var min = AuthType.EDITABLE;
-            u.each(types, function(type) {
+            u.each(types, function (type) {
                 if (type === AuthType.NONE) {
                     min = type;
                     return false;
@@ -89,7 +89,7 @@ define(function (require) {
      * @param {Object} authMap 权限模块集合
      * @return {AuthType} 返回权限类型
      */
-    auth.get = function(authName, authMap) {
+    auth.get = function (authName, authMap) {
 
         var filter;
         if (/^\(.+\)$/.test(authName)) {
@@ -151,7 +151,7 @@ define(function (require) {
         }
 
         var types = [];
-        u.each(authNames, function(name) {
+        u.each(authNames, function (name) {
 
             // 如果是权限类型关键字作为直接量，不需要查询模块
             if (u.contains(u.keys(AuthType), name)) {
@@ -189,7 +189,7 @@ define(function (require) {
      * @param {Object} authMap 权限模块集合
      * @return {boolean} 是否可见
      */
-    auth.permit = function(authName, authMap) {
+    auth.permit = function (authName, authMap) {
         return auth.get(authName, authMap) !== AuthType.NONE;
     };
 
@@ -198,7 +198,7 @@ define(function (require) {
      * @param {string} name 转换器名字
      * @param {function(AuthType)} filter 转换器处理函数
      */
-    auth.registerFilter = function(name, filter) {
+    auth.registerFilter = function (name, filter) {
         filters[name] = filter;
     };
 

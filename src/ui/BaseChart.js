@@ -48,7 +48,7 @@ define(
          * <图例色块> 点击量：12,000
          * =========================
          */
-        BaseChart.prototype.tipFormatter = function(params, axisIndex) {
+        BaseChart.prototype.tipFormatter = function (params, axisIndex) {
             axisIndex = +axisIndex.substr(5, 1);
             // yTitle | xValue | yValue
             // [["展现量", "2013-04-26", 42000], ["点击量", "2013-04-26", 180]]

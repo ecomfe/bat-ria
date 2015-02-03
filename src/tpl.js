@@ -3,7 +3,7 @@
  * @author otakustay
  */
 define(
-    function(require) {
+    function (require) {
         var ajax = require('er/ajax');
         var etpl = require('etpl');
         var template = etpl;
@@ -165,7 +165,7 @@ define(
                     var extensions = getExtensionDependencies(text);
                     var dependencies = controls.concat(extensions);
 
-                    require(dependencies, function() {
+                    require(dependencies, function () {
                         load(text);
                     });
                 }

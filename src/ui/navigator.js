@@ -347,7 +347,7 @@ define(function (require) {
      * @return {boolean}
      */
     function testUrlIn(url, patterns) {
-        return u.some(patterns, function(pattern) {
+        return u.some(patterns, function (pattern) {
             if (u.isFunction(pattern.test)) {
                 return pattern.test(url);
             }

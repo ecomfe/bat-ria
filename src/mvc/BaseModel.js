@@ -24,7 +24,7 @@ define(function (require) {
     /**
      * 合并默认数据源
      */
-    BaseModel.prototype.mergeDefaultDatasource = function() {
+    BaseModel.prototype.mergeDefaultDatasource = function () {
         if (!this.datasource) {
             this.datasource = this.defaultDatasource;
             return;
@@ -73,7 +73,7 @@ define(function (require) {
      *
      * @return {er/Promise}
      */
-    BaseModel.prototype.load = function() {
+    BaseModel.prototype.load = function () {
         // TODO: 移到`getDatasource`方法中
         this.mergeDefaultDatasource();
 

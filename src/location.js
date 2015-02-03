@@ -3,7 +3,7 @@
  * @author Justineo
  */
 
-define(function(require) {
+define(function (require) {
 
     var loc = {};
 

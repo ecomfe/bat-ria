@@ -114,7 +114,7 @@ define(function (require) {
      * @param {Object} data 提交的数据
      * @return {Object} 处理完毕的数据
      */
-    FormModel.prototype.prepareData = function(data) {
+    FormModel.prototype.prepareData = function (data) {
         return this.filterData(data);
     };
 
@@ -126,7 +126,7 @@ define(function (require) {
      * @param {Object} data 提交的数据
      * @return {Object} 处理完毕的数据
      */
-    FormModel.prototype.filterData = function(data) {
+    FormModel.prototype.filterData = function (data) {
         return data;
     };
 

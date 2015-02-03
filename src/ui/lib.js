@@ -86,7 +86,11 @@ define(
         libx.on = function (element, selector, type, listener) {
             // function (element, type, listener)
             if (arguments.length === 3) {
-                lib.on(element, selector /* type */, type /* listener */);
+                lib.on(
+                    element,
+                    selector, // type
+                    type      // listener
+                );
             }
             // function (element, selector, type, listener)
             else if (arguments.length === 4) {

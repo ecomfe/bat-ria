@@ -5,7 +5,7 @@
  * https://github.com/ecomfe/er-track
  **/
 
-define(function(require) {
+define(function (require) {
     var u = require('underscore');
 
     function activate() {

@@ -158,7 +158,7 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    ListView.prototype.bindEvents = function() {
+    ListView.prototype.bindEvents = function () {
         var pager = this.get('pager');
         if (pager) {
             // 切换每页大小

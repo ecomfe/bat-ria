@@ -66,7 +66,7 @@ define(function (require) {
             'OPTGROUP', 'OPTION', 'COMMAND', 'FIELDSET'
         ];
 
-        u.each(root.querySelectorAll('[data-auth]'), function(elem) {
+        u.each(root.querySelectorAll('[data-auth]'), function (elem) {
             if (elem.getAttribute('data-auth-done')) {
                 return true;
             }
@@ -127,7 +127,7 @@ define(function (require) {
                     // 其他类型的元素，劫持onclick
                     else {
                         lib.un(elem, 'click');
-                        elem.onclick = function(e) {
+                        elem.onclick = function (e) {
                             lib.event.stopPropagation(e);
                             lib.event.preventDefault(e);
                             return false;
