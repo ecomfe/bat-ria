@@ -1,3 +1,8 @@
+* 0.2.5
+    - `QuickTip` 改用 `TipLayer` 的 `auto` 模式
+    - 支持列表页和表单页数据请求失败后继续进入 Action
+    - `Image` 控件支持设置 `max-width` 和 `max-height`，去除 Flash 类型支持，调整样式
+
 * 0.2.4
     - 修正 `QuickTip` 未能正确处理 `mouseenter` / `mouseleave` 的问题
     - 在 `extension/ui/lib` 中为 `on` 在代理事件时增加了 `mouseenter` / `mouseleave` 的处理
