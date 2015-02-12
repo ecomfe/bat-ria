@@ -63,8 +63,7 @@ define(function (require) {
             // 不然会随着跳转被销毁，造成下次用不了
             var Toast = require('esui/Toast');
             var toastOptions = {
-                disposeOnHide: false,
-                autoShow: false
+                disposeOnHide: false
             };
             globalToast = new Toast(toastOptions);
             globalToast.render();

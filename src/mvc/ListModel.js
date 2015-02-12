@@ -70,13 +70,27 @@ define(function (require) {
     }
 
     /**
+     * 列表数据请求失败
+     * @return {Object} 空数组，表示没有数据
+     */
+    function fetchFail() {
+        return {
+            totalCount: 0,
+            pageNo: 0,
+            pageSize: 0,
+            extra: {},
+            tableData: []
+        };
+    }
+
+    /**
      * @inheritDoc
      */
     ListModel.prototype.defaultDatasource = {
         listPage: {
             retrieve: function (model) {
                 return model.listRequester(model.getQuery())
-                    .then(adaptData);
+                    .then(adaptData, fetchFail);
             },
             dump: true
         },
@@ -210,27 +224,32 @@ define(function (require) {
         me.fill(urlQuery);
 
         return me.listRequester(me.getQuery())
-            .then(function(data) {
-                function processError (ex) {
-                    var error = {
-                        success: false,
-                        name: '$prepare',
-                        options: {},
-                        error: ex
-                    };
-                    throw error;
-                }
+            .then(
+                function (data) {
+                    function processError(ex) {
+                        var error = {
+                            success: false,
+                            name: '$prepare',
+                            options: {},
+                            error: ex
+                        };
+                        throw error;
+                    }
 
-                me.fill(adaptData(data));
+                    me.fill(adaptData(data));
 
-                var preparing = me.prepare();
-                if (Deferred.isPromise(preparing)) {
-                    return preparing.fail(processError);
+                    var preparing = me.prepare();
+                    if (Deferred.isPromise(preparing)) {
+                        return preparing.fail(processError);
+                    }
+                    else {
+                        return preparing;
+                    }
+                },
+                function () {
+                    me.fill(fetchFail());
                 }
-                else {
-                    return preparing;
-                }
-            });
+            );
     };
 
     return ListModel;

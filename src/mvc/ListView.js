@@ -158,7 +158,7 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    ListView.prototype.bindEvents = function() {
+    ListView.prototype.bindEvents = function () {
         var pager = this.get('pager');
         if (pager) {
             // 切换每页大小
@@ -248,7 +248,7 @@ define(function (require) {
                 {
                     count: model.get('totalCount'),
                     page: model.get('pageNo'),
-                    pageSize: model.get('pageSize')
+                    pageSize: model.get('pageSize') || pager.get('pageSize')
                 },
                 {silent: true}
             );
