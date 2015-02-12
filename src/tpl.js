@@ -3,7 +3,7 @@
  * @author otakustay
  */
 define(
-    function(require) {
+    function (require) {
         var ajax = require('er/ajax');
         var etpl = require('etpl');
         var template = etpl;
@@ -37,6 +37,7 @@ define(
             TextLine: 'esui',
             Tip: 'esui',
             TipLayer: 'esui',
+            Toast: 'esui',
             Tree: 'esui',
             Uploader: './ui',
             Validity: 'esui',
@@ -164,7 +165,7 @@ define(
                     var extensions = getExtensionDependencies(text);
                     var dependencies = controls.concat(extensions);
 
-                    require(dependencies, function() {
+                    require(dependencies, function () {
                         load(text);
                     });
                 }

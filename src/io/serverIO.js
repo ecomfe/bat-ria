@@ -173,7 +173,7 @@ define(function (require) {
                 if (message.redirect === '') {
                     title = '登录超时';
                     content = '登录超时，请重新登录！';
-                    onok = function() {
+                    onok = function () {
                         loc.reload(true);
                     };
                 }
@@ -261,7 +261,7 @@ define(function (require) {
      * @param {Object} options 请求选项
      * @return {meta.Promise} 请求Promise
      */
-    io.request = function(url, data, options) {
+    io.request = function (url, data, options) {
         var defaults = {
             url: url,
             data: data,
@@ -294,7 +294,7 @@ define(function (require) {
      * @param {Object} options 请求选项
      * @return {meta.Promise} 请求Promise
      */
-    io.get = function(url, data, options) {
+    io.get = function (url, data, options) {
         u.extend(options, {
             method: 'GET'
         });
@@ -309,7 +309,7 @@ define(function (require) {
      * @param {Object} options 请求选项
      * @return {meta.Promise} 请求Promise
      */
-    io.post = function(url, data, options) {
+    io.post = function (url, data, options) {
         u.extend(options, {
             method: 'POST'
         });

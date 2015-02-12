@@ -55,10 +55,10 @@ define(
                 },
                 series: [
                     {
-                        type:'pie',
+                        type: 'pie',
                         radius: '55%',
                         center: ['50%', '50%'],
-                        data : originSeries.data,
+                        data: originSeries.data,
                         name: originSeries.name,
                         itemStyle: {
                             normal: {

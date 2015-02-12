@@ -66,11 +66,11 @@ define(function (require) {
                 else {
                     var formRequester = model.formRequester;
                     if (formRequester) {
-                        return formRequester(model.getDefaultArgs());
+                        return formRequester(model.getDefaultArgs()).fail(function () {
+                            return {};
+                        });
                     }
-                    else {
-                        return {};
-                    }
+                    return {};
                 }
             },
             dump: false
@@ -94,7 +94,7 @@ define(function (require) {
      */
     FormModel.prototype.getSubmitData = function (formData) {
         var data = u.extend(formData, this.getExtraData());
-        data = this.filterData(data);
+        data = this.prepareData(data);
         return data;
     };
 
@@ -114,7 +114,7 @@ define(function (require) {
      * @param {Object} data 提交的数据
      * @return {Object} 处理完毕的数据
      */
-    FormModel.prototype.prepareData = function(data) {
+    FormModel.prototype.prepareData = function (data) {
         return this.filterData(data);
     };
 
@@ -126,7 +126,7 @@ define(function (require) {
      * @param {Object} data 提交的数据
      * @return {Object} 处理完毕的数据
      */
-    FormModel.prototype.filterData = function(data) {
+    FormModel.prototype.filterData = function (data) {
         return data;
     };
 

@@ -21,7 +21,7 @@ define(function (require) {
             var vlMap = map[key + VL_MAP_SUFFIX] = {};
             var vlDatasource = map[key + VL_DATASOURCE_SUFFIX] = [];
 
-            u.each(value, function(item) {
+            u.each(value, function (item) {
                 vlMap[item.v] = item.l;
                 vlDatasource.push(u.mapKey(item, {v: 'value', l: 'text'}));
             });

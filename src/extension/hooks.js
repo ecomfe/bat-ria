@@ -43,7 +43,7 @@ define(function (require) {
         var io = require('../io/serverIO');
 
         if (hooks.ADD_ADER_ID) {
-            io.hooks.filterIndexUrl = function(url) {
+            io.hooks.filterIndexUrl = function (url) {
                 return uri(url).addQuery(getAderArgMap()).toString();
             };
 
@@ -57,7 +57,7 @@ define(function (require) {
             };
         }
 
-        io.hooks.beforeRequest = function(options) {
+        io.hooks.beforeRequest = function (options) {
             if (hooks.ADD_ADER_ID) {
                 var url = options.url;
                 var argMap = getAderArgMap();
@@ -74,14 +74,14 @@ define(function (require) {
         };
 
         if (hooks.SHOW_LOADING) {
-            io.hooks.afterComplete = function() {
+            io.hooks.afterComplete = function () {
                 loading.hide();
             };
         }
 
         if (hooks.ADD_ER_REQUEST_HEADER) {
             var ajax = require('er/ajax');
-            ajax.hooks.beforeSend = function(xhr) {
+            ajax.hooks.beforeSend = function (xhr) {
                 xhr.setRequestHeader('X-Request-By', 'ERApplication');
             };
         }
