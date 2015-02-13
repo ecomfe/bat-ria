@@ -99,6 +99,12 @@ define(
                     main.innerHTML = html;
 
                     var newImg = image.helper.getPart('img');
+                    function setOffset() {
+                        var offset = lib.getOffset(this);
+                        !image.height && (main.style.height = offset.height + 'px');
+                        !image.width && (main.style.width = offset.width + 'px');
+                    }
+
                     if (newImg) {
                         if (image.maxWidth) {
                             main.style.maxWidth = image.maxWidth.indexOf('%') === -1
@@ -106,7 +112,8 @@ define(
                                 : image.maxWidth;
                         }
                         else if (image.width) {
-                            main.style.height = image.height + 'px';
+                            main.style.width = image.width + 'px';
+                            main.style.maxWidth = image.width + 'px';
                         }
 
                         if (image.maxHeight) {
@@ -115,7 +122,15 @@ define(
                                 : image.maxHeight;
                         }
                         else if (image.height) {
-                            main.style.width = image.width + 'px';
+                            main.style.height = image.height + 'px';
+                            main.style.maxHeight = image.height + 'px';
+                        }
+
+                        if (image.height || image.width) {
+                            lib.addClass(main, 'ui-image-fixed');
+                            newImg.complete
+                                ? setOffset.call(newImg)
+                                : newImg.onload = setOffset;
                         }
                     }
 
@@ -148,7 +163,7 @@ define(
             return !!this.extentionTypes[extension];
         };
 
-        var imageTemplate = '<img src="${url}" id="${id}"/>';
+        var imageTemplate = '<img src="${url}" id="${id}" alt="${alt}" />';
 
         /**
          * 获取预览的HTML
@@ -167,6 +182,7 @@ define(
                 id: id,
                 url: this.url
             };
+            this.alt && (data.alt = this.alt);
 
             return lib.format(imageTemplate, data);
         };
