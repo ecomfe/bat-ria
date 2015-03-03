@@ -99,6 +99,16 @@ define(
                     main.innerHTML = html;
 
                     var newImg = image.helper.getPart('img');
+                    function setOffset() {
+                        var offset = lib.getOffset(this);
+                        !image.height && (main.style.height = offset.height + 'px');
+                        !image.width && (main.style.width = offset.width + 'px');
+                    }
+
+                    // 1. 默认maxWidth/maxHeight的优先级比width/height高
+                    // 2. 该控件以按比例缩放图片为前提，img上默认样式只设置maxWidth/maxHeight，
+                    //    值继承控件容器的maxWidth/maxHeight，因此需要保证容器上有maxWidth/maxHeight
+                    // 3. 如果设置了width/height，则会保证img居中
                     if (newImg) {
                         if (image.maxWidth) {
                             main.style.maxWidth = image.maxWidth.indexOf('%') === -1
@@ -106,7 +116,14 @@ define(
                                 : image.maxWidth;
                         }
                         else if (image.width) {
-                            main.style.height = image.height + 'px';
+                            if (image.width.indexOf('%') === -1) {
+                                main.style.width = image.width + 'px';
+                                main.style.maxWidth = image.width + 'px';   // 给img标签继承用
+                            }
+                            else {
+                                main.style.width = image.width;
+                                main.style.maxWidth = '100%';               // 给img标签继承用
+                            }
                         }
 
                         if (image.maxHeight) {
@@ -115,7 +132,22 @@ define(
                                 : image.maxHeight;
                         }
                         else if (image.height) {
-                            main.style.width = image.width + 'px';
+                            if (image.height.indexOf('%') === -1) {
+                                main.style.height = image.height + 'px';
+                                main.style.maxHeight = image.height + 'px';  // 给img标签继承用
+                            }
+                            else {
+                                main.style.height = image.height;
+                                main.style.maxHeight = '100%';               // 给img标签继承用
+                            }
+                        }
+
+                        // 如果定死容器高宽，会保证图片居中
+                        if (image.height || image.width) {
+                            lib.addClass(main, 'ui-image-fixed');
+                            newImg.complete
+                                ? setOffset.call(newImg)
+                                : newImg.onload = setOffset;
                         }
                     }
 
@@ -148,7 +180,7 @@ define(
             return !!this.extentionTypes[extension];
         };
 
-        var imageTemplate = '<img src="${url}" id="${id}"/>';
+        var imageTemplate = '<img src="${url}" id="${id}" alt="${alt}" />';
 
         /**
          * 获取预览的HTML
@@ -167,6 +199,7 @@ define(
                 id: id,
                 url: this.url
             };
+            this.alt && (data.alt = this.alt);
 
             return lib.format(imageTemplate, data);
         };
