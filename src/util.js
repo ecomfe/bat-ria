@@ -197,7 +197,9 @@ define(function (require) {
      * @param {string} [link.disabled] 链接是否禁用
      * @param {string} [link.target] 链接的target属性
      * @param {string} link.text 链接文本
-     * @param {Object} [link.extra] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
+     * @param {Object} [link.data] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
+     * @param {Object} [link.extra] 同data，建议使用link.data
+     * @param {Object} [link.attr] 附加原生属性对象，对应kv对会以key="value"形式附加到HTML上
      * @return {string} 生成的HTML内容
      */
     util.genListLink = function (link) {
@@ -221,9 +223,16 @@ define(function (require) {
             attrs.target = link.target;
         }
 
-        if (u.typeOf(link.extra) === 'Object') {
-            u.each(link.extra, function (val, key) {
+        var data = link.data || link.extra;
+        if (data && u.typeOf(data) === 'Object') {
+            u.each(data, function (val, key) {
                 attrs['data-' + key] = val;
+            });
+        }
+
+        if (u.typeOf(link.attr) === 'Object') {
+            u.each(link.attr, function (val, key) {
+                attrs[key] = val;
             });
         }
 
@@ -245,7 +254,9 @@ define(function (require) {
      * @param {string} [command.disabled] 操作按钮是否禁用
      * @param {string} [command.args] 操作按钮点击后触发事件所带的参数
      * @param {string} command.text 操作按钮显示的文本
-     * @param {Object} [command.extra] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
+     * @param {Object} [command.data] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
+     * @param {Object} [command.extra] 同data，建议使用command.data
+     * @param {Object} [command.attr] 附加原生属性对象，对应kv对会以key="value"形式附加到HTML上
      * @return {string} 生成的HTML内容
      */
     util.genListCommand = function (command) {
@@ -270,9 +281,16 @@ define(function (require) {
             attrs['data-command-args'] = '' + command.args;
         }
 
-        if (u.typeOf(command.extra) === 'Object') {
-            u.each(command.extra, function (val, key) {
+        var data = command.data || command.extra;
+        if (data && u.typeOf(data) === 'Object') {
+            u.each(data, function (val, key) {
                 attrs['data-' + key] = val;
+            });
+        }
+
+        if (u.typeOf(command.attr) === 'Object') {
+            u.each(command.attr, function (val, key) {
+                attrs[key] = val;
             });
         }
 
