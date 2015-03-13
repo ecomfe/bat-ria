@@ -223,8 +223,9 @@ define(function (require) {
             attrs.target = link.target;
         }
 
-        if (u.typeOf(link.data) === 'Object' || u.typeOf(link.extra) === 'Object') {
-            u.each(u.extend(link.data || {}, link.extra || {}), function (val, key) {
+        var data = link.data || link.extra;
+        if (data && u.typeOf(data) === 'Object') {
+            u.each(data, function (val, key) {
                 attrs['data-' + key] = val;
             });
         }
@@ -280,8 +281,9 @@ define(function (require) {
             attrs['data-command-args'] = '' + command.args;
         }
 
-        if (u.typeOf(command.data) === 'Object' || u.typeOf(command.extra) === 'Object') {
-            u.each(u.extend(command.data || {}, command.extra || {}), function (val, key) {
+        var data = command.data || command.extra;
+        if (data && u.typeOf(data) === 'Object') {
+            u.each(data, function (val, key) {
                 attrs['data-' + key] = val;
             });
         }
