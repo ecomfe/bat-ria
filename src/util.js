@@ -198,7 +198,7 @@ define(function (require) {
      * @param {string} [link.target] 链接的target属性
      * @param {string} link.text 链接文本
      * @param {Object} [link.data] 附加属性对象，对应kv对会以data-key="value"形式附加到HTML上
-     * @param {Object} [link.extra] 同data，建议使用link.data
+     * @param {Object} [link.extra] 已废弃。同data，建议使用link.data
      * @param {Object} [link.attr] 附加原生属性对象，对应kv对会以key="value"形式附加到HTML上
      * @return {string} 生成的HTML内容
      */
@@ -215,7 +215,7 @@ define(function (require) {
         }
 
         var attrs = {
-            href: link.url,
+            'href': link.url,
             'class': link.className
         };
 

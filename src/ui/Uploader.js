@@ -375,7 +375,7 @@ define(
                     var form = uploader.helper.getPart('form');
                     form.method = method;
                     action = uri(action).addQuery({
-                        'callback': 'parent.esuiShowUploadResult["' + uploader.callbackName + '"]'
+                        callback: 'parent.esuiShowUploadResult["' + uploader.callbackName + '"]'
                     }).toString();
                     form.action = uploader.filterAction(action);
                 }

@@ -1,17 +1,17 @@
 .skin-default-wizard {
-    @commonColor: #E7F0FA;
-    @doneColor: #E7F0FA;
-    @activeColor: #B6D2F1;
+    @common-color: #e7f0fa;
+    @done-color: #e7f0fa;
+    @active-color: #b6d2f1;
 
-    @arrowHeight: 24px;
+    @arrow-height: 24px;
 
-    @arrowGap: 4px;
+    @arrow-gap: 4px;
     .ui-wizard-node {
-        color: #999999;
+        color: #999;
         font-size: 12px;
         font-weight: normal;
-        height: @arrowHeight;
-        line-height: @arrowHeight;
+        height: @arrow-height;
+        line-height: @arrow-height;
         padding: 0 15px 0 0;
         *padding: 0;
         text-align: center;
@@ -19,34 +19,34 @@
         background: #fff;
 
         span {
-            margin-right: @arrowGap;
-            color: #999999;
-            height: @arrowHeight;
+            margin-right: @arrow-gap;
+            color: #999;
+            height: @arrow-height;
             float: left;
             position: relative;
             text-align: center;
             width: auto;
             padding: 0 10px;
-            background-color: @commonColor;
+            background-color: @common-color;
 
             &:after {
-                border-bottom: (@arrowHeight/2) solid transparent;
-                border-left: (@arrowHeight/2) solid @commonColor;
-                border-top: (@arrowHeight/2) solid transparent;
+                border-bottom: (@arrow-height / 2) solid transparent;
+                border-left: (@arrow-height / 2) solid @common-color;
+                border-top: (@arrow-height / 2) solid transparent;
                 content: " ";
                 height: 0;
                 position: absolute;
-                right: -(@arrowHeight/2);
+                right: -(@arrow-height / 2);
                 top: 0;
                 width: 0;
             }
             &:before {
-                border-bottom: (@arrowHeight/2) solid @commonColor;
-                border-left: (@arrowHeight/2) solid transparent;
-                border-top: (@arrowHeight/2) solid @commonColor;
+                border-bottom: (@arrow-height / 2) solid @common-color;
+                border-left: (@arrow-height / 2) solid transparent;
+                border-top: (@arrow-height / 2) solid @common-color;
                 content: "";
                 height: 0;
-                left: -(@arrowHeight/2);
+                left: -(@arrow-height / 2);
                 position: absolute;
                 top: 0;
                 width: 0;
@@ -56,15 +56,15 @@
 
     .ui-wizard-node-done {
         span {
-            background-color: @doneColor;
-            color: #999999;
+            background-color: @done-color;
+            color: #999;
 
             &:after {
-                border-left: (@arrowHeight/2) solid @doneColor;
+                border-left: (@arrow-height / 2) solid @done-color;
             }
             &:before {
-                border-bottom: (@arrowHeight/2) solid @doneColor;
-                border-top: (@arrowHeight/2) solid @doneColor;
+                border-bottom: (@arrow-height / 2) solid @done-color;
+                border-top: (@arrow-height / 2) solid @done-color;
             }
         }
     }
@@ -78,14 +78,14 @@
 
     .ui-wizard-node-active {
         span {
-            background-color: @activeColor;
+            background-color: @active-color;
             color: #000;
             &:after {
-                border-left: (@arrowHeight/2) solid @activeColor;
+                border-left: (@arrow-height / 2) solid @active-color;
             }
             &:before {
-                border-bottom: (@arrowHeight/2) solid @activeColor;
-                border-top: (@arrowHeight/2) solid @activeColor;
+                border-bottom: (@arrow-height / 2) solid @active-color;
+                border-top: (@arrow-height / 2) solid @active-color;
             }
         }
 

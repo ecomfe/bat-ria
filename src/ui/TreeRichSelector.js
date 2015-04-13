@@ -188,8 +188,8 @@ define(
             }
             else {
                 tree.setProperties({
-                    'datasource': u.deepClone(treeData),
-                    'keyword': this.getKeyword()
+                    datasource: u.deepClone(treeData),
+                    keyword: this.getKeyword()
                 });
             }
 
