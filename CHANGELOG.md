@@ -1,6 +1,7 @@
 * 0.2.6
     - ETpl 的依赖升级到 `3.0.0` 以上
     - 增加了 `ListAction` 相关的模板，支持重写 `block` 覆盖
+    - 使用 `filterRedirect` 拦截跳转，解决 `ListAction` 作为子 Action 时无法局部刷新的问题
 
 * 0.2.5
     - `QuickTip` 改用 `TipLayer` 的 `auto` 模式
