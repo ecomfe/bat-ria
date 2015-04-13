@@ -162,20 +162,20 @@ define(function (require) {
         this.view.adjustLayout();
     };
 
-    // /**
-    //  * @inheritDoc
-    //  *
-    //  * @protected
-    //  * @override
-    //  */
-    // ListAction.prototype.filterRedirect = function (url) {
-    //     if (url.getPath() !== this.model.get('url').getPath()
-    //         || this.redirectAfterChange) {
-    //         return true;
-    //     }
-    //     this.loadList(url);
-    //     return false;
-    // };
+    /**
+     * @inheritDoc
+     *
+     * @protected
+     * @override
+     */
+    ListAction.prototype.filterRedirect = function (url) {
+        if (url.getPath() !== this.model.get('url').getPath()
+            || this.redirectAfterChange) {
+            return true;
+        }
+        this.loadList(url);
+        return false;
+    };
 
     return ListAction;
 });
