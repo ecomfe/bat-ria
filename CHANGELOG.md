@@ -1,3 +1,7 @@
+* 0.2.6
+    - ETpl 的依赖升级到 `3.0.0` 以上
+    - 增加了 `ListAction` 相关的模板，支持重写 `block` 覆盖
+
 * 0.2.5
     - `QuickTip` 改用 `TipLayer` 的 `auto` 模式
     - 支持列表页和表单页数据请求失败后继续进入 Action
