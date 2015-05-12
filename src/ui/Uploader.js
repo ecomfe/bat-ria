@@ -218,11 +218,11 @@ define(
             /* eslint-enable fecs-indent */
             // 从附加参数里构造
             var extraArgs = buildExtraArgs(this.args);
+            html.push(
+                '<div id="' + this.helper.getId('extraArgs') + '"',
+                    'class="' + extraArgClasses + '">'
+            );
             if (extraArgs.length) {
-                html.push(
-                    '<div id="' + this.helper.getId('extraArgs') + '"',
-                        'class="' + extraArgClasses + '">'
-                );
                 u.each(extraArgs, function (arg) {
                     html.push(
                         '<input type="hidden" name="' + arg.name + '" ',
@@ -230,10 +230,10 @@ define(
                         '/>'
                     );
                 });
-                html.push(
-                    '</div>'
-                );
             }
+            html.push(
+                '</div>'
+            );
             html.push(
                 '</div>',
                 // 指示器
@@ -278,13 +278,7 @@ define(
             var button = this.helper.getPart('button');
             button.innerHTML = u.escape(this.overrideText);
 
-            var label = this.helper.getPart('label');
-            // 各种兼容。。。
-            label.innerHTML = u.escape(this.getFileName()
-                || info.url
-                || info.previewUrl
-                || ''
-            );
+            this.setFileNameLabel(info);
 
             // 清掉可能存在的错误信息
             var validity = new Validity();
@@ -515,7 +509,7 @@ define(
                 if (!isValid) {
                     var message = this.acceptErrorMessage
                         || '仅接受以下文件格式：' + this.accept.join(',');
-                    this.notifyFail(message);
+                    this.notifyFail(message, !this.autoUpload);
                 }
 
                 return isValid;
@@ -534,12 +528,19 @@ define(
             // 因此我们把内层`<form>`单独写在某个地方，
             // 当需要提交时，把所有的`<input>`丢到这个`<form>`下，
             // 提交完毕后再拿回来
-            this.showUploading();
-            var inputs = this.helper.getPart('input-container');
-            var form = this.helper.getPart('form');
-            form.appendChild(inputs);
-            form.submit();
-            this.main.insertBefore(inputs, this.main.firstChild);
+            var input = this.helper.getPart('input');
+            var fileName = input.value;
+            if (fileName) {
+                this.showUploading();
+                var inputs = this.helper.getPart('input-container');
+                var form = this.helper.getPart('form');
+                form.appendChild(inputs);
+                form.submit();
+                this.main.insertBefore(inputs, this.main.firstChild);
+            }
+            else {
+                this.notifyFail(this.requiredErrorMessage || '请选择文件', !this.autoUpload);
+            }
         };
 
         /**
@@ -554,6 +555,13 @@ define(
                 this.fire('receive');
                 if (this.autoUpload) {
                     this.submit();
+                }
+                else {
+                    // 提前显示文件名
+                    this.setFileNameLabel();
+                    // 清掉可能存在的错误信息
+                    var validity = new Validity();
+                    this.showValidity(validity);
                 }
             }
         };
@@ -628,15 +636,8 @@ define(
             //    }
             // }
             var result = options.result;
-            if (options.success === false || options.success === 'false' || options.code === 1) {
-                if (typeof options.message === 'object' && options.message.ERROR) {
-                    this.notifyFail(options.message.ERROR);
-                }
-                else {
-                    this.notifyFail(options.message);
-                }
-            }
-            else if (result) {
+            if ((options.success === true || options.success === 'true' || options.code === 0)
+                && options.result) {
                 this.fileInfo = result;
                 this.rawValue = result.content || result.url || result.previewUrl || '';
                 this.fire('complete', {
@@ -644,20 +645,32 @@ define(
                 });
                 this.notifyComplete(options.result);
             }
+            else {
+                if (typeof options.message === 'object' && options.message.ERROR) {
+                    this.notifyFail(options.message.ERROR);
+                }
+                else {
+                    this.notifyFail(options.message);
+                }
+            }
         };
 
         /**
          * 通知上传失败
          *
          * @param {string} message 失败消息
+         * @param {boolean} silent 是否要出发fail事件，不是自动上传会调用该方法，但不需要触发事件
          * @protected
          */
-        Uploader.prototype.notifyFail = function (message) {
+        Uploader.prototype.notifyFail = function (message, silent) {
             this.clear();
-            var fail = this.fire('fail', {
-                message: message
-            });
-            if (!fail.isDefaultPrevented()) {
+            var fail;
+            if (!silent) {
+                fail = this.fire('fail', {
+                    message: message
+                });
+            }
+            if (!fail || !fail.isDefaultPrevented()) {
                 var validity = new Validity();
                 var state = new ValidityState(false, message);
                 validity.addState('upload', state);
@@ -739,6 +752,21 @@ define(
                 value = input.value;
                 return value.split('\\').pop() || '';
             }
+        };
+
+        /**
+         * 设置显示的文件名
+         * @param info [object] 上传完成返回的信息
+         */
+        Uploader.prototype.setFileNameLabel = function (info) {
+            var label = this.helper.getPart('label');
+            info = info || {};
+            // 各种兼容。。。
+            label.innerHTML = u.escape(this.getFileName()
+                || info.url
+                || info.previewUrl
+                || ''
+            );
         };
 
         /**
