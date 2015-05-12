@@ -278,7 +278,7 @@ define(
             var button = this.helper.getPart('button');
             button.innerHTML = u.escape(this.overrideText);
 
-            this.setFileNameLabel(info);
+            this.setLabelContent(info.url || info.previewUrl);
 
             // 清掉可能存在的错误信息
             var validity = new Validity();
@@ -507,9 +507,18 @@ define(
                 }
 
                 if (!isValid) {
-                    var message = this.acceptErrorMessage
-                        || '仅接受以下文件格式：' + this.accept.join(',');
-                    this.notifyFail(message, !this.autoUpload);
+                    this.clear();
+                    var message = this.acceptErrorMessage || '仅接受以下文件格式：' + this.accept.join(',');
+                    var unaccepted = this.fire('unaccepted', {
+                        message: message
+                    });
+                    if (!unaccepted.isDefaultPrevented()) {
+                        var validity = new Validity();
+                        var state = new ValidityState(false, message);
+                        validity.addState('upload', state);
+                        this.showValidity(validity);
+                    }
+                    this.removeState('busy');
                 }
 
                 return isValid;
@@ -539,7 +548,10 @@ define(
                 this.main.insertBefore(inputs, this.main.firstChild);
             }
             else {
-                this.notifyFail(this.requiredErrorMessage || '请选择文件', !this.autoUpload);
+                var validity = new Validity();
+                var state = new ValidityState(false, this.requiredErrorMessage || '请选择文件');
+                validity.addState('upload', state);
+                this.showValidity(validity);
             }
         };
 
@@ -558,7 +570,7 @@ define(
                 }
                 else {
                     // 提前显示文件名
-                    this.setFileNameLabel();
+                    this.setLabelContent();
                     // 清掉可能存在的错误信息
                     var validity = new Validity();
                     this.showValidity(validity);
@@ -659,18 +671,14 @@ define(
          * 通知上传失败
          *
          * @param {string} message 失败消息
-         * @param {boolean} silent 是否要出发fail事件，不是自动上传会调用该方法，但不需要触发事件
          * @protected
          */
-        Uploader.prototype.notifyFail = function (message, silent) {
+        Uploader.prototype.notifyFail = function (message) {
             this.clear();
-            var fail;
-            if (!silent) {
-                fail = this.fire('fail', {
-                    message: message
-                });
-            }
-            if (!fail || !fail.isDefaultPrevented()) {
+            var fail = this.fire('fail', {
+                message: message
+            });
+            if (!fail.isDefaultPrevented()) {
                 var validity = new Validity();
                 var state = new ValidityState(false, message);
                 validity.addState('upload', state);
@@ -756,17 +764,12 @@ define(
 
         /**
          * 设置显示的文件名
-         * @param info [object] 上传完成返回的信息
+         * @param content [string] 文件名
          */
-        Uploader.prototype.setFileNameLabel = function (info) {
+        Uploader.prototype.setLabelContent = function (content) {
             var label = this.helper.getPart('label');
-            info = info || {};
-            // 各种兼容。。。
-            label.innerHTML = u.escape(this.getFileName()
-                || info.url
-                || info.previewUrl
-                || ''
-            );
+            var text = content || this.getFileName();
+            label.innerHTML = u.escape(text);
         };
 
         /**
