@@ -4,7 +4,6 @@
  */
 
 define(function (require) {
-    var util = require('er/util');
     var u = require('underscore');
     var Deferred = require('er/Deferred');
     var BaseAction = require('./BaseAction');
@@ -15,11 +14,7 @@ define(function (require) {
      * @extends BaseAction
      * @constructor
      */
-    function FormAction() {
-        BaseAction.apply(this, arguments);
-    }
-
-    util.inherits(FormAction, BaseAction);
+    var exports = {};
 
     /**
      * 设置表单提交成功后显示的信息，如果值为`null`或`undefined`则表示不显示任何信息
@@ -29,7 +24,7 @@ define(function (require) {
      *
      * @type {string | false | null}
      */
-    FormAction.prototype.toastMessage = '';
+    exports.toastMessage = '';
 
     /**
      * 获取表单提交成功后显示的信息
@@ -39,7 +34,7 @@ define(function (require) {
      * @param {Object} result 提交后服务器端返回的信息
      * @return {string}
      */
-    FormAction.prototype.getToastMessage = function (result) {
+    exports.getToastMessage = function (result) {
         var message = this.toastMessage;
         if (message == null) {
             return '';
@@ -58,7 +53,7 @@ define(function (require) {
      *
      * @param {Object} result 提交成功后返回的内容
      */
-    FormAction.prototype.handleSubmitResult = function (result) {
+    exports.handleSubmitResult = function (result) {
         var toast = this.getToastMessage(result);
         if (toast) {
             this.view.showToast(toast);
@@ -72,7 +67,7 @@ define(function (require) {
      * 默认提交/取消后跳转的路径
      * @type {string}
      */
-    FormAction.prototype.backLocation = null;
+    exports.backLocation = null;
 
     /**
      * 执行提交成功后的跳转操作
@@ -83,7 +78,7 @@ define(function (require) {
      *
      * @param {Object} result 提交后服务器返回的数据
      */
-    FormAction.prototype.redirectAfterSubmit = function (result) {
+    exports.redirectAfterSubmit = function (result) {
         this.back(this.backLocation, true);
     };
 
@@ -92,7 +87,7 @@ define(function (require) {
      *
      * @param {Object} message 失败时的message对象
      */
-    FormAction.prototype.handleSubmitError = function (message) {
+    exports.handleSubmitError = function (message) {
         if (message && message.field) {
             this.view.notifyErrors(message.field);
             this.view.handleValidateInvalid();
@@ -114,7 +109,7 @@ define(function (require) {
      *
      * @return {Mixed} 本地验证得到的错误信息
      */
-    FormAction.prototype.handleLocalValidationErrors = function (errors) {
+    exports.handleLocalValidationErrors = function (errors) {
         if (typeof errors === 'string') {
             this.view.alert(errors, '系统提示');
         }
@@ -127,7 +122,7 @@ define(function (require) {
     /**
      * 重置的操作
      */
-    FormAction.prototype.reset = function () {
+    exports.reset = function () {
         var reset = this.fire('reset');
         if (!reset.isDefaultPrevented()) {
             this.view.rollbackFormData(this.model.getDefaultData());
@@ -139,14 +134,14 @@ define(function (require) {
      *
      * @type {string}
      */
-    FormAction.prototype.cancelConfirmTitle = '确认取消编辑';
+    exports.cancelConfirmTitle = '确认取消编辑';
 
     /**
      * 获取取消编辑时的提示信息标题
      *
      * @return {string}
      */
-    FormAction.prototype.getCancelConfirmTitle = function () {
+    exports.getCancelConfirmTitle = function () {
         return this.cancelConfirmTitle;
     };
 
@@ -155,7 +150,7 @@ define(function (require) {
      *
      * @type {string}
      */
-    FormAction.prototype.cancelConfirmMessage =
+    exports.cancelConfirmMessage =
         '取消编辑将不保留已经填写的数据，确定继续吗？';
 
     /**
@@ -163,7 +158,7 @@ define(function (require) {
      *
      * @return {string}
      */
-    FormAction.prototype.getCancelConfirmMessage = function () {
+    exports.getCancelConfirmMessage = function () {
         return this.cancelConfirmMessage;
     };
 
@@ -173,7 +168,7 @@ define(function (require) {
      * @fires submitcancel
      * @fires aftercancel
      */
-    FormAction.prototype.cancel = function () {
+    exports.cancel = function () {
         var submitCancelEvent = this.fire('submitcancel');
         var handleFinishEvent = this.fire('aftercancel');
 
@@ -185,7 +180,7 @@ define(function (require) {
     /**
      * 取消编辑时的确认提示
      */
-    FormAction.prototype.cancelEdit = function () {
+    exports.cancelEdit = function () {
         var formData = this.view.getFormData();
 
         if (this.model.isFormDataChanged(formData)) {
@@ -208,7 +203,7 @@ define(function (require) {
      *
      * 可在业务action里边重写
      */
-    FormAction.prototype.redirectAfterCancel = function () {
+    exports.redirectAfterCancel = function () {
         this.back(this.backLocation, true);
     };
 
@@ -218,7 +213,7 @@ define(function (require) {
      * @param {Object} submitData 表单数据
      * @return {er.Promise}
      */
-    FormAction.prototype.submit = function (submitData) {
+    exports.submit = function (submitData) {
         var handleBeforeSubmit = this.fire('beforesubmit', {submitData: submitData});
         if (!handleBeforeSubmit.isDefaultPrevented()) {
             try {
@@ -244,7 +239,7 @@ define(function (require) {
      *      当且仅当返回Deferred.rejected()阻止后续流程
      *      其他任意返回结果均与Deferred.resolved()等效
      */
-    FormAction.prototype.beforeValidate = function (submitData) {
+    exports.beforeValidate = function (submitData) {
         return true;
     };
 
@@ -257,7 +252,7 @@ define(function (require) {
      *      当且仅当返回Deferred.rejected()阻止后续流程
      *      其他任意返回结果均与Deferred.resolved()等效
      */
-    FormAction.prototype.afterValidate = function (submitData) {
+    exports.afterValidate = function (submitData) {
         return true;
     };
 
@@ -267,7 +262,7 @@ define(function (require) {
      * @param {Object} submitData 最终要提交的数据
      * @return {er.Promise} 处理完毕的Promise
      */
-    FormAction.prototype.validate = function (submitData) {
+    exports.validate = function (submitData) {
         var localViewValidationResult = this.view.validate();
         var localModelValidationResult = this.model.validateSubmitData(submitData);
         if (localViewValidationResult && localModelValidationResult === true) {
@@ -297,7 +292,7 @@ define(function (require) {
      * 可针对业务需求扩展beforeValidate、afterValidate
      * validate、submit若与业务有冲突，也可自行修改，但不推荐
      */
-    FormAction.prototype.submitEdit = function () {
+    exports.submitEdit = function () {
         this.view.disableSubmit();
         var formData = this.view.getFormData();
         var submitData = this.model.getSubmitData(formData);
@@ -316,12 +311,13 @@ define(function (require) {
      * @protected
      * @override
      */
-    FormAction.prototype.initBehavior = function () {
-        BaseAction.prototype.initBehavior.apply(this, arguments);
+    exports.initBehavior = function () {
+        this.$super(arguments);
         this.view.on('submit', this.submitEdit, this);
         this.view.on('cancel', this.cancelEdit, this);
         this.view.on('reset', this.reset, this);
     };
 
+    var FormAction = require('eoo').create(BaseAction, exports);
     return FormAction;
 });

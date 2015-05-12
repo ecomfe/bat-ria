@@ -4,7 +4,6 @@
  */
 
 define(function (require) {
-    var util = require('er/util');
     var BaseView = require('./BaseView');
     var u = require('underscore');
     var lib = require('esui/lib');
@@ -28,18 +27,14 @@ define(function (require) {
      * @extends BaseView
      * @constructor
      */
-    function FormView() {
-        BaseView.apply(this, arguments);
-    }
-
-    util.inherits(FormView, BaseView);
+    var exports = {};
 
     /**
      * 从表单中获取数据
      *
      * @return {Object}
      */
-    FormView.prototype.getFormData = function () {
+    exports.getFormData = function () {
         var form = this.get('form');
         return u.extend(
             {},
@@ -53,7 +48,7 @@ define(function (require) {
      *
      * @return {Object} 表单数据
      */
-    FormView.prototype.getExtraFormData = function () {
+    exports.getExtraFormData = function () {
         return {};
     };
 
@@ -62,7 +57,7 @@ define(function (require) {
      *
      * @param {Object} defaultData key/value形式的数据，key和input的name一一对应
      */
-    FormView.prototype.rollbackFormData = function (defaultData) {
+    exports.rollbackFormData = function (defaultData) {
         this.setFormData(defaultData);
     };
 
@@ -71,7 +66,7 @@ define(function (require) {
      *
      * @param {Object} formData key:value形式的数据 key和input的name一一对应
      */
-    FormView.prototype.setFormData = function (formData) {
+    exports.setFormData = function (formData) {
         var form = this.get('form');
         var inputs = form.getInputControls();
         u.each(inputs, function (input, index) {
@@ -91,7 +86,7 @@ define(function (require) {
      *
      * @param {Object} formData key:value形式的数据 key和input的name一一对应
      */
-    FormView.prototype.setExtraFormData = function (formData) {
+    exports.setExtraFormData = function (formData) {
         return;
     };
 
@@ -106,7 +101,7 @@ define(function (require) {
      *
      * @return {boolean} 校验是否成功
      */
-    FormView.prototype.validate = function () {
+    exports.validate = function () {
         var form = this.get('form');
         var isAutoValidate = form.get('autoValidate');
         if (!isAutoValidate) {
@@ -121,7 +116,7 @@ define(function (require) {
      * @param {Object} errors 错误信息，每个key为控件`name`，value为`errorMessage`
      *
      */
-    FormView.prototype.notifyErrors = function (errors) {
+    exports.notifyErrors = function (errors) {
         if (typeof errors !== 'object') {
             return;
         }
@@ -185,7 +180,7 @@ define(function (require) {
      * @param {Object} form esui表单控件
      * @fire {Event} scrolltofirsterror 定位至页面第一个出错的控件
      */
-    FormView.prototype.handleValidateInvalid = function () {
+    exports.handleValidateInvalid = function () {
         var me = this;
         var form = this.get('form');
         u.some(form.getInputControls(), function (input) {
@@ -204,7 +199,7 @@ define(function (require) {
      *
      * @override
      */
-    FormView.prototype.bindEvents = function () {
+    exports.bindEvents = function () {
         var form = this.get('form');
         if (form) {
             form.on('beforevalidate', submit, this);
@@ -220,13 +215,13 @@ define(function (require) {
             cancelButton.on('click', cancelEdit, this);
         }
 
-        BaseView.prototype.bindEvents.apply(this, arguments);
+        this.$super(arguments);
     };
 
     /**
      * 禁用提交操作
      */
-    FormView.prototype.disableSubmit = function () {
+    exports.disableSubmit = function () {
         if (this.viewContext) {
             this.getGroup('submit').disable();
         }
@@ -235,11 +230,12 @@ define(function (require) {
     /**
      * 启用提交操作
      */
-    FormView.prototype.enableSubmit = function () {
+    exports.enableSubmit = function () {
         if (this.viewContext) {
             this.getGroup('submit').enable();
         }
     };
 
+    var FormView = require('eoo').create(BaseView, exports);
     return FormView;
 });

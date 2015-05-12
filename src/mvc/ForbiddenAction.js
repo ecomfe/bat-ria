@@ -4,7 +4,6 @@
  */
 
 define(function (require) {
-    var util = require('er/util');
     var Action = require('er/Action');
 
     /**
@@ -13,14 +12,11 @@ define(function (require) {
      * @extends er.Action
      * @constructor
      */
-    function ForbiddenAction() {
-        Action.apply(this, arguments);
-    }
+    var exports = {};
 
-    util.inherits(ForbiddenAction, Action);
+    exports.modelType = require('./ForbiddenModel');
+    exports.viewType = require('./ForbiddenView');
 
-    ForbiddenAction.prototype.modelType = require('./ForbiddenModel');
-    ForbiddenAction.prototype.viewType = require('./ForbiddenView');
-
+    var ForbiddenAction = require('eoo').create(Action, exports);
     return ForbiddenAction;
 });

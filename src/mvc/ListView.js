@@ -17,26 +17,24 @@ define(function (require) {
      * @constructor
      * @extends ef.BaseView
      */
-    function ListView() {
-        BaseView.apply(this, arguments);
-    }
+    var exports = {};
 
     /**
      * @inheritDoc
      */
-    ListView.prototype.uiProperties = {};
+    exports.uiProperties = {};
 
     /**
      * @inheritDoc
      */
-    ListView.prototype.uiEvents = {};
+    exports.uiEvents = {};
 
     /**
      * 收集查询参数并触发查询事件
      *
      * @param {mini-event.Event} e 控件事件对象
      */
-    ListView.prototype.submitSearch = function (e) {
+    exports.submitSearch = function (e) {
         var args = this.getSearchArgs();
 
         // 如果是表格排序引发的，把新的排序放进去
@@ -53,7 +51,7 @@ define(function (require) {
      *
      * @return {Object}
      */
-    ListView.prototype.getSearchArgs = function () {
+    exports.getSearchArgs = function () {
         // 获取表单的字段
         var form = this.get('filter');
         var args = form ? form.getData() : {};
@@ -99,7 +97,7 @@ define(function (require) {
     /**
      * 根据表格中所选择的行来控制批量更新按钮的启用/禁用状态
      */
-    ListView.prototype.updateBatchButtonStatus = function () {
+    exports.updateBatchButtonStatus = function () {
         var items = this.getSelectedItems();
 
         this.getGroup('batch').set('disabled', u.isEmpty(items));
@@ -111,7 +109,7 @@ define(function (require) {
      *
      * @return {Object[]} 当前table的已选择列对应的数据
      */
-    ListView.prototype.getSelectedItems = function () {
+    exports.getSelectedItems = function () {
         var table = this.get('table');
         return table ? table.getSelectedItems() : [];
     };
@@ -158,7 +156,7 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    ListView.prototype.bindEvents = function () {
+    exports.bindEvents = function () {
         var pager = this.get('pager');
         if (pager) {
             // 切换每页大小
@@ -196,7 +194,7 @@ define(function (require) {
             this
         );
 
-        BaseView.prototype.bindEvents.apply(this, arguments);
+        this.$super(arguments);
     };
 
     /**
@@ -204,8 +202,8 @@ define(function (require) {
      *
      * @override
      */
-    ListView.prototype.enterDocument = function () {
-        BaseView.prototype.enterDocument.apply(this, arguments);
+    exports.enterDocument = function () {
+        this.$super(arguments);
         this.updateBatchButtonStatus();
 
         this.adjustLayout();
@@ -214,7 +212,7 @@ define(function (require) {
     /**
      * 根据布局变化重新调整自身布局
      */
-    ListView.prototype.adjustLayout = function () {
+    exports.adjustLayout = function () {
         var table = this.get('table');
         if (table) {
             table.adjustWidth();
@@ -224,7 +222,7 @@ define(function (require) {
     /**
      * 根据Model数据重新渲染页面
      */
-    ListView.prototype.refresh = function () {
+    exports.refresh = function () {
         // 刷新列表
         this.refreshList();
 
@@ -235,7 +233,7 @@ define(function (require) {
     /**
      * 根据Model数据重新渲染列表
      */
-    ListView.prototype.refreshList = function () {
+    exports.refreshList = function () {
         var model = this.model;
         var table = this.get('table');
         if (table) {
@@ -255,6 +253,6 @@ define(function (require) {
         }
     };
 
-    require('er/util').inherits(ListView, BaseView);
+    var ListView = require('eoo').create(BaseView, exports);
     return ListView;
 });

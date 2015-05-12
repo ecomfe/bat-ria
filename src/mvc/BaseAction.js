@@ -4,7 +4,6 @@
  */
 
 define(function (require) {
-    var util = require('er/util');
     var u = require('underscore');
     var Action = require('er/Action');
 
@@ -14,17 +13,13 @@ define(function (require) {
      * @extends er.Action
      * @constructor
      */
-    function BaseAction() {
-        Action.apply(this, arguments);
-    }
-
-    util.inherits(BaseAction, Action);
+    var exports = {};
 
     /**
      * @override
      */
-    BaseAction.prototype.createModel = function (args) {
-        var model = Action.prototype.createModel.apply(this, arguments);
+    exports.createModel = function (args) {
+        var model = this.$super(arguments);
 
         // `Action`基类的默认返回值是一个空对象`{}`，
         // 但是普通的`Model`对象因为方法和属性全在`prototype`上，也会被判断为空
@@ -45,7 +40,7 @@ define(function (require) {
      * @protected
      * @override
      */
-    BaseAction.prototype.back = function (defaultURL, isForce) {
+    exports.back = function (defaultURL, isForce) {
         if (typeof arguments[0] === 'boolean') {
             isForce = defaultURL;
             defaultURL = null;
@@ -63,5 +58,6 @@ define(function (require) {
         }
     };
 
+    var BaseAction = require('eoo').create(Action, exports);
     return BaseAction;
 });

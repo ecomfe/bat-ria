@@ -5,7 +5,6 @@
 
 define(function (require) {
     var u = require('underscore');
-    var util = require('er/util');
     var BaseModel = require('./BaseModel');
     var batUtil = require('../util');
     var Deferred = require('er/Deferred');
@@ -18,18 +17,14 @@ define(function (require) {
      * @constructor
      * @extends ef.BaseModel
      */
-    function ListModel(context) {
-        BaseModel.call(this, context);
-    }
-
-    util.inherits(ListModel, BaseModel);
+    var exports = {};
 
     /**
      * 列表数据请求器
      *
      * @type {function}
      */
-    ListModel.prototype.listRequester;
+    exports.listRequester;
 
     /**
      * 配置默认查询参数
@@ -41,7 +36,7 @@ define(function (require) {
      * @type {Object}
      * @protected
      */
-    ListModel.prototype.defaultArgs = {};
+    exports.defaultArgs = {};
 
     /**
      * 默认查询参数
@@ -51,7 +46,7 @@ define(function (require) {
      * @return {Object}
      * @protected
      */
-    ListModel.prototype.getDefaultArgs = function () {
+    exports.getDefaultArgs = function () {
         return u.defaults(this.defaultArgs || {}, {pageNo: 1});
     };
 
@@ -86,7 +81,7 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    ListModel.prototype.defaultDatasource = {
+    exports.defaultDatasource = {
         listPage: {
             retrieve: function (model) {
                 return model.listRequester(model.getQuery())
@@ -143,7 +138,7 @@ define(function (require) {
      * @type {?{begin: Date, end: Date}}
      * @protected
      */
-    ListModel.prototype.defaultTimeRange = null;
+    exports.defaultTimeRange = null;
 
     /**
      * 生成默认的后端请求参数
@@ -151,7 +146,7 @@ define(function (require) {
      * @return {Object}
      * @protected
      */
-    ListModel.prototype.getQuery = function () {
+    exports.getQuery = function () {
         var url = this.get('url');
         var query = url.getQuery();
 
@@ -183,7 +178,7 @@ define(function (require) {
      * @return {Object}
      * @protected
      */
-    ListModel.prototype.getExtraQuery = function () {
+    exports.getExtraQuery = function () {
         return {};
     };
 
@@ -195,7 +190,7 @@ define(function (require) {
      * @return {Object}
      * @protected
      */
-    ListModel.prototype.filterQuery = function (query) {
+    exports.filterQuery = function (query) {
         return query;
     };
 
@@ -206,7 +201,7 @@ define(function (require) {
      * @return {Object}
      * @protected
      */
-    ListModel.prototype.prepareQuery = function (query) {
+    exports.prepareQuery = function (query) {
         return this.filterQuery(query);
     };
 
@@ -217,7 +212,7 @@ define(function (require) {
      * @return {er/Promise} 返回异步请求的Promise对象
      * @protected
      */
-    ListModel.prototype.loadData = function (url) {
+    exports.loadData = function (url) {
         var me = this;
         var urlQuery = url.getQuery();
         me.set('url', url);
@@ -252,5 +247,6 @@ define(function (require) {
             );
     };
 
+    var ListModel = require('eoo').create(BaseModel, exports);
     return ListModel;
 });

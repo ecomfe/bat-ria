@@ -4,23 +4,43 @@
  */
 
 define(function (require) {
-    var util = require('er/util');
     var u = require('underscore');
     var UIView = require('ef/UIView');
     var Deferred = require('er/Deferred');
     var Dialog = require('esui/Dialog');
 
     /**
+     * @class BaseView
+     *
      * 业务`View`基类
      *
      * @extends ef.UIView
      * @constructor
      */
-    function BaseView() {
-        UIView.apply(this, arguments);
-    }
+    var exports = {};
 
-    util.inherits(BaseView, UIView);
+    /**
+     * 渲染当前视图
+     *
+     * ER的默认实现是使用[etpl](https://github.com/ecomfe/etpl)渲染容器，
+     * 如果需要使用其它的模板，或自己有视图的管理，建议重写此方法
+     */
+    exports.render = function () {
+        var container = this.getContainerElement();
+        // 容器没有还不一定是没配置好，很可能是主Action销毁了子Action才刚加载完
+        if (!container) {
+            var url = this.model
+                && typeof this.model.get === 'function'
+                && this.model.get('url');
+            throw new Error('Container not found when rendering ' + (url ? '"' + url + '"' : 'view'));
+        }
+
+        var template = require('etpl');
+        var html = template.render(this.getTemplateName(), this.getTemplateData());
+        container.innerHTML = html;
+
+        this.enterDocument();
+    };
 
     /**
      * 获取对应模板名称
@@ -31,9 +51,9 @@ define(function (require) {
      * @return {string}
      * @override
      */
-    BaseView.prototype.getTemplateName = function () {
+    exports.getTemplateName = function () {
         var templateName =
-            UIView.prototype.getTemplateName.apply(this, arguments);
+            this.$super(arguments);
 
         // 作为子Action嵌入页面时，模板使用`xxxMain`这个target
         if (this.model && this.model.get('isChildAction')) {
@@ -52,7 +72,7 @@ define(function (require) {
      * @param {Object} [options] 配置
      * @return {esui.Toast}
      */
-    BaseView.prototype.showToast = function (content, options) {
+    exports.showToast = function (content, options) {
         if (!content) {
             return;
         }
@@ -85,7 +105,7 @@ define(function (require) {
      * @return {esui/Dialog}
      * @protected
      */
-    BaseView.prototype.popDialog = function (options) {
+    exports.popDialog = function (options) {
         // 创建main
         var main = document.createElement('div');
         document.body.appendChild(main);
@@ -132,7 +152,7 @@ define(function (require) {
      * 1. waitDialog(options)
      * 2. waitDialog(dialog, options)
      */
-    BaseView.prototype.waitDialog = function (dialog, options) {
+    exports.waitDialog = function (dialog, options) {
         if (!(dialog instanceof Dialog)) {
             options = dialog;
             dialog = this.popDialog.call(this, options);
@@ -190,7 +210,7 @@ define(function (require) {
      * 1. showDialog(options)
      * 2. showDialog(dialog, options)
      */
-    BaseView.prototype.showDialog = function (dialog, options) {
+    exports.showDialog = function (dialog, options) {
         if (!(dialog instanceof Dialog)) {
             options = dialog;
             dialog = this.popDialog.call(this, options);
@@ -255,7 +275,7 @@ define(function (require) {
      *
      * @return {er.Promise} 一个`Promise`对象，用户确认则进入`resolved`状态
      */
-    BaseView.prototype.waitAlert = function () {
+    exports.waitAlert = function () {
         var dialog = this.alert.apply(this, arguments);
         var deferred = new Deferred();
 
@@ -272,7 +292,7 @@ define(function (require) {
      * @return {er.Promise} 一个`Promise`对象，用户确认则进入`resolved`状态，
      * 用户取消则进入`rejected`状态
      */
-    BaseView.prototype.waitConfirm = function () {
+    exports.waitConfirm = function () {
         var dialog = this.confirm.apply(this, arguments);
         var deferred = new Deferred();
 
@@ -289,7 +309,7 @@ define(function (require) {
      * 对应的Action加载完成时进入`resolved`状态，
      * 如Action加载失败则进入`rejected`状态
      */
-    BaseView.prototype.waitActionDialog = function () {
+    exports.waitActionDialog = function () {
         var dialog = this.popActionDialog.apply(this, arguments);
 
         var deferred = new Deferred();
@@ -304,12 +324,13 @@ define(function (require) {
     /**
      * 刷新权限设置，在Action加载过新内容时使用
      */
-    BaseView.prototype.refreshAuth = function () {
+    exports.refreshAuth = function () {
         var authPanel = this.get('authPanel');
         if (authPanel) {
             authPanel.initAuth();
         }
     };
 
+    var BaseView = require('eoo').create(UIView, exports);
     return BaseView;
 });

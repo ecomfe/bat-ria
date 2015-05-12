@@ -5,7 +5,6 @@
 
 define(function (require) {
     var BaseAction = require('./BaseAction');
-    var util = require('er/util');
     var u = require('underscore');
     var URL = require('er/URL');
 
@@ -15,26 +14,21 @@ define(function (require) {
      * @extends BaseAction
      * @constructor
      */
-    function ListAction() {
-        BaseAction.apply(this, arguments);
-    }
-
-    util.inherits(ListAction, BaseAction);
-
+    var exports = {};
 
     /**
      * 在搜索、翻页等操作后选择触发跳转还是仅刷新列表
      *
      * @type {boolean}
      */
-    ListAction.prototype.redirectAfterChange = true;
+    exports.redirectAfterChange = true;
 
     /**
      * 进行查询
      *
      * @param {Object} args 查询参数
      */
-    ListAction.prototype.performSearch = function (args) {
+    exports.performSearch = function (args) {
         // 去除默认参数值
         var defaultArgs = this.model.getDefaultArgs();
         var extraArgs = this.model.getExtraQuery();
@@ -54,7 +48,7 @@ define(function (require) {
      *
      * @param {Object} args 查询参数
      */
-    ListAction.prototype.redirectForSearch = function (args) {
+    exports.redirectForSearch = function (args) {
         var path = this.model.get('url').getPath();
         var url = URL.withQuery(path, args);
         this.loadList(url);
@@ -66,7 +60,7 @@ define(function (require) {
      * @param {number} pageNo 指定的页码
      * @return {er/URL} 生成的分页URL对象
      */
-    ListAction.prototype.getURLForPage = function (pageNo) {
+    exports.getURLForPage = function (pageNo) {
         var url = this.model.get('url');
         var path = url.getPath();
         var query = url.getQuery();
@@ -112,7 +106,7 @@ define(function (require) {
      * @fires listchange 跳转后将URL通过事件传递出来，作为child的时候父action可以去修改address bar
      * @return {er.Promise} 返回请求的Promise对象
      */
-    ListAction.prototype.loadList = function (url) {
+    exports.loadList = function (url) {
         if (this.redirectAfterChange) {
             this.redirect(url, {force: true});
         }
@@ -134,8 +128,8 @@ define(function (require) {
      * @protected
      * @override
      */
-    ListAction.prototype.initBehavior = function () {
-        BaseAction.prototype.initBehavior.apply(this, arguments);
+    exports.initBehavior = function () {
+        this.$super(arguments);
         this.view.on('search', search, this);
         this.view.on('pagechange', forwardToPage, this);
     };
@@ -146,9 +140,9 @@ define(function (require) {
      * @protected
      * @override
      */
-    ListAction.prototype.reload = function () {
+    exports.reload = function () {
         if (this.redirectAfterChange) {
-            BaseAction.prototype.reload.call(this);
+            this.$super(arguments);
         }
         else {
             this.loadList();
@@ -158,7 +152,7 @@ define(function (require) {
     /**
      * 根据布局变化重新调整自身布局
      */
-    ListAction.prototype.adjustLayout = function () {
+    exports.adjustLayout = function () {
         this.view.adjustLayout();
     };
 
@@ -168,7 +162,7 @@ define(function (require) {
      * @protected
      * @override
      */
-    ListAction.prototype.filterRedirect = function (url) {
+    exports.filterRedirect = function (url) {
         if (url.getPath() !== this.model.get('url').getPath()
             || this.redirectAfterChange) {
             return true;
@@ -177,5 +171,6 @@ define(function (require) {
         return false;
     };
 
+    var ListAction = require('eoo').create(BaseAction, exports);
     return ListAction;
 });

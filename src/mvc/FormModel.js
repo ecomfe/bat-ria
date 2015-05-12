@@ -6,7 +6,6 @@
 define(function (require) {
     var BaseModel = require('./BaseModel');
     var u = require('underscore');
-    var util = require('er/util');
     var datasource = require('er/datasource');
 
     /**
@@ -15,25 +14,21 @@ define(function (require) {
      * @extends BaseModel
      * @constructor
      */
-    function FormModel() {
-        BaseModel.apply(this, arguments);
-    }
-
-    util.inherits(FormModel, BaseModel);
+    var exports = {};
 
     /**
      * 表单初始数据请求器
      *
      * @type {?function}
      */
-    FormModel.prototype.formRequester = null;
+    exports.formRequester = null;
 
     /**
      * 表单提交请求器
      *
      * @type {function}
      */
-    FormModel.prototype.submitRequester = null;
+    exports.submitRequester = null;
 
     /**
      * 默认请求参数，针对formData的请求发送
@@ -41,7 +36,7 @@ define(function (require) {
      * @type {Object}
      * @protected
      */
-    FormModel.prototype.defaultArgs = {};
+    exports.defaultArgs = {};
 
     /**
      * 获取默认请求参数，针对formData的请求发送，默认直接返回`this.defaultArgs`
@@ -49,14 +44,14 @@ define(function (require) {
      * @return {Object}
      * @protected
      */
-    FormModel.prototype.getDefaultArgs = function () {
+    exports.getDefaultArgs = function () {
         return this.defaultArgs;
     };
 
     /**
      * @inheritDoc
      */
-    FormModel.prototype.defaultDatasource = {
+    exports.defaultDatasource = {
         rule: datasource.constant(require('./rule')),
         formData: {
             retrieve: function (model) {
@@ -82,7 +77,7 @@ define(function (require) {
      *
      * @return {Object}
      */
-    FormModel.prototype.getDefaultData = function () {
+    exports.getDefaultData = function () {
         return this.get('formData');
     };
 
@@ -92,7 +87,7 @@ define(function (require) {
      * @param {Object} formData 从表单中取得的数据
      * @return {Object} 合并后用来提交的数据
      */
-    FormModel.prototype.getSubmitData = function (formData) {
+    exports.getSubmitData = function (formData) {
         var data = u.extend(formData, this.getExtraData());
         data = this.prepareData(data);
         return data;
@@ -103,7 +98,7 @@ define(function (require) {
      *
      * @return {Object} 附加数据
      */
-    FormModel.prototype.getExtraData = function () {
+    exports.getExtraData = function () {
         return {};
     };
 
@@ -114,7 +109,7 @@ define(function (require) {
      * @param {Object} data 提交的数据
      * @return {Object} 处理完毕的数据
      */
-    FormModel.prototype.prepareData = function (data) {
+    exports.prepareData = function (data) {
         return this.filterData(data);
     };
 
@@ -126,7 +121,7 @@ define(function (require) {
      * @param {Object} data 提交的数据
      * @return {Object} 处理完毕的数据
      */
-    FormModel.prototype.filterData = function (data) {
+    exports.filterData = function (data) {
         return data;
     };
 
@@ -137,7 +132,7 @@ define(function (require) {
      * @param {Object} present 新表单数据
      * @return {boolean} 是否有变动
      */
-    FormModel.prototype.isFormDataChanged = function (present) {
+    exports.isFormDataChanged = function (present) {
         return false;
     };
 
@@ -154,9 +149,10 @@ define(function (require) {
      *         的`fieldError`内容，可以触发`FormView`的`notifyErrors`
      *         返回`true`则验证通过
      */
-    FormModel.prototype.validateSubmitData = function (submitData) {
+    exports.validateSubmitData = function (submitData) {
         return true;
     };
 
+    var FormModel = require('eoo').create(BaseModel, exports);
     return FormModel;
 });
