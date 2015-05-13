@@ -278,7 +278,7 @@ define(
             var button = this.helper.getPart('button');
             button.innerHTML = u.escape(this.overrideText);
 
-            this.setLabelContent(info.url || info.previewUrl);
+            this.setLabelText(this.getFileName() || info.url || info.previewUrl || '');
 
             // 清掉可能存在的错误信息
             var validity = new Validity();
@@ -509,10 +509,10 @@ define(
                 if (!isValid) {
                     this.clear();
                     var message = this.acceptErrorMessage || '仅接受以下文件格式：' + this.accept.join(',');
-                    var unaccepted = this.fire('unaccepted', {
+                    var invalid = this.fire('invalid', {
                         message: message
                     });
-                    if (!unaccepted.isDefaultPrevented()) {
+                    if (!invalid.isDefaultPrevented()) {
                         var validity = new Validity();
                         var state = new ValidityState(false, message);
                         validity.addState('upload', state);
@@ -570,7 +570,7 @@ define(
                 }
                 else {
                     // 提前显示文件名
-                    this.setLabelContent();
+                    this.setLabelText();
                     // 清掉可能存在的错误信息
                     var validity = new Validity();
                     this.showValidity(validity);
@@ -766,7 +766,7 @@ define(
          * 设置显示的文件名
          * @param content [string] 文件名
          */
-        Uploader.prototype.setLabelContent = function (content) {
+        Uploader.prototype.setLabelText = function (content) {
             var label = this.helper.getPart('label');
             var text = content || this.getFileName();
             label.innerHTML = u.escape(text);
