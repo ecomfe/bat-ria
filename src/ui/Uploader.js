@@ -570,7 +570,7 @@ define(
                 }
                 else {
                     // 提前显示文件名
-                    this.setLabelText();
+                    this.setLabelText(this.getFileName());
                     // 清掉可能存在的错误信息
                     var validity = new Validity();
                     this.showValidity(validity);
