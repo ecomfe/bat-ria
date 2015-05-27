@@ -42,7 +42,7 @@ define(
                 i++;
             }
 
-            return matches[i] ? true : false;
+            return !!matches[i];
         };
 
         u.defaults(dom, lib.dom);

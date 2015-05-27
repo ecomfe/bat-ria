@@ -150,8 +150,7 @@ define(function (require) {
      *
      * @type {string}
      */
-    exports.cancelConfirmMessage =
-        '取消编辑将不保留已经填写的数据，确定继续吗？';
+    exports.cancelConfirmMessage = '取消编辑将不保留已经填写的数据，确定继续吗？';
 
     /**
      * 获取取消编辑时的提示信息内容

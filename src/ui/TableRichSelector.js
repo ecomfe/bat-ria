@@ -274,8 +274,7 @@ define(
             });
 
             // 最后一列添加箭头
-            var arrowClasses =
-                control.helper.getPartClassName('row-action-icon');
+            var arrowClasses = control.helper.getPartClassName('row-action-icon');
             var arrowHTML = '<span class="' + arrowClasses + '"></span>';
             if (tr) {
                 var td = tr.insertCell();
@@ -345,8 +344,7 @@ define(
         };
 
         function actionForAdd(control, row, item) {
-            var selectedClasses =
-                control.helper.getPartClassName('row-selected');
+            var selectedClasses = control.helper.getPartClassName('row-selected');
             var fire = false;
             // 点击已选中的，在单选模式下，执行取消选择
             if (lib.hasClass(row, selectedClasses)) {
@@ -450,21 +448,20 @@ define(
          * @param {boolean} toBeSelected 要选择还是取消选择
          * @override
          */
-        TableRichSelector.prototype.selectItems =
-            function (items, toBeSelected) {
-                var allData = this.allData;
-                var indexData = this.indexData;
-                var me = this;
-                u.each(items, function (item) {
-                    var id = item.id !== 'undefined' ? item.id : item;
-                    var itemIndex = indexData[id];
-                    if (itemIndex !== null && itemIndex !== undefined) {
-                        var rawItem = allData[itemIndex];
-                        // 更新状态，但不触发事件
-                        selectItem(me, rawItem.id, toBeSelected);
-                    }
-                });
-            };
+        TableRichSelector.prototype.selectItems = function (items, toBeSelected) {
+            var allData = this.allData;
+            var indexData = this.indexData;
+            var me = this;
+            u.each(items, function (item) {
+                var id = item.id !== 'undefined' ? item.id : item;
+                var itemIndex = indexData[id];
+                if (itemIndex !== null && itemIndex !== undefined) {
+                    var rawItem = allData[itemIndex];
+                    // 更新状态，但不触发事件
+                    selectItem(me, rawItem.id, toBeSelected);
+                }
+            });
+        };
 
         /**
          *  下面的方法专属delete型table
@@ -510,8 +507,7 @@ define(
 
 
         function actionForLoad(control, row, item) {
-            var selectedClasses =
-                control.helper.getPartClassName('row-selected');
+            var selectedClasses = control.helper.getPartClassName('row-selected');
             // 点击未选中的，执行
             if (!lib.hasClass(row, selectedClasses)) {
                 selectItem(control, item.id, true);

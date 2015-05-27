@@ -325,8 +325,7 @@ define(
                     }
 
                     // 更新X轴数据
-                    chart.chartOptions.xAxis[0].data =
-                        chart.formatXSeries(xSeries);
+                    chart.chartOptions.xAxis[0].data = chart.formatXSeries(xSeries);
 
                     // 跟新Y轴数据
                     // 1. 构建数据
@@ -335,8 +334,7 @@ define(
                     for (var i = 0; i < ySeries.length; i++) {
                         var serie = ySeries[i];
                         // 格式化y轴坐标数据
-                        var formattedYSeriesData =
-                            chart.formatYSeriesData(serie, i);
+                        var formattedYSeriesData = chart.formatYSeriesData(serie, i);
                         formattedYSeries.push(formattedYSeriesData);
 
                         // 更新图例数据

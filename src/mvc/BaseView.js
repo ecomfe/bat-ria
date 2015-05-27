@@ -52,8 +52,7 @@ define(function (require) {
      * @override
      */
     exports.getTemplateName = function () {
-        var templateName =
-            this.$super(arguments);
+        var templateName = this.$super(arguments);
 
         // 作为子Action嵌入页面时，模板使用`xxxMain`这个target
         if (this.model && this.model.get('isChildAction')) {

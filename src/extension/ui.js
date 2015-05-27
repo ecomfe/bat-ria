@@ -107,8 +107,8 @@ define(
         function addControlLinkMode() {
             var CommandMenu = require('esui/CommandMenu');
 
-            CommandMenu.prototype.linkTemplate =
-                '<a target="${target}" href="${href}">${text}</a>';
+            CommandMenu.prototype.linkTemplate = ''
+                + '<a target="${target}" href="${href}">${text}</a>';
 
             CommandMenu.prototype.getItemHTML = function (item) {
                 var data = {
@@ -289,8 +289,8 @@ define(
              * @type {string}
              * @override
              */
-            Crumb.prototype.linkNodeTemplate =
-                '<a class="${classes}" href="${href}" data-redirect="${scope}">${text}</a>';
+            Crumb.prototype.linkNodeTemplate = ''
+                + '<a class="${classes}" href="${href}" data-redirect="${scope}">${text}</a>';
 
             /**
              * 获取节点的HTML内容

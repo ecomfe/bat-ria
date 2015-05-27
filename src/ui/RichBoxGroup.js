@@ -34,7 +34,7 @@ define(
          * @override
          */
         RichBoxGroup.prototype.type = 'RichBoxGroup';
-        
+
         /**
          * 同步样式
          *
@@ -47,7 +47,7 @@ define(
                 .value();
             u.each(
                 u.chain(this.getBoxElements()).value(),
-                function(item, index) {
+                function (item, index) {
                     if (item.checked === true) {
                         lib.addClasses(item, group.helper.getPartClasses('checked'));
                         lib.addClasses(item.parentNode, group.helper.getPartClasses('wrapper-checked'));
@@ -58,25 +58,25 @@ define(
                     }
                 }
             );
-            if (group.boxType == 'checkbox' && group.singleSelect === 'true') {
+            if (group.boxType === 'checkbox' && (group.singleSelect === 'true' || group.singleSelect === true)) {
                 if (result && result.length) {
                     var unselectedBox = u.chain(this.getBoxElements())
                         .where({checked: false})
                         .value();
-                    u.each(unselectedBox, function(item, index) {
+                    u.each(unselectedBox, function (item, index) {
                         item.disabled = true;
                     });
                 }
                 else {
                     var allBox = u.chain(this.getBoxElements())
                         .value();
-                    u.each(allBox, function(item, index) {
+                    u.each(allBox, function (item, index) {
                         item.disabled = false;
                     });
                 }
             }
         }
-        
+
         /**
          * 同步值
          *

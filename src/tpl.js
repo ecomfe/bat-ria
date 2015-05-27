@@ -113,8 +113,7 @@ define(
                 if (!defined[type]) {
                     defined[type] = true;
 
-                    var prefix =
-                        (extensionModulePrefix[type] || 'ui/extension') + '/';
+                    var prefix = (extensionModulePrefix[type] || 'ui/extension') + '/';
                     dependencies.push(prefix + type);
                 }
 

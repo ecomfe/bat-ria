@@ -311,22 +311,21 @@ define(
          * @param {boolean} toBeSelected 目标状态 true是选择，false是取消
          * @override
          */
-        TreeRichSelector.prototype.selectItems =
-            function (nodes, toBeSelected) {
-                var indexData = this.indexData;
-                var me = this;
-                u.each(
-                    nodes,
-                    function (node) {
-                        var id = node.id !== undefined ? node.id : node;
-                        var item = indexData[id];
-                        if (item !== null && item !== undefined) {
-                            // 更新状态，但不触发事件
-                            selectItem(me, item.node.id, toBeSelected);
-                        }
+        TreeRichSelector.prototype.selectItems = function (nodes, toBeSelected) {
+            var indexData = this.indexData;
+            var me = this;
+            u.each(
+                nodes,
+                function (node) {
+                    var id = node.id !== undefined ? node.id : node;
+                    var item = indexData[id];
+                    if (item !== null && item !== undefined) {
+                        // 更新状态，但不触发事件
+                        selectItem(me, item.node.id, toBeSelected);
                     }
-                );
-            };
+                }
+            );
+        };
 
         /**
          * 删除动作

@@ -264,8 +264,7 @@ define(
          * @ignore
          */
         SearchTree.prototype.getSearchBox = function () {
-            var searchBoxArea =
-                this.getChild('body').getChild('searchBoxArea');
+            var searchBoxArea = this.getChild('body').getChild('searchBoxArea');
             if (searchBoxArea) {
                 return searchBoxArea.getChild('itemSearch');
             }
@@ -303,8 +302,7 @@ define(
             }
             else {
                 // 结果区高度 = 总高度 - 头部高度 - 搜索框高度 - 腿部高度
-                var contentHeight =
-                    settingHeight - headHeight - searchBoxHeight - footHeight;
+                var contentHeight = settingHeight - headHeight - searchBoxHeight - footHeight;
 
                 // 处于query状态时，会有一个30px的概要信息区
                 if (this.isQuery()) {
