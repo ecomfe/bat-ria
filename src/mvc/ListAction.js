@@ -11,14 +11,17 @@ define(function (require) {
     /**
      * 列表`Action`基类
      *
+     * @class mvc.ListAction
      * @extends BaseAction
-     * @constructor
      */
     var exports = {};
 
     /**
-     * 在搜索、翻页等操作后选择触发跳转还是仅刷新列表
+     * 在搜索、翻页等操作后选择触发跳转还是仅刷新列表，设置为`false`会进
+     * 入局部刷新的模式
      *
+     * @protected
+     * @member mvc.ListAction#redirectAfterChange
      * @type {boolean}
      */
     exports.redirectAfterChange = true;
@@ -26,6 +29,8 @@ define(function (require) {
     /**
      * 进行查询
      *
+     * @protected
+     * @method mvc.ListAction#performSearch
      * @param {Object} args 查询参数
      */
     exports.performSearch = function (args) {
@@ -46,6 +51,8 @@ define(function (require) {
     /**
      * 进行查询引起的重定向操作
      *
+     * @protected
+     * @method mvc.ListAction#redirectForSearch
      * @param {Object} args 查询参数
      */
     exports.redirectForSearch = function (args) {
@@ -57,6 +64,8 @@ define(function (require) {
     /**
      * 获取指定页码的跳转URL
      *
+     * @protected
+     * @method mvc.ListAction#getURLForPage
      * @param {number} pageNo 指定的页码
      * @return {er/URL} 生成的分页URL对象
      */
@@ -77,6 +86,7 @@ define(function (require) {
     /**
      * 查询的事件处理函数
      *
+     * @event
      * @param {Object} e 事件对象
      * @ignore
      */
@@ -87,6 +97,7 @@ define(function (require) {
     /**
      * 前往指定页
      *
+     * @event
      * @param {mini-event.Event} e 事件对象
      * @param {number} e.page 前往的页码
      * @ignore
@@ -102,6 +113,8 @@ define(function (require) {
     /**
      * 根据新的URL参数刷新列表
      *
+     * @protected
+     * @method mvc.ListAction#loadList
      * @param {er.URL} [url] 新的URL对象，没有时按当前URL刷新
      * @fires listchange 跳转后将URL通过事件传递出来，作为child的时候父action可以去修改address bar
      * @return {er.Promise} 返回请求的Promise对象
@@ -125,7 +138,6 @@ define(function (require) {
     /**
      * 初始化交互行为
      *
-     * @protected
      * @override
      */
     exports.initBehavior = function () {
@@ -137,7 +149,6 @@ define(function (require) {
     /**
      * 初始化交互行为
      *
-     * @protected
      * @override
      */
     exports.reload = function () {
@@ -151,15 +162,15 @@ define(function (require) {
 
     /**
      * 根据布局变化重新调整自身布局
+     *
+     * @protected
+     * @method mvc.ListAction#adjustLayout
      */
     exports.adjustLayout = function () {
         this.view.adjustLayout();
     };
 
     /**
-     * @inheritDoc
-     *
-     * @protected
      * @override
      */
     exports.filterRedirect = function (url) {

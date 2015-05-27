@@ -10,15 +10,16 @@ define(function (require) {
     /**
      * 业务`Model`基类
      *
-     * @param {Object} [context] 初始化时的数据
-     *
-     * @constructor
+     * @class mvc.BaseModel
      * @extends ef.UIModel
      */
     var exports = {};
 
     /**
      * 合并默认数据源
+     *
+     * @protected
+     * @method mvc.BaseModel#mergeDefaultDatasource
      */
     exports.mergeDefaultDatasource = function () {
         if (!this.datasource) {
@@ -65,12 +66,9 @@ define(function (require) {
     };
 
     /**
-     * 加载数据
-     *
-     * @return {er/Promise}
+     * @override
      */
     exports.load = function () {
-        // TODO: 移到`getDatasource`方法中
         this.mergeDefaultDatasource();
 
         return this.$super(arguments);

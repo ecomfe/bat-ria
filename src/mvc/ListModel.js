@@ -12,16 +12,17 @@ define(function (require) {
     /**
      * 业务`Model`基类
      *
-     * @param {Object} [context] 初始化时的数据
-     *
-     * @constructor
+     * @class mvc.ListModel
      * @extends ef.BaseModel
+     * @param {Object} [context] 初始化时的数据
      */
     var exports = {};
 
     /**
      * 列表数据请求器
      *
+     * @protected
+     * @member mvc.ListModel#listRequester
      * @type {function}
      */
     exports.listRequester;
@@ -33,8 +34,9 @@ define(function (require) {
      *
      * 创建`Model`时，如果某个参数不存在，则会自动补上这里的值
      *
-     * @type {Object}
      * @protected
+     * @member mvc.ListModel#defaultArgs
+     * @type {Object}
      */
     exports.defaultArgs = {};
 
@@ -43,8 +45,9 @@ define(function (require) {
      *
      * 参考{@link ListModel#defaultArgs}属性的说明
      *
-     * @return {Object}
      * @protected
+     * @method mvc.ListModel#getDefaultArgs
+     * @return {Object}
      */
     exports.getDefaultArgs = function () {
         return u.defaults(this.defaultArgs || {}, {pageNo: 1});
@@ -56,6 +59,7 @@ define(function (require) {
      *
      * @param {Object} data 列表请求接口返回的数据
      * @return {Object} 转换完毕的数据
+     * @ignore
      */
     function adaptData(data) {
         var page = data;
@@ -66,7 +70,7 @@ define(function (require) {
 
     /**
      * 列表数据请求失败
-     * @return {Object} 空数组，表示没有数据
+     * @return {Object} tableData字段为空数组，表示没有数据
      */
     function fetchFail() {
         return {
@@ -79,7 +83,7 @@ define(function (require) {
     }
 
     /**
-     * @inheritDoc
+     * @override
      */
     exports.defaultDatasource = {
         listPage: {
@@ -135,16 +139,18 @@ define(function (require) {
     /**
      * 默认选择的时间范围
      *
-     * @type {?{begin: Date, end: Date}}
      * @protected
+     * @member mvc.ListModel#defaultTimeRange
+     * @type {?{begin: Date, end: Date}}
      */
     exports.defaultTimeRange = null;
 
     /**
      * 生成默认的后端请求参数
      *
-     * @return {Object}
      * @protected
+     * @method mvc.ListModel#getQuery
+     * @return {Object}
      */
     exports.getQuery = function () {
         var url = this.get('url');
@@ -175,8 +181,9 @@ define(function (require) {
     /**
      * 获取除列表本身参数外附加的请求参数
      *
-     * @return {Object}
      * @protected
+     * @method mvc.ListModel#getExtraQuery
+     * @return {Object}
      */
     exports.getExtraQuery = function () {
         return {};
@@ -185,10 +192,12 @@ define(function (require) {
     /**
      * 对合并好的请求参数进行统一的后续处理
      *
-     * @deprecated since v0.2.1 名字起得不好，后面使用`prepareQuery`替代
+     * @protected
+     * @method mvc.ListModel#filterQuery
+     * @deprecated v0.2.1起废弃。名字起得不好，后面使用`prepareQuery`替代，见
+     * {@link mvc.ListModel#prepareQuery}
      * @param {Object} query 需要处理的参数对象
      * @return {Object}
-     * @protected
      */
     exports.filterQuery = function (query) {
         return query;
@@ -197,9 +206,10 @@ define(function (require) {
     /**
      * 对合并好的请求参数进行统一的后续处理
      *
-     * @param {Object} query 需要处理的参数对象
-     * @return {Object}
      * @protected
+     * @method mvc.ListModel#prepareQuery
+     * @param {Object} query 需要处理的参数对象
+     * @return {Object} 处理完成的参数对象
      */
     exports.prepareQuery = function (query) {
         return this.filterQuery(query);
@@ -208,9 +218,10 @@ define(function (require) {
     /**
      * 重新读取列表数据
      *
-     * @param {er/URL} url 根据指定URL读取数据
-     * @return {er/Promise} 返回异步请求的Promise对象
      * @protected
+     * @method mvc.ListModel#loadData
+     * @param {er.URL} url 根据指定URL读取数据
+     * @return {er.Promise} 返回异步请求的Promise对象
      */
     exports.loadData = function (url) {
         var me = this;

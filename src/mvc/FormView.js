@@ -24,14 +24,16 @@ define(function (require) {
     /**
      * 表单类型`View`基类
      *
+     * @class mvc.FormView
      * @extends BaseView
-     * @constructor
      */
     var exports = {};
 
     /**
      * 从表单中获取数据
      *
+     * @public
+     * @method mvc.FormView#getFormData
      * @return {Object}
      */
     exports.getFormData = function () {
@@ -46,6 +48,8 @@ define(function (require) {
     /**
      * 获取当前表单需要提交的额外数据
      *
+     * @protected
+     * @method mvc.FormView#getExtraFormData
      * @return {Object} 表单数据
      */
     exports.getExtraFormData = function () {
@@ -55,6 +59,8 @@ define(function (require) {
     /**
      * 回滚表单数据
      *
+     * @public
+     * @method mvc.FormView#rollbackFormData
      * @param {Object} defaultData key/value形式的数据，key和input的name一一对应
      */
     exports.rollbackFormData = function (defaultData) {
@@ -64,6 +70,8 @@ define(function (require) {
     /**
      * 设置表单数据
      *
+     * @public
+     * @method mvc.FormView#setFormData
      * @param {Object} formData key:value形式的数据 key和input的name一一对应
      */
     exports.setFormData = function (formData) {
@@ -84,6 +92,8 @@ define(function (require) {
      * 设置表单额外数据
      * 这个接口提供给不是input的控件去扩展，自个玩去
      *
+     * @protected
+     * @method mvc.FormView#setExtraFormData
      * @param {Object} formData key:value形式的数据 key和input的name一一对应
      */
     exports.setExtraFormData = function (formData) {
@@ -99,6 +109,8 @@ define(function (require) {
      * 这个方法会在FormAction.validite中和FormModel的校验一起做
      * (还不是一堆蛋疼需求导致的...
      *
+     * @protected
+     * @method mvc.FormView#validate
      * @return {boolean} 校验是否成功
      */
     exports.validate = function () {
@@ -113,6 +125,8 @@ define(function (require) {
     /**
      * 向用户通知提交错误信息，默认根据`errors`的`key`字段查找对应`name`的控件并显示错误信息
      *
+     * @public
+     * @method mvc.FormView#notifyErrors
      * @param {Object} errors 错误信息，每个key为控件`name`，value为`errorMessage`
      *
      */
@@ -139,6 +153,9 @@ define(function (require) {
 
     /**
      * 重置表单
+     *
+     * @event
+     * @ignore
      */
     function reset() {
         this.fire('reset');
@@ -146,6 +163,9 @@ define(function (require) {
 
     /**
      * 取消编辑
+     *
+     * @event
+     * @ignore
      */
     function cancelEdit() {
         this.fire('cancel');
@@ -154,7 +174,9 @@ define(function (require) {
     /**
      * 进入提交前的处理
      *
+     * @event
      * @param {Event} e 事件对象
+     * @ignore
      */
     function submit(e) {
         e.preventDefault();
@@ -165,6 +187,7 @@ define(function (require) {
      * 若页面在目标dom元素下方，设置页面scrollTop至该元素
      *
      * @param {Element} element label的dom元素
+     * @ignore
      */
     function scrollTo(element) {
         var offset = lib.getOffset(element);
@@ -177,6 +200,8 @@ define(function (require) {
      * 处理esui表单控件自动校验出错
      * 定位至第一个出错的控件
      *
+     * @protected
+     * @method mvc.FormView#handleValidateInvalid
      * @param {Object} form esui表单控件
      * @fire {Event} scrolltofirsterror 定位至页面第一个出错的控件
      */
@@ -220,6 +245,9 @@ define(function (require) {
 
     /**
      * 禁用提交操作
+     *
+     * @public
+     * @method mvc.FormView#disableSubmit
      */
     exports.disableSubmit = function () {
         if (this.viewContext) {
@@ -229,6 +257,9 @@ define(function (require) {
 
     /**
      * 启用提交操作
+     *
+     * @public
+     * @method mvc.FormView#enableSubmit
      */
     exports.enableSubmit = function () {
         if (this.viewContext) {

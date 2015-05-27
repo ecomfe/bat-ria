@@ -10,12 +10,10 @@ define(function (require) {
     var Dialog = require('esui/Dialog');
 
     /**
-     * @class BaseView
-     *
      * 业务`View`基类
      *
+     * @class mvc.BaseView
      * @extends ef.UIView
-     * @constructor
      */
     var exports = {};
 
@@ -24,6 +22,8 @@ define(function (require) {
      *
      * ER的默认实现是使用[etpl](https://github.com/ecomfe/etpl)渲染容器，
      * 如果需要使用其它的模板，或自己有视图的管理，建议重写此方法
+     *
+     * @override
      */
     exports.render = function () {
         var container = this.getContainerElement();
@@ -67,6 +67,8 @@ define(function (require) {
     /**
      * 显示toast提示信息，这个方法会控制一个单例，以免信息叠在一起
      *
+     * @public
+     * @method mvc.BaseView#showToast
      * @param {string} content 显示的内容
      * @param {Object} [options] 配置
      * @return {esui.Toast}
@@ -100,9 +102,10 @@ define(function (require) {
     /**
      * 显示Dialog
      *
+     * @public
+     * @method mvc.BaseView#popDialog
      * @param {Object} options 参数
      * @return {esui/Dialog}
-     * @protected
      */
     exports.popDialog = function (options) {
         // 创建main
@@ -140,16 +143,18 @@ define(function (require) {
 
     /**
      * 等待一个`Dialog`触发`ok`或`cancel`事件，触发后一定会自动关闭
-     *
-     * @param {esui.Dialog} [dialog] 指定的对话框控件，未指定则通过`popDialog`创建新对话框
-     * @param {Object} options 参数
-     * @return {er.Promise} 一个`Promise`对象，
      * 默认为点击确定按钮时进入`resolved`状态，
      * 点击取消按钮则进入`rejected`状态
      *
      * 有两种重载：
      * 1. waitDialog(options)
      * 2. waitDialog(dialog, options)
+     *
+     * @public
+     * @method mvc.BaseView#waitDialog
+     * @param {esui.Dialog} [dialog] 指定的对话框控件，未指定则通过`popDialog`创建新对话框
+     * @param {Object} options 参数
+     * @return {er.Promise} 一个`Promise`对象，
      */
     exports.waitDialog = function (dialog, options) {
         if (!(dialog instanceof Dialog)) {
@@ -195,12 +200,6 @@ define(function (require) {
      * 显示一个`Dialog`，并指定触发`ok`与`cancel`事件（默认状态下为点击确定、取消按钮后触发）
      * 后的处理函数，可以手动指定阻止自动关闭
      *
-     * @param {esui.Dialog} [dialog] 指定的对话框控件，未指定则通过`popDialog`创建新对话框
-     * @param {Object} options 参数
-     * @param {function} [options.onOk] `ok`事件处理函数，`this`指向对应的`Dialog`对象
-     * @param {function} [options.onCancel] `cancel`事件处理函数，`this`指向对应的`Dialog`对象
-     * @return {esui.Dialog} 显示的`Dialog`对象
-     *
      * `onOk`或`onCancel`的返回值如果为`false`，则不执行默认的关闭动作；
      * 如果返回值是一个`Event`对象，则在调用过`preventDefault()`后不执行默认动作；
      * 如果返回一个`Promise`对象，则在`resolve`时执行默认关闭动作，在`reject`时不执行
@@ -208,6 +207,14 @@ define(function (require) {
      * 有两种重载：
      * 1. showDialog(options)
      * 2. showDialog(dialog, options)
+     *
+     * @public
+     * method mvc.BaseView#showDialog
+     * @param {esui.Dialog} [dialog] 指定的对话框控件，未指定则通过`popDialog`创建新对话框
+     * @param {Object} options 参数
+     * @param {function} [options.onOk] `ok`事件处理函数，`this`指向对应的`Dialog`对象
+     * @param {function} [options.onCancel] `cancel`事件处理函数，`this`指向对应的`Dialog`对象
+     * @return {esui.Dialog} 显示的`Dialog`对象
      */
     exports.showDialog = function (dialog, options) {
         if (!(dialog instanceof Dialog)) {
@@ -272,6 +279,8 @@ define(function (require) {
      *
      * 参数同`ef.UIView.prototype.alert`，但返回一个`Promise`对象
      *
+     * @public
+     * @method mvc.BaseView#waitAlert
      * @return {er.Promise} 一个`Promise`对象，用户确认则进入`resolved`状态
      */
     exports.waitAlert = function () {
@@ -288,6 +297,8 @@ define(function (require) {
      *
      * 参数同`ef.UIView.prototype.confirm`，但返回一个`Promise`对象
      *
+     * @public
+     * @method mvc.BaseView#waitConfirm
      * @return {er.Promise} 一个`Promise`对象，用户确认则进入`resolved`状态，
      * 用户取消则进入`rejected`状态
      */
@@ -304,6 +315,8 @@ define(function (require) {
     /**
      * 等待一个`DialogAction`加载完成
      *
+     * @public
+     * @method mvc.BaseView#waitActionDialog
      * @return {er.Promise} 一个`Promise`对象，
      * 对应的Action加载完成时进入`resolved`状态，
      * 如Action加载失败则进入`rejected`状态
@@ -322,6 +335,9 @@ define(function (require) {
 
     /**
      * 刷新权限设置，在Action加载过新内容时使用
+     *
+     * @public
+     * @method mvc.BaseView#refreshAuth
      */
     exports.refreshAuth = function () {
         var authPanel = this.get('authPanel');

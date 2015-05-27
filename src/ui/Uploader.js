@@ -243,9 +243,8 @@ define(
                     '<span id="' + this.helper.getId('indicator') + '">',
                     '</span>',
                 '</div>',
-                '<div id="' + this.helper.getId('label') +
-                    '"',
-                    'class="' + labelClasses + '">' + this.placeholder +
+                '<div id="' + this.helper.getId('label') + '"',
+                    'class="' + labelClasses + '">' + this.placeholder,
                 '</div>',
                 // 用来偷偷上传的`<iframe>`元素
                 '<iframe id="' + iframeId + '" name="' + iframeId + '"',
@@ -764,7 +763,9 @@ define(
 
         /**
          * 设置显示的文件名
-         * @param content [string] 文件名
+         *
+         * @param {[string]} content 文件名
+         * @protected
          */
         Uploader.prototype.setLabelText = function (content) {
             var label = this.helper.getPart('label');

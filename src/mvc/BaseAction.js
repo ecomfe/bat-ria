@@ -10,8 +10,8 @@ define(function (require) {
     /**
      * `Action`基类
      *
+     * @class mvc.BaseAction
      * @extends er.Action
-     * @constructor
      */
     var exports = {};
 

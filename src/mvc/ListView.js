@@ -14,24 +14,26 @@ define(function (require) {
     /**
      * 列表`View`基类
      *
-     * @constructor
+     * @class mvc.ListView
      * @extends ef.BaseView
      */
     var exports = {};
 
     /**
-     * @inheritDoc
+     * @override
      */
     exports.uiProperties = {};
 
     /**
-     * @inheritDoc
+     * @override
      */
     exports.uiEvents = {};
 
     /**
      * 收集查询参数并触发查询事件
      *
+     * @protected
+     * @method mvc.ListView#submitSearch
      * @param {mini-event.Event} e 控件事件对象
      */
     exports.submitSearch = function (e) {
@@ -49,6 +51,8 @@ define(function (require) {
     /**
      * 获取查询参数，默认是取`filter`表单的所有数据，加上表格的排序字段和每页显示条目数
      *
+     * @public
+     * @method mvc.ListView#getSearchArgs
      * @return {Object}
      */
     exports.getSearchArgs = function () {
@@ -86,6 +90,7 @@ define(function (require) {
     /**
      * 更新页码
      *
+     * @event
      * @param {mini-event.Event} e 事件对象
      * @ignore
      */
@@ -96,6 +101,9 @@ define(function (require) {
 
     /**
      * 根据表格中所选择的行来控制批量更新按钮的启用/禁用状态
+     *
+     * @public
+     * @method mvc.ListView#updateBatchButtonStatus
      */
     exports.updateBatchButtonStatus = function () {
         var items = this.getSelectedItems();
@@ -107,6 +115,8 @@ define(function (require) {
     /**
      * 获取table已经选择的列的数据
      *
+     * @public
+     * @method mvc.ListView#getSelectedItems
      * @return {Object[]} 当前table的已选择列对应的数据
      */
     exports.getSelectedItems = function () {
@@ -117,6 +127,7 @@ define(function (require) {
     /**
      * 触发批量操作
      *
+     * @event
      * @param {Object} e 控件事件对象
      * @ignore
      */
@@ -131,9 +142,11 @@ define(function (require) {
     }
 
     /**
-     * 侧边栏模式改变时要调整整体布局
+     * 侧边栏模式改变时要调整整体布局，要求主栏位于`id`为`neighbor`的容器内
      *
+     * @event
      * @param {Object} e 模式切换事件对象
+     * @ignore
      */
     function sidebarModeChange(e) {
         // Sidebar目前只提供了操作DOM的方式更新布局，需要对ESUI做优化后再升级这块
@@ -154,7 +167,7 @@ define(function (require) {
     }
 
     /**
-     * @inheritDoc
+     * @override
      */
     exports.bindEvents = function () {
         var pager = this.get('pager');
@@ -211,6 +224,9 @@ define(function (require) {
 
     /**
      * 根据布局变化重新调整自身布局
+     *
+     * @protected
+     * @method mvc.ListView#adjustLayout
      */
     exports.adjustLayout = function () {
         var table = this.get('table');
@@ -220,7 +236,10 @@ define(function (require) {
     };
 
     /**
-     * 根据Model数据重新渲染页面
+     * 根据Model数据重新渲染页面，在局部刷新时使用
+     *
+     * @public
+     * @method mvc.ListView#refresh
      */
     exports.refresh = function () {
         // 刷新列表
@@ -232,6 +251,9 @@ define(function (require) {
 
     /**
      * 根据Model数据重新渲染列表
+     *
+     * @protected
+     * @method mvc.ListView#refreshList
      */
     exports.refreshList = function () {
         var model = this.model;
