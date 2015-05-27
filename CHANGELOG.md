@@ -1,5 +1,6 @@
 * 0.2.6
     - 代码风格优化
+    - 优化 `mvc` 模块的 JSDoc 注释
 
 * 0.2.5
     - `QuickTip` 改用 `TipLayer` 的 `manual` 模式
