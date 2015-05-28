@@ -1,7 +1,3 @@
-* 0.2.6
-    - 代码风格优化
-    - 优化 `mvc` 模块的 JSDoc 注释
-
 * 0.2.5
     - `QuickTip` 改用 `TipLayer` 的 `manual` 模式
     - `RichBoxGroup` 支持设置 `singleSelect`
@@ -15,6 +11,7 @@
     - 支持列表页和表单页数据请求失败后继续进入 Action
     - 使用 `filterRedirect` 拦截跳转，解决 `ListAction` 作为子 Action 时无法局部刷新的问题
     - 大量代码根据规范优化
+    - 优化 `mvc` 模块的 JSDoc 注释
 
 * 0.2.4
     - 修正 `QuickTip` 未能正确处理 `mouseenter` / `mouseleave` 的问题
