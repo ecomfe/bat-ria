@@ -4,7 +4,6 @@
  */
 
 define(function (require) {
-    var util = require('er/util');
     var BaseView = require('./BaseView');
     var u = require('underscore');
     var lib = require('esui/lib');
@@ -25,21 +24,19 @@ define(function (require) {
     /**
      * 表单类型`View`基类
      *
+     * @class mvc.FormView
      * @extends BaseView
-     * @constructor
      */
-    function FormView() {
-        BaseView.apply(this, arguments);
-    }
-
-    util.inherits(FormView, BaseView);
+    var exports = {};
 
     /**
      * 从表单中获取数据
      *
+     * @public
+     * @method mvc.FormView#getFormData
      * @return {Object}
      */
-    FormView.prototype.getFormData = function () {
+    exports.getFormData = function () {
         var form = this.get('form');
         return u.extend(
             {},
@@ -51,27 +48,33 @@ define(function (require) {
     /**
      * 获取当前表单需要提交的额外数据
      *
+     * @protected
+     * @method mvc.FormView#getExtraFormData
      * @return {Object} 表单数据
      */
-    FormView.prototype.getExtraFormData = function () {
+    exports.getExtraFormData = function () {
         return {};
     };
 
     /**
      * 回滚表单数据
      *
+     * @public
+     * @method mvc.FormView#rollbackFormData
      * @param {Object} defaultData key/value形式的数据，key和input的name一一对应
      */
-    FormView.prototype.rollbackFormData = function (defaultData) {
+    exports.rollbackFormData = function (defaultData) {
         this.setFormData(defaultData);
     };
 
     /**
      * 设置表单数据
      *
+     * @public
+     * @method mvc.FormView#setFormData
      * @param {Object} formData key:value形式的数据 key和input的name一一对应
      */
-    FormView.prototype.setFormData = function (formData) {
+    exports.setFormData = function (formData) {
         var form = this.get('form');
         var inputs = form.getInputControls();
         u.each(inputs, function (input, index) {
@@ -89,9 +92,11 @@ define(function (require) {
      * 设置表单额外数据
      * 这个接口提供给不是input的控件去扩展，自个玩去
      *
+     * @protected
+     * @method mvc.FormView#setExtraFormData
      * @param {Object} formData key:value形式的数据 key和input的name一一对应
      */
-    FormView.prototype.setExtraFormData = function (formData) {
+    exports.setExtraFormData = function (formData) {
         return;
     };
 
@@ -104,9 +109,11 @@ define(function (require) {
      * 这个方法会在FormAction.validite中和FormModel的校验一起做
      * (还不是一堆蛋疼需求导致的...
      *
+     * @protected
+     * @method mvc.FormView#validate
      * @return {boolean} 校验是否成功
      */
-    FormView.prototype.validate = function () {
+    exports.validate = function () {
         var form = this.get('form');
         var isAutoValidate = form.get('autoValidate');
         if (!isAutoValidate) {
@@ -118,10 +125,12 @@ define(function (require) {
     /**
      * 向用户通知提交错误信息，默认根据`errors`的`key`字段查找对应`name`的控件并显示错误信息
      *
+     * @public
+     * @method mvc.FormView#notifyErrors
      * @param {Object} errors 错误信息，每个key为控件`name`，value为`errorMessage`
      *
      */
-    FormView.prototype.notifyErrors = function (errors) {
+    exports.notifyErrors = function (errors) {
         if (typeof errors !== 'object') {
             return;
         }
@@ -144,6 +153,9 @@ define(function (require) {
 
     /**
      * 重置表单
+     *
+     * @event
+     * @ignore
      */
     function reset() {
         this.fire('reset');
@@ -151,6 +163,9 @@ define(function (require) {
 
     /**
      * 取消编辑
+     *
+     * @event
+     * @ignore
      */
     function cancelEdit() {
         this.fire('cancel');
@@ -159,7 +174,9 @@ define(function (require) {
     /**
      * 进入提交前的处理
      *
+     * @event
      * @param {Event} e 事件对象
+     * @ignore
      */
     function submit(e) {
         e.preventDefault();
@@ -170,6 +187,7 @@ define(function (require) {
      * 若页面在目标dom元素下方，设置页面scrollTop至该元素
      *
      * @param {Element} element label的dom元素
+     * @ignore
      */
     function scrollTo(element) {
         var offset = lib.getOffset(element);
@@ -182,10 +200,12 @@ define(function (require) {
      * 处理esui表单控件自动校验出错
      * 定位至第一个出错的控件
      *
+     * @protected
+     * @method mvc.FormView#handleValidateInvalid
      * @param {Object} form esui表单控件
      * @fire {Event} scrolltofirsterror 定位至页面第一个出错的控件
      */
-    FormView.prototype.handleValidateInvalid = function () {
+    exports.handleValidateInvalid = function () {
         var me = this;
         var form = this.get('form');
         u.some(form.getInputControls(), function (input) {
@@ -204,7 +224,7 @@ define(function (require) {
      *
      * @override
      */
-    FormView.prototype.bindEvents = function () {
+    exports.bindEvents = function () {
         var form = this.get('form');
         if (form) {
             form.on('beforevalidate', submit, this);
@@ -220,13 +240,16 @@ define(function (require) {
             cancelButton.on('click', cancelEdit, this);
         }
 
-        BaseView.prototype.bindEvents.apply(this, arguments);
+        this.$super(arguments);
     };
 
     /**
      * 禁用提交操作
+     *
+     * @public
+     * @method mvc.FormView#disableSubmit
      */
-    FormView.prototype.disableSubmit = function () {
+    exports.disableSubmit = function () {
         if (this.viewContext) {
             this.getGroup('submit').disable();
         }
@@ -234,12 +257,16 @@ define(function (require) {
 
     /**
      * 启用提交操作
+     *
+     * @public
+     * @method mvc.FormView#enableSubmit
      */
-    FormView.prototype.enableSubmit = function () {
+    exports.enableSubmit = function () {
         if (this.viewContext) {
             this.getGroup('submit').enable();
         }
     };
 
+    var FormView = require('eoo').create(BaseView, exports);
     return FormView;
 });

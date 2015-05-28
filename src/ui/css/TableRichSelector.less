@@ -1,7 +1,7 @@
 // 表格
-@ui-table-richselector-th-bg: transparent; 
+@ui-table-richselector-th-bg: transparent;
 @ui-table-richselector-tr-bg: transparent;
-@ui-table-richselector-tr-active-bg: transparent; 
+@ui-table-richselector-tr-active-bg: transparent;
 .ui-table-richselector {
     .ui-richselector-query-list {
         table {
@@ -22,7 +22,7 @@
                 vertical-align: middle;
                 padding-left: 10px;
                 .ellipsis();
-            }   
+            }
         }
         .ui-richselector-content-table {
 
@@ -30,7 +30,7 @@
     }
 
     // 添加型
-    &.ui-richselector-add {            
+    &.ui-richselector-add {
         .ui-richselector-row {
             cursor:pointer;
             &:hover {
@@ -43,7 +43,7 @@
 
         .ui-richselector-row-selected {
             cursor: default;
-            color: #666666;
+            color: #666;
             &:hover {
                 background: #fff;
                 .ui-richselector-row-action-icon {
@@ -54,7 +54,7 @@
 
         .ui-richselector-row-disabled {
             cursor: default;
-            color: #666666;
+            color: #666;
             &:hover {
                 background: #fff;
                 .ui-richselector-row-action-icon {
@@ -64,7 +64,7 @@
         }
 
         .ui-richselector-row-action-icon {
-            background: url("../img/treeselector-arrow.png");
+            background: none;
             height: 14px;
             margin-top: -1px;
             width: 17px;
@@ -73,7 +73,7 @@
     }
 
     // 删除型
-    &.ui-richselector-del {            
+    &.ui-richselector-del {
         .ui-richselector-row {
             cursor:pointer;
             &:hover {

@@ -7,7 +7,6 @@ define(function (require) {
     // require template
     require('../tpl!../tpl/forbidden.tpl.html');
 
-    var util = require('er/util');
     var View = require('er/View');
 
     /**
@@ -16,16 +15,13 @@ define(function (require) {
      * @extends er.View
      * @constructor
      */
-    function ForbiddenView() {
-        View.apply(this, arguments);
-    }
-
-    util.inherits(ForbiddenView, View);
+    var exports = {};
 
     /**
      * @inheritDoc
      */
-    ForbiddenView.prototype.template = 'TPL_forbidden';
+    exports.template = 'TPL_forbidden';
 
+    var ForbiddenView = require('eoo').create(View, exports);
     return ForbiddenView;
 });

@@ -4,7 +4,6 @@
  */
 
 define(function (require) {
-    var util = require('er/util');
     var Model = require('er/Model');
 
     /**
@@ -15,10 +14,8 @@ define(function (require) {
      * @constructor
      * @extends er.Model
      */
-    function ForbiddenModel(context) {
-        Model.call(this, context);
-    }
-    util.inherits(ForbiddenModel, Model);
+    var exports = {};
 
+    var ForbiddenModel = require('eoo').create(Model, exports);
     return ForbiddenModel;
 });

@@ -5,26 +5,23 @@
 
 define(function (require) {
     var u = require('underscore');
-    var util = require('er/util');
     var UIModel = require('ef/UIModel');
 
     /**
      * 业务`Model`基类
      *
-     * @param {Object} [context] 初始化时的数据
-     *
-     * @constructor
+     * @class mvc.BaseModel
      * @extends ef.UIModel
      */
-    function BaseModel(context) {
-        UIModel.call(this, context);
-    }
-    util.inherits(BaseModel, UIModel);
+    var exports = {};
 
     /**
      * 合并默认数据源
+     *
+     * @protected
+     * @method mvc.BaseModel#mergeDefaultDatasource
      */
-    BaseModel.prototype.mergeDefaultDatasource = function() {
+    exports.mergeDefaultDatasource = function () {
         if (!this.datasource) {
             this.datasource = this.defaultDatasource;
             return;
@@ -69,16 +66,14 @@ define(function (require) {
     };
 
     /**
-     * 加载数据
-     *
-     * @return {er/Promise}
+     * @override
      */
-    BaseModel.prototype.load = function() {
-        // TODO: 移到`getDatasource`方法中
+    exports.load = function () {
         this.mergeDefaultDatasource();
 
-        return UIModel.prototype.load.apply(this, arguments);
+        return this.$super(arguments);
     };
 
+    var BaseModel = require('eoo').create(UIModel, exports);
     return BaseModel;
 });

@@ -1,3 +1,18 @@
+* 0.2.5
+    - `QuickTip` 改用 `TipLayer` 的 `manual` 模式
+    - `RichBoxGroup` 支持设置 `singleSelect`
+    - `Image` 控件支持设置 `max-width` 和 `max-height`，去除 Flash 类型支持，调整样式
+    - 修正 `Uploader` 在非自动上传模式下设置 `extraArgs` 时失败的问题
+    - 扩展的 `u.constanize` 函数名优化为 `u.constantize`，老名字保留
+    - `util.genListLink` 和 `util.genListCommand` 方法 `extra` 选项现在改名为 `data`，对应于生成的 HTML 元素中的 `data-` 前缀属性，`extra` 仍保留。同时增加了 `attr` 选项，对应于无 `data-` 前缀的属性
+    - MVC 扩展代码切换为基于 `eoo` 实现
+    - ETpl 的依赖升级到 `3.0.0` 以上
+    - 增加了 `ListAction` 相关的模板，利用 etpl `3.0.0` 版本后的引用带入功能，支持通过重写 `block` 覆盖
+    - 支持列表页和表单页数据请求失败后继续进入 Action
+    - 使用 `filterRedirect` 拦截跳转，解决 `ListAction` 作为子 Action 时无法局部刷新的问题
+    - 大量代码根据规范优化
+    - 优化 `mvc` 模块的 JSDoc 注释
+
 * 0.2.4
     - 修正 `QuickTip` 未能正确处理 `mouseenter` / `mouseleave` 的问题
     - 在 `extension/ui/lib` 中为 `on` 在代理事件时增加了 `mouseenter` / `mouseleave` 的处理

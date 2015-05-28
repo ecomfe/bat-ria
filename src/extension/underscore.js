@@ -31,14 +31,11 @@ define(function (require) {
         u.each(
             object,
             function (value, key) {
-                var isDefaultNull =
-                    value == null || value === '';
-                var isInDefaults =
-                    defaults.hasOwnProperty(key) && defaults[key] === value;
+                var isDefaultNull = value == null || value === '';
+                var isInDefaults = defaults.hasOwnProperty(key) && defaults[key] === value;
                 if (!isDefaultNull && !isInDefaults) {
                     if (deep && typeof value === 'object') {
-                        purifiedObject[key] =
-                            purify(value, defaults[key], deep);
+                        purifiedObject[key] = purify(value, defaults[key], deep);
                     }
                     else {
                         purifiedObject[key] = value;
@@ -233,11 +230,18 @@ define(function (require) {
      * @param {string} s 输入的字符串
      * @return {string}
      */
-    util.constanize = function (s) {
+    util.constantize = function (s) {
         s = util.dasherize(s);
         s = s.replace(/-/g, '_');
         return s.toUpperCase();
     };
+
+    /**
+     * 参见{@link util#constantize}
+     *
+     * @deprecated
+     */
+    util.constanize = util.constantize;
 
     /**
      * 将一个单词转为复数

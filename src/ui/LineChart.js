@@ -68,6 +68,8 @@ define(
 
         /**
          * 获得提示层的title
+         * @param  {Array}  params 一个点上的数据
+         * @return {string}        tip title的html
          */
         LineChart.prototype.getTipTitleHtml = function (params) {
             // 如果是日期，则需要显示星期几
@@ -138,7 +140,7 @@ define(
                     // formatter: lib.bind(this.tipFormatter, this)
                 },
                 legend: {
-                    data:['']
+                    data: ['']
                 },
                 xAxis: [
                     {

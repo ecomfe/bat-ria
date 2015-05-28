@@ -1,3 +1,92 @@
+<!-- target: listPageWithSidebar -->
+<!-- block: sidebar -->
+<div data-ui-type="Sidebar" data-ui-id="sidebar" data-ui-mode="fixed">
+    <!-- block: sidebarContent --><!-- /block -->
+</div>
+<!-- /block -->
+<!-- block: neighbor -->
+<div id="neighbor" class="ui-sidebar-neighbor">
+    <!-- block: neighborContent -->
+    <!-- block: header -->
+    <div class="list-header">
+        <!-- block: summary -->
+        <div class="list-summary">
+            <!-- block: summaryContent --><!-- /block -->
+        </div>
+        <!-- /block -->
+        <!-- block: filter -->
+        <form data-ui-type="Form" data-ui-id="filter" class="list-filter">
+            <!-- block: filterContent --><!-- /block -->
+        </form>
+        <!-- /block -->
+        <!-- block: batch -->
+        <div class="list-batch">
+            <!-- block: batchContent --><!-- /block -->
+        </div>
+        <!-- /block -->
+    </div>
+    <!-- /block -->
+    <!-- block: table -->
+    <!-- import: listPageTable -->
+    <!-- /block -->
+    <!-- block: pager -->
+    <!-- import: listPager -->
+    <!-- /block -->
+    <!-- /block -->
+</div>
+<!-- /block -->
+
+
+<!-- target: listPage -->
+<!-- block: header -->
+<div class="list-header">
+    <!-- block: summary -->
+    <div class="list-summary">
+        <!-- block: summaryContent --><!-- /block -->
+    </div>
+    <!-- /block -->
+
+    <!-- block: filter -->
+    <form data-ui-type="Form" data-ui-id="filter" class="list-filter">
+        <!-- block: filterContent --><!-- /block -->
+    </form>
+    <!-- /block -->
+</div>
+<!-- /block -->
+<!-- block: table -->
+<!-- import: listPageTable -->
+<!-- /block -->
+<!-- block: pager -->
+<!-- import: listPager -->
+<!-- /block -->
+
+<!-- target: listPageTable -->
+<!-- var: tip = ${tip} !== false -->
+<!-- var: command = ${command} !== false -->
+<!-- var: edit = ${edit} === true -->
+<!-- var: subrow = ${subrow} === true -->
+<div data-ui-type="Table" data-ui-id="table" data-ui-datasource="@tableData"
+    data-ui-order-by="@orderBy" data-ui-order="@order" data-ui-select="@selectMode"
+    <!-- if: ${tip} -->
+    data-ui-extension-tip-type="QuickTip"
+    <!-- /if -->
+    <!-- if: ${command} -->
+    data-ui-extension-command-type="Command"
+    <!-- /if -->
+    <!-- if: ${edit} -->
+    data-ui-extension-tableedit-type="TableEdit"
+    <!-- /if -->
+    <!-- if: ${subrow} -->
+    data-ui-extension-tablesubrow-type="TableSubrow"
+    <!-- /if -->>
+</div>
+
+<!-- target: listPager -->
+<div data-ui-type="Pager" data-ui-id="pager" data-ui-page-type="plain"
+    data-ui-count="@totalCount" data-ui-page="@pageNo" data-ui-page-size="@pageSize"
+    data-ui-url-template="@urlTemplate" data-ui-layout="alignRight">
+</div>
+
 <!-- target: listSearchBox -->
 <input name="keyword"
     data-ui-type="SearchBox" data-ui-id="keyword"
@@ -7,7 +96,7 @@
     data-ui-extension-submit-type="AutoSubmit" />
 
 <!-- target: listRangeCalendar -->
-<div data-ui-type="RangeCalendar" 
+<div data-ui-type="RangeCalendar"
     data-ui-id="range"
     data-ui-param-format="YYYYMMDDHHmmss" data-ui-raw-value="@time"
     data-ui-extension-submit-type="AutoSubmit">
@@ -45,10 +134,4 @@
     data-ui-extension-command-type="Command"
     data-ui-extension-tip-type="TableTip"
     data-ui-extension-tablesubrow-type="TableSubrow">
-</div>
-
-<!-- target: listPager -->
-<div data-ui-type="Pager" data-ui-id="pager" data-ui-page-type="plain"
-    data-ui-count="@totalCount" data-ui-page="@pageNo" data-ui-page-size="@pageSize" 
-    data-ui-url-template="@urlTemplate" data-ui-layout="alignRight">
 </div>

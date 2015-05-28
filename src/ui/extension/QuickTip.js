@@ -109,7 +109,7 @@ define(
 
             var attachOptions = {
                 targetDOM: element,
-                showMode: 'over',
+                showMode: 'manual',
                 delayTime: 200,
                 positionOpt: {
                     top: 'top',

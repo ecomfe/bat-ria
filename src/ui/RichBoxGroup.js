@@ -36,6 +36,48 @@ define(
         RichBoxGroup.prototype.type = 'RichBoxGroup';
 
         /**
+         * 同步样式
+         *
+         * @ignore
+         */
+        function syncStyle() {
+            var group = this;
+            var result = u.chain(this.getBoxElements())
+                .where({checked: true})
+                .value();
+            u.each(
+                u.chain(this.getBoxElements()).value(),
+                function (item, index) {
+                    if (item.checked === true) {
+                        lib.addClasses(item, group.helper.getPartClasses('checked'));
+                        lib.addClasses(item.parentNode, group.helper.getPartClasses('wrapper-checked'));
+                    }
+                    else {
+                        lib.removeClasses(item, group.helper.getPartClasses('checked'));
+                        lib.removeClasses(item.parentNode, group.helper.getPartClasses('wrapper-checked'));
+                    }
+                }
+            );
+            if (group.boxType === 'checkbox' && (group.singleSelect === 'true' || group.singleSelect === true)) {
+                if (result && result.length) {
+                    var unselectedBox = u.chain(this.getBoxElements())
+                        .where({checked: false})
+                        .value();
+                    u.each(unselectedBox, function (item, index) {
+                        item.disabled = true;
+                    });
+                }
+                else {
+                    var allBox = u.chain(this.getBoxElements())
+                        .value();
+                    u.each(allBox, function (item, index) {
+                        item.disabled = false;
+                    });
+                }
+            }
+        }
+
+        /**
          * 同步值
          *
          * @ignore
@@ -48,6 +90,7 @@ define(
 
             this.rawValue = result;
             this.fire('change');
+            syncStyle.call(this);
         }
 
         /* eslint-disable fecs-indent */
@@ -114,6 +157,7 @@ define(
                 },
                 group
             );
+            syncStyle.call(group);
         }
 
         /**
@@ -191,6 +235,16 @@ define(
                     group.removeState('vertical');
                     group.removeState('horizontal');
                     group.addState(orientation);
+                }
+            },
+            {
+                /**
+                 *
+                 * 选框的样式同步
+                 */
+                name: 'singleSelect',
+                paint: function (group) {
+                    syncStyle.call(group);
                 }
             }
         );

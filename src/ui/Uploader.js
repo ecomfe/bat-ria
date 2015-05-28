@@ -55,7 +55,6 @@ define(
             width: 80,
             height: 25,
             action: '',                // uploader提交的地址
-            fileType: 'auto',
             dataKey: 'filedata',
             args: {},                  // 在post参数中添加额外内容
             fileInfo: {},
@@ -219,11 +218,11 @@ define(
             /* eslint-enable fecs-indent */
             // 从附加参数里构造
             var extraArgs = buildExtraArgs(this.args);
+            html.push(
+                '<div id="' + this.helper.getId('extraArgs') + '"',
+                    'class="' + extraArgClasses + '">'
+            );
             if (extraArgs.length) {
-                html.push(
-                    '<div id="' + this.helper.getId('extraArgs') + '"',
-                        'class="' + extraArgClasses + '">'
-                );
                 u.each(extraArgs, function (arg) {
                     html.push(
                         '<input type="hidden" name="' + arg.name + '" ',
@@ -231,10 +230,10 @@ define(
                         '/>'
                     );
                 });
-                html.push(
-                    '</div>'
-                );
             }
+            html.push(
+                '</div>'
+            );
             html.push(
                 '</div>',
                 // 指示器
@@ -244,9 +243,8 @@ define(
                     '<span id="' + this.helper.getId('indicator') + '">',
                     '</span>',
                 '</div>',
-                '<div id="' + this.helper.getId('label') +
-                    '"',
-                    'class="' + labelClasses + '">' + this.placeholder +
+                '<div id="' + this.helper.getId('label') + '"',
+                    'class="' + labelClasses + '">' + this.placeholder,
                 '</div>',
                 // 用来偷偷上传的`<iframe>`元素
                 '<iframe id="' + iframeId + '" name="' + iframeId + '"',
@@ -279,19 +277,15 @@ define(
             var button = this.helper.getPart('button');
             button.innerHTML = u.escape(this.overrideText);
 
-            var label = this.helper.getPart('label');
-            // 各种兼容。。。
-            label.innerHTML = u.escape(this.getFileName()
-                || info.url
-                || info.previewUrl
-                || ''
-            );
+            this.setLabelText(this.getFileName() || info.url || info.previewUrl || '');
 
             // 清掉可能存在的错误信息
             var validity = new Validity();
             this.showValidity(validity);
 
-            this.fire('change');
+            this.fire('change', {
+                fileInfo: this.fileInfo
+            });
             if (this.preview) {
                 this.showPreview(info);
             }
@@ -374,7 +368,7 @@ define(
                     var form = uploader.helper.getPart('form');
                     form.method = method;
                     action = uri(action).addQuery({
-                        'callback': 'parent.esuiShowUploadResult["' + uploader.callbackName + '"]'
+                        callback: 'parent.esuiShowUploadResult["' + uploader.callbackName + '"]'
                     }).toString();
                     form.action = uploader.filterAction(action);
                 }
@@ -512,9 +506,18 @@ define(
                 }
 
                 if (!isValid) {
-                    var message = this.acceptErrorMessage
-                        || '仅接受以下文件格式：' + this.accept.join(',');
-                    this.notifyFail(message);
+                    this.clear();
+                    var message = this.acceptErrorMessage || '仅接受以下文件格式：' + this.accept.join(',');
+                    var invalid = this.fire('invalid', {
+                        message: message
+                    });
+                    if (!invalid.isDefaultPrevented()) {
+                        var validity = new Validity();
+                        var state = new ValidityState(false, message);
+                        validity.addState('upload', state);
+                        this.showValidity(validity);
+                    }
+                    this.removeState('busy');
                 }
 
                 return isValid;
@@ -533,12 +536,22 @@ define(
             // 因此我们把内层`<form>`单独写在某个地方，
             // 当需要提交时，把所有的`<input>`丢到这个`<form>`下，
             // 提交完毕后再拿回来
-            this.showUploading();
-            var inputs = this.helper.getPart('input-container');
-            var form = this.helper.getPart('form');
-            form.appendChild(inputs);
-            form.submit();
-            this.main.insertBefore(inputs, this.main.firstChild);
+            var input = this.helper.getPart('input');
+            var fileName = input.value;
+            if (fileName) {
+                this.showUploading();
+                var inputs = this.helper.getPart('input-container');
+                var form = this.helper.getPart('form');
+                form.appendChild(inputs);
+                form.submit();
+                this.main.insertBefore(inputs, this.main.firstChild);
+            }
+            else {
+                var validity = new Validity();
+                var state = new ValidityState(false, this.requiredErrorMessage || '请选择文件');
+                validity.addState('upload', state);
+                this.showValidity(validity);
+            }
         };
 
         /**
@@ -553,6 +566,13 @@ define(
                 this.fire('receive');
                 if (this.autoUpload) {
                     this.submit();
+                }
+                else {
+                    // 提前显示文件名
+                    this.setLabelText(this.getFileName());
+                    // 清掉可能存在的错误信息
+                    var validity = new Validity();
+                    this.showValidity(validity);
                 }
             }
         };
@@ -627,19 +647,22 @@ define(
             //    }
             // }
             var result = options.result;
-            if (options.success === false || options.success === 'false' || options.code === 1) {
+            if ((options.success === true || options.success === 'true' || options.code === 0)
+                && options.result) {
+                this.fileInfo = result;
+                this.rawValue = result.content || result.url || result.previewUrl || '';
+                this.fire('complete', {
+                    fileInfo: this.fileInfo
+                });
+                this.notifyComplete(options.result);
+            }
+            else {
                 if (typeof options.message === 'object' && options.message.ERROR) {
                     this.notifyFail(options.message.ERROR);
                 }
                 else {
                     this.notifyFail(options.message);
                 }
-            }
-            else if (result) {
-                this.fileInfo = result;
-                this.rawValue = result.content || result.url || result.previewUrl || '';
-                this.fire('complete');
-                this.notifyComplete(options.result);
             }
         };
 
@@ -651,7 +674,9 @@ define(
          */
         Uploader.prototype.notifyFail = function (message) {
             this.clear();
-            var fail = this.fire('fail', message);
+            var fail = this.fire('fail', {
+                message: message
+            });
             if (!fail.isDefaultPrevented()) {
                 var validity = new Validity();
                 var state = new ValidityState(false, message);
@@ -700,12 +725,12 @@ define(
                 }
 
                 var properties = {
-                    imageType: info ? info.type : (this.fileType || 'auto'),
                     url: this.getPreviewUrl(),
-                    width: info ? info.width : null,
-                    height: info ? info.height : null
+                    width: info.width || null,
+                    height: info.height || null
                 };
-                container.setProperties(properties);
+
+                container.setProperties(u.purify(properties));
             }
         };
 
@@ -734,6 +759,18 @@ define(
                 value = input.value;
                 return value.split('\\').pop() || '';
             }
+        };
+
+        /**
+         * 设置显示的文件名
+         *
+         * @param {[string]} content 文件名
+         * @protected
+         */
+        Uploader.prototype.setLabelText = function (content) {
+            var label = this.helper.getPart('label');
+            var text = content || this.getFileName();
+            label.innerHTML = u.escape(text);
         };
 
         /**

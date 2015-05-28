@@ -111,8 +111,7 @@ define(
             var helper = this.helper;
             var actionLink = '';
             if (this.needBatchAction) {
-                var linkClassName =
-                    helper.getPartClassName('batch-action-link');
+                var linkClassName = helper.getPartClassName('batch-action-link');
                 var linkId = this.helper.getId('batch-action');
                 actionLink = ''
                     + '<span class="' + linkClassName
@@ -405,8 +404,7 @@ define(
          * @ignore
          */
         RichSelector.prototype.getSearchBox = function () {
-            var searchBoxArea =
-                this.getChild('body').getChild('searchBoxArea');
+            var searchBoxArea = this.getChild('body').getChild('searchBoxArea');
             if (searchBoxArea) {
                 return searchBoxArea.getChild('itemSearch');
             }
@@ -464,7 +462,7 @@ define(
          * 出现搜索信息时，结果区域的高度要变小，才能使整个控件高度不变
          *
          */
-        RichSelector.prototype.adjustHeight = function() {
+        RichSelector.prototype.adjustHeight = function () {
             // 用户设置总高度
             var settingHeight = this.height;
 
@@ -483,8 +481,7 @@ define(
             }
             else {
                 // 结果区高度 = 总高度 - 头部高度 - 搜索框高度 - 腿部高度
-                var contentHeight =
-                    settingHeight - headHeight - searchBoxHeight - footHeight;
+                var contentHeight = settingHeight - headHeight - searchBoxHeight - footHeight;
 
                 // 处于query状态时，会有一个30px的概要信息区
                 if (this.isQuery()) {

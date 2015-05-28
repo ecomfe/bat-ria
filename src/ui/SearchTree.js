@@ -264,8 +264,7 @@ define(
          * @ignore
          */
         SearchTree.prototype.getSearchBox = function () {
-            var searchBoxArea =
-                this.getChild('body').getChild('searchBoxArea');
+            var searchBoxArea = this.getChild('body').getChild('searchBoxArea');
             if (searchBoxArea) {
                 return searchBoxArea.getChild('itemSearch');
             }
@@ -284,7 +283,7 @@ define(
          * 出现搜索信息时，结果区域的高度要变小，才能使整个控件高度不变
          *
          */
-        SearchTree.prototype.adjustHeight = function() {
+        SearchTree.prototype.adjustHeight = function () {
             // 用户设置总高度
             var settingHeight = this.height;
 
@@ -303,8 +302,7 @@ define(
             }
             else {
                 // 结果区高度 = 总高度 - 头部高度 - 搜索框高度 - 腿部高度
-                var contentHeight =
-                    settingHeight - headHeight - searchBoxHeight - footHeight;
+                var contentHeight = settingHeight - headHeight - searchBoxHeight - footHeight;
 
                 // 处于query状态时，会有一个30px的概要信息区
                 if (this.isQuery()) {
@@ -467,8 +465,8 @@ define(
             }
             else {
                 tree.setProperties({
-                    'datasource': u.deepClone(treeData),
-                    'keyword': this.getKeyword()
+                    datasource: u.deepClone(treeData),
+                    keyword: this.getKeyword()
                 });
             }
 
@@ -563,7 +561,7 @@ define(
             var me = this;
             return u.find(
                 me.indexData,
-                function(item) {
+                function (item) {
                     return item.node.id === me.curSeleId;
                 }
             ).node;
@@ -582,7 +580,7 @@ define(
          * 清空搜索的结果
          *
          */
-        SearchTree.prototype.clearData = function() {
+        SearchTree.prototype.clearData = function () {
             // 清空数据
             this.queriedData = {};
         };

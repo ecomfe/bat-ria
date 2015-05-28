@@ -7,7 +7,6 @@ define(function (require) {
     // require template
     require('../tpl!../tpl/not_found.tpl.html');
 
-    var util = require('er/util');
     var View = require('er/View');
 
     /**
@@ -16,16 +15,13 @@ define(function (require) {
      * @extends er.View
      * @constructor
      */
-    function NotFoundView() {
-        View.apply(this, arguments);
-    }
-
-    util.inherits(NotFoundView, View);
+    var exports = {};
 
     /**
      * @inheritDoc
      */
-    NotFoundView.prototype.template = 'TPL_not_found';
+    exports.template = 'TPL_not_found';
 
+    var NotFoundView = require('eoo').create(View, exports);
     return NotFoundView;
 });

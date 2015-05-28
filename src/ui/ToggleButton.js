@@ -90,8 +90,8 @@ define(
         }
 
         ToggleButton.prototype.initStructure = function () {
-            this.main.innerHTML =
-                getPartHTML(this, 'on') + getPartHTML(this, 'off')
+            this.main.innerHTML
+                = getPartHTML(this, 'on') + getPartHTML(this, 'off')
                 + '<input type="hidden"'
                 + (this.name ? ' name="' + this.name + '"' : '')
                 + ' />';
@@ -138,8 +138,7 @@ define(
                 this.checked = !!this.checked;
             }
 
-            var changed =
-                InputControl.prototype.setProperties.apply(this, arguments);
+            var changed = InputControl.prototype.setProperties.apply(this, arguments);
             if (changed.hasOwnProperty('checked')) {
                 this.fire('change');
             }
