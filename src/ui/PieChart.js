@@ -64,8 +64,8 @@ define(
                             normal: {
                                 label: {
                                     position: 'outer',
-                                    formatter: function (a, b, c, d) {
-                                        return (d - 0).toFixed(0) + '%';
+                                    formatter: function (a) {
+                                        return (a.percent - 0).toFixed(0) + '%';
                                     }
                                 },
                                 labelLine: {
