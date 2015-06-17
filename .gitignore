@@ -5,5 +5,4 @@ npm-debug.log
 .DS_Store
 test/coverage
 doc/api
-bat-ria.sublime-project
-bat-ria.sublime-workspace
+*.sublime-*
