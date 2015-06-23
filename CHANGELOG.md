@@ -1,3 +1,6 @@
+* 0.2.6
+    - 修正代码规范
+
 * 0.2.5
     - `QuickTip` 改用 `TipLayer` 的 `manual` 模式
     - `RichBoxGroup` 支持设置 `singleSelect`

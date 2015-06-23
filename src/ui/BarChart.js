@@ -15,6 +15,7 @@ define(
         var helper = require('esui/controlHelper');
         var BaseChart = require('./BaseChart');
         require('echarts/chart/bar');
+
         /**
          * 控件类
          *

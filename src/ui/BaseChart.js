@@ -4,10 +4,8 @@
  *
  * @ignore
  * @file 图表基类控件
- * @author lixiang(lixiang05@baidu.com)
- * @edit by loutongbing(loutongbing@baidu.com)
+ * @author lixiang(lixiang05@baidu.com), loutongbing(loutongbing@baidu.com)
  */
-
 define(
     function (require) {
         var lib = require('esui/lib');
@@ -15,6 +13,7 @@ define(
         var helper = require('esui/controlHelper');
         var Control = require('esui/Control');
         var echarts = require('echarts');
+
         /**
          * 控件类
          *

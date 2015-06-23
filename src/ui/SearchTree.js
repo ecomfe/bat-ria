@@ -224,6 +224,7 @@ define(
             }
             return false;
         };
+
         /**
          * 获取结果列表承载容器控件，列表在它里面
          * @return {ui.Panel}
@@ -258,6 +259,7 @@ define(
             }
             return null;
         };
+
         /**
          * 获取搜索控件
          * @return {ui.Panel}
@@ -365,6 +367,7 @@ define(
                 }
             }
         );
+
         /**
          * 适配数据，创建一个全集扁平索引
          *
@@ -517,6 +520,7 @@ define(
 
             return leafItems;
         };
+
         /**
          * 选择或取消选择
          *   如果控件是单选的，则将自己置灰且将其他节点恢复可选
@@ -566,6 +570,7 @@ define(
                 }
             ).node;
         };
+
         /**
          * 或许当前已选择的id
          *

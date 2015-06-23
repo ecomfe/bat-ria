@@ -1,3 +1,4 @@
+/* eslint-disable fecs-no-global-require */
 /**
  * @file tpl加载插件
  * @author otakustay
@@ -140,6 +141,7 @@ define(
          * @singleton
          */
         var plugin = {
+
             /**
              * 设置模板引擎实例，可通过此方法来使用非默认引擎实例
              *
