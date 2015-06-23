@@ -64,8 +64,14 @@ define(
                             normal: {
                                 label: {
                                     position: 'outer',
-                                    formatter: function (a) {
-                                        return (a.percent - 0).toFixed(0) + '%';
+                                    formatter: function () {
+                                        var args = arguments;
+                                        if (args.length === 1) {
+                                            return (args[0].percent - 0).toFixed(0) + '%';
+                                        }
+                                        if (args.length === 4) {
+                                            return (args[3] - 0).toFixed(0) + '%';
+                                        }
                                     }
                                 },
                                 labelLine: {
