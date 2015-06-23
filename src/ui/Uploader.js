@@ -575,6 +575,10 @@ define(
                     this.showValidity(validity);
                 }
             }
+            else {
+                // 取消了上传，浏览器会把input清空，控件也得跟着
+                this.clear();
+            }
         };
 
         /**

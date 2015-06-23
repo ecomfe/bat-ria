@@ -249,7 +249,6 @@ define(
             }
         );
 
-        lib.inherits(RichBoxGroup, InputControl);
         require('esui/main').register(RichBoxGroup);
         return RichBoxGroup;
     }
