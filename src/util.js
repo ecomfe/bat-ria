@@ -342,7 +342,7 @@ define(function (require) {
         var content = options.content || '';
         var title = options.title || '';
         var isEllipsis = options.isEllipsis || false;
-        var className = options.className;
+        var className = options.className || '';
 
         var tpl = '<span';
         if (isEllipsis && className) {
