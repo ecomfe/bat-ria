@@ -65,6 +65,10 @@ define(
                                 label: {
                                     position: 'outer',
                                     formatter: function () {
+                                        // 由于 echarts 此次提交：
+                                        // https://github.com/ecomfe/echarts/commit/151e7a87a661ccd1e4cab69d325f65ad7c28cb8e#diff-135257ccc0491223777def3de1ebba18，
+                                        // 导致此处 formatter 回调函数的参数发生了变化。
+                                        // 为了保证与最新版本 echarts 兼容，做一下 arguments 参数判断
                                         var args = arguments;
                                         if (args.length === 1) {
                                             return (args[0].percent - 0).toFixed(0) + '%';
