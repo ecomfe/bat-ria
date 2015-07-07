@@ -759,8 +759,7 @@ define(
                 return this.fileInfo.fileName;
             }
             var input = this.helper.getPart('input');
-            var value;
-            value = input.value;
+            var value = input.value;
             if (value) {
                 return value.split('\\').pop() || '';
             }
