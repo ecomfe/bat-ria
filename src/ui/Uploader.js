@@ -761,7 +761,7 @@ define(
             var input = this.helper.getPart('input');
             var value = input.value;
             if (value) {
-                return value.split('\\').pop() || '';
+                return value.split(/[\\\/]/).pop() || '';
             }
             else if (this.fileInfo.url || this.fileInfo.previewUrl) {
                 var url = this.fileInfo.url || this.fileInfo.previewUrl || '';
