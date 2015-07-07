@@ -329,14 +329,14 @@ define(function (require) {
     };
 
     /**
-     * 生成列表页table cell，可选带省略，带TipLayer
-     * @param  {Object} options               可选参数配置
-     * @param  {string} options.className     类
-     * @param  {string} options.title         交给QuickTip的title
-     * @param  {string} options.content       最终展示的内容，考虑到可能还要加其他东西，
-     *                                        自己在调用前对后端的内容escape一下吧
-     * @param  {boolean} options.isEllipsis   是否超长省略
-     * @return {string}                       html
+     * 生成列表页项，可选带省略，带TipLayer
+     * @param  {Object} options                 可选参数配置
+     * @param  {string} [options.className]     类
+     * @param  {string} [options.title]         交给QuickTip的title
+     * @param  {string} [options.content]       最终展示的内容，考虑到可能还要加其他东西，
+     *                                          自己在调用前对后端的内容escape一下吧
+     * @param  {boolean} [options.isEllipsis]   是否超长省略
+     * @return {string}                         html
      */
     util.genTableTipContent = function (options) {
         var content = options.content || '';
@@ -346,10 +346,10 @@ define(function (require) {
 
         var tpl = '<span';
         if (isEllipsis && className) {
-            tpl += ' class="table-cell-ellipsis ' + className + '"';
+            tpl += ' class="list-ellipsis ' + className + '"';
         }
         else if (isEllipsis) {
-            tpl += ' class="table-cell-ellipsis"';
+            tpl += ' class="list-ellipsis"';
         }
         else if (className) {
             tpl += ' class="' + className + '"';
@@ -361,9 +361,7 @@ define(function (require) {
 
         tpl += '>' + content + '</span>';
 
-        var render = etpl.compile(tpl);
-        var html = render();
-        return html;
+        return tpl;
     };
 
     /**
