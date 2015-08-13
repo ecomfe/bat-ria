@@ -58,7 +58,7 @@ define(
             dataKey: 'filedata',
             args: {},                  // 在post参数中添加额外内容
             fileInfo: {},
-            outputType: 'url',         // `url|previewUrl`表示提交一个路径，`content`表示提交文件内容
+            outputType: 'url',         // `url`表示提交一个路径，`content`表示提交文件内容
             method: 'POST',
             text: '点击上传',
             overrideText: '重新上传',
@@ -758,12 +758,19 @@ define(
             if (this.fileInfo && this.fileInfo.fileName) {
                 return this.fileInfo.fileName;
             }
-            else {
-                var input = this.helper.getPart('input');
-                var value;
-                value = input.value;
-                return value.split('\\').pop() || '';
+            var input = this.helper.getPart('input');
+            var value = input.value;
+            if (value) {
+                return value.split(/[\\\/]/).pop() || '';
             }
+            else if (this.fileInfo.url || this.fileInfo.previewUrl) {
+                var url = this.fileInfo.url || this.fileInfo.previewUrl || '';
+                var match = url.match(/[^\\\/]+\.[^\\\/]+$/);
+                if (match) {
+                    return match[0];
+                }
+            }
+            return '';
         };
 
         /**
