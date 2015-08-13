@@ -10,7 +10,6 @@ define(function (require) {
     var u = require('underscore');
     var moment = require('moment');
     var io = require('./io/serverIO');
-    var etpl = require('etpl');
 
     /**
      * 工具模块
@@ -330,6 +329,7 @@ define(function (require) {
 
     /**
      * 生成列表页项，可选带省略，带TipLayer
+     *
      * @param  {Object} options                 可选参数配置
      * @param  {string} [options.className]     类
      * @param  {string} [options.title]         交给QuickTip的title
