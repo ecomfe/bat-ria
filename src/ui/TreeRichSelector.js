@@ -122,6 +122,7 @@ define(
 
         /**
          * 刷新备选区
+         *
          * @override
          */
         TreeRichSelector.prototype.refreshContent = function () {
@@ -197,6 +198,7 @@ define(
 
         /**
          * 点击触发，选择或删除节点
+         *
          * @param {Object} node 节点对象
          * @ignore
          */
@@ -275,6 +277,7 @@ define(
 
         /**
          * 撤销选择当前项
+         *
          * @param {ui.TreeRichSelector} control 类实例
          * @ignore
          */
@@ -486,7 +489,8 @@ define(
 
         /**
          * 清除搜索结果
-         * @param {ui.RichSelector2} richSelector 类实例
+         *
+         * @param {ui.RichSelector} RichSelector 类实例
          * @return {false} 阻止默认行为
          * @ignore
          */

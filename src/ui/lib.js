@@ -54,6 +54,7 @@ define(
 
         /**
          * 获取事件对象
+         *
          * @param {Event|undefined} evt 事件对象
          * @return {HTMLElement} 事件对象
          */
@@ -63,6 +64,7 @@ define(
 
         /**
          * 获取事件相关目标对象
+         *
          * @param {Event|undefined} evt 事件对象
          * @return {HTMLElement} 事件相关目标对象
          */

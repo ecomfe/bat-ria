@@ -143,7 +143,7 @@ define(function (require) {
     };
 
     /**
-     * @inheritDoc
+     * @override
      */
     AuthPanel.prototype.repaint = function () {
         Panel.prototype.repaint.call(this);

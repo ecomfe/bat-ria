@@ -68,6 +68,7 @@ define(
 
         /**
          * 获得提示层的title
+         *
          * @param  {Array}  params 一个点上的数据
          * @return {string}        tip title的html
          */

@@ -70,6 +70,7 @@ define(function (require) {
 
     /**
      * 列表数据请求失败
+     *
      * @return {Object} tableData字段为空数组，表示没有数据
      */
     function fetchFail() {

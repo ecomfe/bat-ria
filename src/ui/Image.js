@@ -184,6 +184,7 @@ define(
 
         /**
          * 获取预览的HTML
+         *
          * @param  {string} id img的id
          * @return {string} 预览的HTML内容
          * @ignore
@@ -231,6 +232,7 @@ define(
 
         /**
          * 取消全尺寸显示
+         *
          * @param {Object} e 点击事件
          */
         Image.prototype.cancelFullSize = function (e) {

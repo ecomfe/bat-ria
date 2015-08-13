@@ -30,6 +30,7 @@ define(
 
         /**
          * 获得提示层的title
+         *
          * @param {Array} params 一个点上的数据
          */
         BaseChart.prototype.getTipTitleHtml = function (params) {

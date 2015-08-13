@@ -740,6 +740,7 @@ define(
 
         /**
          * 获取后端返回的信息
+         *
          * @return {Object} 后端返回的结构体
          */
         Uploader.prototype.getFileInfo = function () {
@@ -768,7 +769,7 @@ define(
         /**
          * 设置显示的文件名
          *
-         * @param {[string]} content 文件名
+         * @param {string} [content] 文件名
          * @protected
          */
         Uploader.prototype.setLabelText = function (content) {

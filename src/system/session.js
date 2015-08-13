@@ -11,6 +11,7 @@ define(function (require) {
 
         /**
          * 读取会话数据
+         *
          * @param {string} key 会话数据的键名
          * @return {*} 特定的会话数据
          */
@@ -20,6 +21,7 @@ define(function (require) {
 
         /**
          * 设置会话数据
+         *
          * @param {string} key 会话数据的键名
          * @param {*} value 会话数据的值
          */
@@ -29,6 +31,7 @@ define(function (require) {
 
         /**
          * 测试会话是否有指定键名的内容
+         *
          * @param {string} key 会话数据的键名
          * @return {boolean} 是否包含指定的键名
          */

@@ -329,6 +329,7 @@ define(function (require) {
 
     /**
      * 下载文件
+     *
      * @param {string} url 文件地址.
      */
     util.download = function (url) {
