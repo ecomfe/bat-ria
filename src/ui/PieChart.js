@@ -64,8 +64,17 @@ define(
                             normal: {
                                 label: {
                                     position: 'outer',
-                                    formatter: function (a, b, c, d) {
-                                        return (d - 0).toFixed(0) + '%';
+                                    formatter: function () {
+                                        // 由于 echarts 的一次提交（http://dwz.cn/1ho2Eg），
+                                        // 导致此处 formatter 回调函数的参数发生了变化。
+                                        // 为了保证与最新版本 echarts 兼容，做一下 arguments 参数判断
+                                        var args = arguments;
+                                        if (args.length === 1) {
+                                            return (args[0].percent - 0).toFixed(0) + '%';
+                                        }
+                                        if (args.length === 4) {
+                                            return (args[3] - 0).toFixed(0) + '%';
+                                        }
                                     }
                                 },
                                 labelLine: {

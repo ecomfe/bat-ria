@@ -196,6 +196,7 @@ define(
 
         /**
          * 清除搜索结果
+         *
          * @return {false} 阻止默认行为
          * @ignore
          */
@@ -224,8 +225,10 @@ define(
             }
             return false;
         };
+
         /**
          * 获取结果列表承载容器控件，列表在它里面
+         *
          * @return {ui.Panel}
          * @ignore
          */
@@ -248,6 +251,7 @@ define(
 
         /**
          * 获取结果列表控件
+         *
          * @return {ui.TreeForSelector | ui.ListForSelector}
          * @ignore
          */
@@ -258,8 +262,10 @@ define(
             }
             return null;
         };
+
         /**
          * 获取搜索控件
+         *
          * @return {ui.Panel}
          * @ignore
          */
@@ -272,6 +278,7 @@ define(
 
         /**
          * 判断是否处于query状态
+         *
          * @return {boolean}
          */
         SearchTree.prototype.isQuery = function () {
@@ -281,7 +288,6 @@ define(
         /**
          * 调整高度。
          * 出现搜索信息时，结果区域的高度要变小，才能使整个控件高度不变
-         *
          */
         SearchTree.prototype.adjustHeight = function () {
             // 用户设置总高度
@@ -365,6 +371,7 @@ define(
                 }
             }
         );
+
         /**
          * 适配数据，创建一个全集扁平索引
          *
@@ -399,7 +406,6 @@ define(
 
         /**
          * 刷新备选区
-         * @override
          */
         SearchTree.prototype.refreshContent = function () {
             var treeData = this.isQuery() ? this.queriedData : this.allData;
@@ -474,6 +480,7 @@ define(
 
         /**
          * 撤销选择当前项
+         *
          * @param {ui.SearchTree} control 类实例
          * @ignore
          */
@@ -517,10 +524,12 @@ define(
 
             return leafItems;
         };
+
         /**
          * 选择或取消选择
          *   如果控件是单选的，则将自己置灰且将其他节点恢复可选
          *   如果控件是多选的，则仅将自己置灰
+         *
          * @param {Object} id 结点对象id
          * @param {boolean} toBeSelected 置为选择还是取消选择
          * @ignore
@@ -566,6 +575,7 @@ define(
                 }
             ).node;
         };
+
         /**
          * 或许当前已选择的id
          *

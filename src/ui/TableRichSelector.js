@@ -195,6 +195,7 @@ define(
 
         /**
          * 创建表格体
+         *
          * @param {ui.TableForSelector} control 类实例
          * @param {Object} data 表数据
          * @return {string} 表格HTML
@@ -289,6 +290,7 @@ define(
 
         /**
          * 点击行为分发器
+         *
          * @param {Event} e 事件对象
          * @ignore
          */
@@ -429,6 +431,7 @@ define(
         /**
          * 选择全部
          * 如果当前处于搜索状态，那么只把搜索结果中未选择的选过去
+         *
          * @public
          */
         TableRichSelector.prototype.selectAll = function () {

@@ -85,6 +85,7 @@ define(function (require) {
 
     /**
      * 获取某个权限模块在某个权限集合中的权限类型
+     *
      * @param {string} authName 权限模块的名字
      * @param {Object} authMap 权限模块集合
      * @return {AuthType} 返回权限类型
@@ -185,6 +186,7 @@ define(function (require) {
 
     /**
      * 获取某个权限模块在某个权限集合中是否有基本权限
+     *
      * @param {string} authName 权限模块的名字
      * @param {Object} authMap 权限模块集合
      * @return {boolean} 是否可见
@@ -195,6 +197,7 @@ define(function (require) {
 
     /**
      * 注册新的权限类型转换器
+     *
      * @param {string} name 转换器名字
      * @param {function(AuthType)} filter 转换器处理函数
      */

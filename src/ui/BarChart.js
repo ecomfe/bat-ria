@@ -15,6 +15,7 @@ define(
         var helper = require('esui/controlHelper');
         var BaseChart = require('./BaseChart');
         require('echarts/chart/bar');
+
         /**
          * 控件类
          *
@@ -32,6 +33,7 @@ define(
 
         /**
          * 获得提示层的title
+         *
          * @param  {Array}  params 一个点上的数据
          * @param  {number} index  索引
          * @return {string}        Tip title的html
@@ -53,6 +55,7 @@ define(
 
         /**
          * 格式化y轴显示数据
+         *
          * @param {Object} serie y轴数据
          * @param {number} index 索引
          * @return {Object} 返回格式化后的y轴显示所需数据对象
