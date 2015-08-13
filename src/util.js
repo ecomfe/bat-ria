@@ -338,7 +338,7 @@ define(function (require) {
      * @param  {boolean} [options.isEllipsis]   是否超长省略
      * @return {string}                         html
      */
-    util.genTableTipContent = function (options) {
+    util.genTruncatableContent = function (options) {
         var content = options.content || '';
         var title = options.title || '';
         var isEllipsis = options.isEllipsis || false;
