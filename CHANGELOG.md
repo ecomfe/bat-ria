@@ -5,6 +5,7 @@
     - `tpl` 模块支持解析 `data-ui` 属性中以集中方式设置的 `type`
     - 修复 `.list-operation` 样式在 Firefox 下的问题
     - 调整了图表控件中 `echarts` 的 `formatter` 参数
+    - 增加了 `genTableTipContent` 来在列表中生成超长截断的文本，并为 `QuickTip` 扩展提供对应全部文本作为参数
     - 修正代码规范
 
 * 0.2.5
