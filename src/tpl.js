@@ -80,10 +80,10 @@ define(
             var dependencies = [];
             var defined = {};
 
-            var regex = /data-ui-type="(\w+)"/g;
+            var regex = /data-ui-type="(\w+)"|data-ui="(?:[^"]*;)?(type:(\w+)\b)/g;
             var match = regex.exec(text);
             while (match) {
-                var type = match[1];
+                var type = match[1] || match[3];
                 if (!defined[type]) {
                     defined[type] = true;
 

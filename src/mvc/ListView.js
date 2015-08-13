@@ -90,7 +90,7 @@ define(function (require) {
     /**
      * 更新页码
      *
-     * @event
+     * @event mvc.ListView#pagechange
      * @param {mini-event.Event} e 事件对象
      * @ignore
      */
@@ -127,7 +127,6 @@ define(function (require) {
     /**
      * 触发批量操作
      *
-     * @event
      * @param {Object} e 控件事件对象
      * @ignore
      */
@@ -138,13 +137,27 @@ define(function (require) {
             selectedItems: this.get('table').getSelectedItems()
         };
 
-        this.fire('batchmodify', args);
+        this.batchModify(args);
     }
+
+    /**
+     * 批量操作的视图层处理，比如弹出浮层确认等
+     * 已自动处理根据列表勾选情况启用/禁用批量操作控件控件，操作完毕默认触发
+     * `batchmodify`事件，可根据业务需求自定义。
+     * 如果需要使用批量操作功能请为控件添加名为`batch`的`group`和CustomData扩展与
+     * 其对应的属性`data-ui-data-type`。
+     *
+     * @protected
+     * @event mvc.ListView#batchmodify
+     * @param {{action: string, selectedItems: Array}} args 批量操作的参数
+     */
+    exports.batchModify = function (args) {
+        this.fire('batchmodify', args);
+    };
 
     /**
      * 侧边栏模式改变时要调整整体布局，要求主栏位于`id`为`neighbor`的容器内
      *
-     * @event
      * @param {Object} e 模式切换事件对象
      * @ignore
      */

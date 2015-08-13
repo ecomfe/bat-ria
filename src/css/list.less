@@ -69,11 +69,13 @@
     .bat-linkify();
 
     &:before {
-        content: "|";
-        display: inline;
+        content: "";
+        display: inline-block;
         position: absolute;
-        left: -8px;
-        color: @bat-aux-color;
+        top: 1px;
+        left: -6px;
+        height: 12px;
+        box-shadow: 0 0 0 0.5px @bat-aux-color; // 用其他方式会导致可点击
     }
 
     &:first-child {
