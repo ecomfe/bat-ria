@@ -1,3 +1,7 @@
+* 0.2.7
+    - 修正 `list.tpl.html` 遗漏了一处 batch block 的问题
+    - 增加 `.ui-item` 样式，用于在 `.ui-row` 内与控件一起正确排列
+
 * 0.2.6
     - 增加 `system/session` 模块
     - `ListView` 原型增加 `batchModify` 方法，提供批量操作在 View 层的扩展点
