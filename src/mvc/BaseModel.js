@@ -74,6 +74,31 @@ define(function (require) {
         return this.$super(arguments);
     };
 
+
+    /**
+     * api请求
+     */
+    exports.requesters = {};
+
+    /**
+     * 获取api请求，默认直接返回`this.requesters`
+     *
+     * @return {Object}
+     */
+    exports.getRequesters = function () {
+        return this.requesters;
+    };
+
+    /**
+     * 注册api，将api的名称添加`request`前缀，注册到model的属性下边
+     */
+    exports.registerRequester = function () {
+        var me = this;
+        u.each(this.requesters, function (requester, reqName) {
+            me['request' + reqName.charAt(0).toUpperCase() + reqName.slice(1)] = requester;
+        });
+    };
+
     var BaseModel = require('eoo').create(UIModel, exports);
     return BaseModel;
 });
