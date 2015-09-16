@@ -29,6 +29,8 @@ define(function (require) {
             model = new BaseModel(args);
         }
 
+        model.registerRequesters();
+
         return model;
     };
 
