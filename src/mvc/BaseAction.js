@@ -29,7 +29,7 @@ define(function (require) {
             model = new BaseModel(args);
         }
 
-        model.registerRequester();
+        model.registerRequesters();
 
         return model;
     };

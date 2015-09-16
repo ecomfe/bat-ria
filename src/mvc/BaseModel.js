@@ -90,12 +90,12 @@ define(function (require) {
     };
 
     /**
-     * 注册api，将api的名称添加`request`前缀，注册到model的属性下边
+     * 注册api，将api的名称添加`request`前缀，注册为model的方法
      */
-    exports.registerRequester = function () {
+    exports.registerRequesters = function () {
         var me = this;
-        u.each(this.requesters, function (requester, reqName) {
-            me['request' + reqName.charAt(0).toUpperCase() + reqName.slice(1)] = requester;
+        u.each(this.getRequesters(), function (requester, name) {
+            me['request' + u.pascalize(name)] = requester;
         });
     };
 
