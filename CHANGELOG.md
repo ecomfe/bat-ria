@@ -1,6 +1,7 @@
 * 0.2.7
     - 修正 `list.tpl.html` 遗漏了一处 batch block 的问题
     - 增加 `.ui-item` 样式，用于在 `.ui-row` 内与控件一起正确排列
+    - 增加了在 model 中注册 API 请求方法的功能，以后不允许直接在 action 发起 API 请求，而需要调用注册在 model 上的方法
 
 * 0.2.6
     - 增加 `system/session` 模块
