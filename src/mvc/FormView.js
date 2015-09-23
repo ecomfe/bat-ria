@@ -185,6 +185,17 @@ define(function (require) {
     }
 
     /**
+     * 禁用各类事件的默认逻辑
+     *
+     * @event
+     * @param {Event} e 事件对象
+     * @ignore
+     */
+    function preventDefault(e) {
+        e.preventDefault();
+    }
+
+    /**
      * 若页面在目标dom元素下方，设置页面scrollTop至该元素
      *
      * @param {Element} element label的dom元素
@@ -251,15 +262,10 @@ define(function (require) {
      * @method mvc.FormView#disableSubmit
      */
     exports.disableSubmit = function () {
-        if (this.viewContext) {
-            var group = this.getGroup('submit');
-            var submitBtn = this.get('submit');
-            if (group.length) {
-                group.disable();
-            }
-            else if (submitBtn) {
-                submitBtn.disable();
-            }
+        var form = this.get('form');
+        if (form) {
+            form.un('beforevalidate', submit, this);
+            form.on('beforevalidate', preventDefault, this);
         }
     };
 
@@ -270,15 +276,10 @@ define(function (require) {
      * @method mvc.FormView#enableSubmit
      */
     exports.enableSubmit = function () {
-        if (this.viewContext) {
-            var group = this.getGroup('submit');
-            var submitBtn = this.get('submit');
-            if (group.length) {
-                group.enable();
-            }
-            else if (submitBtn) {
-                submitBtn.enable();
-            }
+        var form = this.get('form');
+        if (form) {
+            form.on('beforevalidate', submit, this);
+            form.un('beforevalidate', preventDefault, this);
         }
     };
 
