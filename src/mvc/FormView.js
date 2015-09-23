@@ -13,7 +13,6 @@ define(function (require) {
      *
      * - 有id为`form`的`Form`控件
      * - 所有触发提交的按钮，会触发`form`的`submit`事件
-     * - 若有多个触发提交按钮，建议加上`submit`的`group`
      * - 可以使用`Form`控件的`data-ui-auto-validate`属性，
      *   设置为`true`可以在submit之前自动校验含有`name`属性的`InputControl`
      *
