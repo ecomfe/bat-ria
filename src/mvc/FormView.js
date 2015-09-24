@@ -261,10 +261,12 @@ define(function (require) {
      * @method mvc.FormView#disableSubmit
      */
     exports.disableSubmit = function () {
-        var form = this.get('form');
-        if (form) {
-            form.un('beforevalidate', submit, this);
-            form.on('beforevalidate', preventDefault, this);
+        if (this.viewContext) {
+            var form = this.get('form');
+            if (form) {
+                form.un('beforevalidate', submit, this);
+                form.on('beforevalidate', preventDefault, this);
+            }
         }
     };
 
@@ -275,10 +277,12 @@ define(function (require) {
      * @method mvc.FormView#enableSubmit
      */
     exports.enableSubmit = function () {
-        var form = this.get('form');
-        if (form) {
-            form.on('beforevalidate', submit, this);
-            form.un('beforevalidate', preventDefault, this);
+        if (this.viewContext) {
+            var form = this.get('form');
+            if (form) {
+                form.on('beforevalidate', submit, this);
+                form.un('beforevalidate', preventDefault, this);
+            }
         }
     };
 
