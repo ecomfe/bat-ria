@@ -113,7 +113,7 @@ define(function (require) {
      * @method mvc.FormView#validate
      * @return {boolean} 校验是否成功
      */
-    exports.validate = function () {
+    exports.validate = function (submitData) {
         var form = this.get('form');
         var isAutoValidate = form.get('autoValidate');
         if (!isAutoValidate) {
