@@ -111,6 +111,7 @@ define(function (require) {
      *
      * @protected
      * @method mvc.FormView#validate
+     * @param  {Object} submitData 上层传入的要提交的数据
      * @return {boolean} 校验是否成功
      */
     exports.validate = function (submitData) {
