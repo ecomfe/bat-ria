@@ -325,6 +325,12 @@ define(
             newInput.type = 'file';
             newInput.id = this.helper.getId('input');
             newInput.name = this.dataKey;
+            newInput.accept = this.accept ? this.accept.join(',') : '';
+            newInput.disabled = this.disabled;
+            if (this.readOnly && (this.readOnly !== 'false' || this.readOnly !== false)) {
+                newInput.disabled = 'disabled';
+            }
+
             // 清理注册事件
             var input = this.helper.getPart('input');
             this.helper.removeDOMEvent(input, 'change');
