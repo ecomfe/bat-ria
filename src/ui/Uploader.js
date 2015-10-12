@@ -562,17 +562,19 @@ define(
         Uploader.prototype.receiveFile = function () {
             var input = this.helper.getPart('input');
             var fileName = input.value;
-            if (fileName && this.checkFileFormat(fileName)) {
-                this.fire('receive');
-                if (this.autoUpload) {
-                    this.submit();
-                }
-                else {
-                    // 提前显示文件名
-                    this.setLabelText(this.getFileName());
-                    // 清掉可能存在的错误信息
-                    var validity = new Validity();
-                    this.showValidity(validity);
+            if (fileName) {
+                if (this.checkFileFormat(fileName)) {
+                    this.fire('receive');
+                    if (this.autoUpload) {
+                        this.submit();
+                    }
+                    else {
+                        // 提前显示文件名
+                        this.setLabelText(this.getFileName());
+                        // 清掉可能存在的错误信息
+                        var validity = new Validity();
+                        this.showValidity(validity);
+                    }
                 }
             }
             else {
