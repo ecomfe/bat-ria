@@ -23,10 +23,13 @@ define(
         /**
          * 初始化ER 配置
          *
+         * @param {Object} extraConfig
          * @ignore
          */
-        function initErConfigs() {
+        function initErConfigs(extraConfig) {
             var erConfig = require('er/config');
+            config = u.extend(config, extraConfig);
+
             erConfig.indexURL = config.index;
             erConfig.systemName = config.systemName;
         }
@@ -88,11 +91,12 @@ define(
         /**
          * 启动ER
          *
+         * @param {Object} extraConfig 额外的ER配置
          * @ignore
          */
-        function init() {
+        function init(extraConfig) {
 
-            initErConfigs();
+            initErConfigs(extraConfig);
 
             // 启动er
             require('er').start();
@@ -103,7 +107,8 @@ define(
          *
          * @param {Object} riaConfig RIA配置
          * @param {Array} requesters 初始化数据需要的请求发送器
-         * @param {Function} callback 初始化请求返回后的回调函数
+         * @param {Function} callback 初始化请求返回后的回调函数，返回值为额外的ER配置，
+                                      比如根据返回数据修改了默认路径
          * @return {er.Promise} 处理完毕的Promise
          * @ignore
          */
