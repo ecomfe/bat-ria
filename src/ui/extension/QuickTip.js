@@ -82,32 +82,13 @@ define(
         };
 
         /**
-         * 格式化数据
-         *
-         * @param  {string|Object} data Tip属性值
-         * @return {Object}                   格式化后的Tip属性值
-         */
-        function prepareData(data) {
-            var regexp = /\r|\n|\r\n/g;
-            var newline = '<br>';
-            if (typeof data === 'string') {
-                data = {
-                    content: data.replace(regexp, newline)
-                };
-            }
-            else {
-                data.content = data.content.replace(regexp, newline);
-            }
-            return data;
-        }
-
-        /**
          * 创建`Tip`控件并附加到相应元素上
          *
          * @param {HTMLElement} element 需要`Tip`的元素
          */
         exports.showTip = function (element) {
-            var data = prepareData(this.getTipContent(element));
+            var content = this.getTipContent(element);
+            content = typeof content === 'string' ? {content: content} : content;
             var tip = this.current;
 
             // 每个扩展只支持同时显示一个Tip
@@ -117,13 +98,13 @@ define(
                     viewContext: this.target.viewContext,
                     arrow: true
                 };
-                u.extend(options, data);
+                u.extend(options, content);
                 tip = ui.create('TipLayer', options);
                 tip.appendTo(document.body);
                 this.current = tip;
             }
             else {
-                tip.setProperties(data);
+                tip.setProperties(content);
             }
 
             var attachOptions = {
