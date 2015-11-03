@@ -117,7 +117,7 @@ define(
                             target = target.parentNode;
                         }
 
-                        if (!related || match && target !== related && !lib.dom.contains(target, related)) {
+                        if (match && (!related || (target !== related && !lib.dom.contains(target, related)))) {
                             listener.call(element, {
                                 target: target,
                                 relatedTarget: related,

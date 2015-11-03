@@ -325,6 +325,12 @@ define(
             newInput.type = 'file';
             newInput.id = this.helper.getId('input');
             newInput.name = this.dataKey;
+            newInput.accept = this.accept ? this.accept.join(',') : '';
+            newInput.disabled = this.disabled;
+            if (this.readOnly && (this.readOnly !== 'false' || this.readOnly !== false)) {
+                newInput.disabled = 'disabled';
+            }
+
             // 清理注册事件
             var input = this.helper.getPart('input');
             this.helper.removeDOMEvent(input, 'change');
@@ -562,17 +568,19 @@ define(
         Uploader.prototype.receiveFile = function () {
             var input = this.helper.getPart('input');
             var fileName = input.value;
-            if (fileName && this.checkFileFormat(fileName)) {
-                this.fire('receive');
-                if (this.autoUpload) {
-                    this.submit();
-                }
-                else {
-                    // 提前显示文件名
-                    this.setLabelText(this.getFileName());
-                    // 清掉可能存在的错误信息
-                    var validity = new Validity();
-                    this.showValidity(validity);
+            if (fileName) {
+                if (this.checkFileFormat(fileName)) {
+                    this.fire('receive');
+                    if (this.autoUpload) {
+                        this.submit();
+                    }
+                    else {
+                        // 提前显示文件名
+                        this.setLabelText(this.getFileName());
+                        // 清掉可能存在的错误信息
+                        var validity = new Validity();
+                        this.showValidity(validity);
+                    }
                 }
             }
             else {
