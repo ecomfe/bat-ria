@@ -1,3 +1,10 @@
+* 0.2.8
+    - 优先使用 `underscore` 原生支持的 `mapObject`
+    - 支持在初始化数据请求结束后设置 ER 启动选项
+    - 调整表单提交的方式以防止通过键盘操作等方式在提交过程中再次提交
+    - 修正 `getRelatedTarget` 和 `on` 方法，修复了 `QuickTip` 可能出现的问题
+    - 解决 `Uploader` 清空内容时没有恢复 `accept` / `disabled` / `readOnly` 等属性的问题
+
 * 0.2.7
     - 修正 `list.tpl.html` 遗漏了一处 batch block 的问题
     - 增加 `.ui-item` 样式，用于在 `.ui-row` 内与控件一起正确排列
