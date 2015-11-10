@@ -90,16 +90,18 @@ define(function (require) {
      * @param {*} [context] 判断函数的`this`
      * @return {Object} context 映射函数的this
      */
-    util.mapObject = function (obj, iterator, context) {
-        var result = {};
-        if (obj == null) {
+    util.mapObject = u.mapObject
+        ? u.mapObject
+        : function (obj, iterator, context) {
+            var result = {};
+            if (obj == null) {
+                return result;
+            }
+            u.each(obj, function (value, key) {
+                result[key] = iterator.call(context, value, key);
+            });
             return result;
-        }
-        u.each(obj, function (value, key) {
-            result[key] = iterator.call(context, value);
-        });
-        return result;
-    };
+        };
 
     /**
      * 根据指定的映射关系修改对象的键名

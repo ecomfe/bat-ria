@@ -111,9 +111,10 @@ define(function (require) {
      *
      * @protected
      * @method mvc.FormView#validate
+     * @param  {Object} submitData 上层传入的要提交的数据
      * @return {boolean} 校验是否成功
      */
-    exports.validate = function () {
+    exports.validate = function (submitData) {
         var form = this.get('form');
         var isAutoValidate = form.get('autoValidate');
         if (!isAutoValidate) {
@@ -184,6 +185,17 @@ define(function (require) {
     }
 
     /**
+     * 禁用各类事件的默认逻辑
+     *
+     * @event
+     * @param {Event} e 事件对象
+     * @ignore
+     */
+    function preventDefault(e) {
+        e.preventDefault();
+    }
+
+    /**
      * 若页面在目标dom元素下方，设置页面scrollTop至该元素
      *
      * @param {Element} element label的dom元素
@@ -251,7 +263,11 @@ define(function (require) {
      */
     exports.disableSubmit = function () {
         if (this.viewContext) {
-            this.getGroup('submit').disable();
+            var form = this.get('form');
+            if (form) {
+                form.un('beforevalidate', submit, this);
+                form.on('beforevalidate', preventDefault, this);
+            }
         }
     };
 
@@ -263,7 +279,11 @@ define(function (require) {
      */
     exports.enableSubmit = function () {
         if (this.viewContext) {
-            this.getGroup('submit').enable();
+            var form = this.get('form');
+            if (form) {
+                form.on('beforevalidate', submit, this);
+                form.un('beforevalidate', preventDefault, this);
+            }
         }
     };
 

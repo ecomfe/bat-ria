@@ -70,7 +70,14 @@ define(
          */
         event.getRelatedTarget = function (evt) {
             evt = event.getEvent(evt);
-            return evt.relatedTarget || evt.fromElement || evt.toElement;
+            var target = event.getTarget(evt);
+            var relatedTarget = evt.relatedTarget;
+
+            if (!evt.relatedTarget && evt.fromElement) {
+                relatedTarget = evt.fromElement === target ? evt.toElement : evt.fromElement;
+            }
+
+            return relatedTarget;
         };
 
         u.defaults(event, lib.event);
@@ -110,7 +117,7 @@ define(
                             target = target.parentNode;
                         }
 
-                        if (match && target !== related && !lib.dom.contains(target, related)) {
+                        if (match && (!related || (target !== related && !lib.dom.contains(target, related)))) {
                             listener.call(element, {
                                 target: target,
                                 relatedTarget: related,

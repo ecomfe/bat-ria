@@ -304,7 +304,7 @@ define(function (require) {
      * @return {er.Promise} 处理完毕的Promise
      */
     exports.validate = function (submitData) {
-        var localViewValidationResult = this.view.validate();
+        var localViewValidationResult = this.view.validate(submitData);
         var localModelValidationResult = this.model.validateSubmitData(submitData);
         if (localViewValidationResult && localModelValidationResult === true) {
             return Deferred.resolved(submitData);
