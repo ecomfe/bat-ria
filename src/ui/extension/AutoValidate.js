@@ -7,6 +7,7 @@ define(
         var u = require('underscore');
         var lib = require('esui/lib');
         var Extension = require('esui/Extension');
+        var InputControl = require('esui/InputControl');
 
         /**
          * 让输入控件在特定事件下自动校验rule
@@ -49,7 +50,13 @@ define(
          * @ignore
          */
         function validate() {
-            this.target.validate();
+            if (this.target instanceof InputControl) {
+                // target是InputControl类型时，才有校验意义
+                this.target.validate();
+            }
+            else {
+                throw new Error('Current target is not a InputControl type.');
+            }
         }
 
         /**
