@@ -50,13 +50,10 @@ define(
          * @ignore
          */
         function validate() {
-            if (this.target instanceof InputControl) {
-                // target是InputControl类型时，才有校验意义
-                this.target.validate();
-            }
-            else {
+            if (!(this.target instanceof InputControl)) {
                 throw new Error('Current target is not a InputControl type.');
             }
+            this.target.validate();
         }
 
         /**
