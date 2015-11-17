@@ -51,7 +51,7 @@ define(
          */
         function validate() {
             if (!(this.target instanceof InputControl)) {
-                throw new Error('Current target is not a InputControl type.');
+                throw new Error('Current target is not an instance of InputControl.');
             }
             this.target.validate();
         }
