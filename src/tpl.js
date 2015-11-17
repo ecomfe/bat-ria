@@ -67,7 +67,8 @@ define(
             TableTip: './ui/extension',
             TableSubrow: 'esui/extension',
             WordCount: './ui/extension',
-            QuickTip: './ui/extension'
+            QuickTip: './ui/extension',
+            AutoValidate: './ui/extension'
         };
 
         /**
