@@ -60,7 +60,7 @@ define(function (require) {
         root = root || me.main;
 
         // 可以通过设置disabled属性禁用的控件
-        // 见 http://www.w3.org/html/wg/drafts/html/master/semantics.html#enabling-and-disabling-form-controls:-the-disabled-attribute
+        // 见 http://www.w3.org/TR/html/disabled-elements.html
         var disableableTagNames = [
             'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA',
             'OPTGROUP', 'OPTION', 'COMMAND', 'FIELDSET'
