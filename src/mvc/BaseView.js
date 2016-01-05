@@ -171,6 +171,8 @@ define(function (require) {
             dialog.hide();
         }
 
+        options = options || {};
+
         // 使用默认foot时，改变显示文字
         if (options.needFoot || dialog.getFoot()) {
             var okBtn = dialog.getFoot().getChild('btnOk');
