@@ -41,7 +41,7 @@ define(
          *
          * @type {string}
          */
-        WordCount.prototype.initialTemplate = '最多可输入${available}个字符';
+        WordCount.prototype.initialTemplate = '最多可输入${available}个${unit}';
 
         /**
          * 设置还可以输入字符时的提示信息模板，可用以下占位符：
@@ -52,7 +52,7 @@ define(
          *
          * @type {string}
          */
-        WordCount.prototype.remainingTemplate = '还可输入${available}个字符';
+        WordCount.prototype.remainingTemplate = '还可输入${available}个${unit}';
 
         /**
          * 设置已超出可输入字符限制时的提示信息模板，可用以下占位符：
@@ -63,7 +63,7 @@ define(
          *
          * @type {string}
          */
-        WordCount.prototype.exceededTemplate = '已超出${available}个字符';
+        WordCount.prototype.exceededTemplate = '已超出${available}个${unit}';
 
         /**
          * 获取提示信息
@@ -77,6 +77,11 @@ define(
          */
         WordCount.prototype.getHintMessage = function (data) {
             var template;
+            var unit = '字符';
+            if (this.target.get('maxByteLength')) {
+                unit = '字节(1个汉字等于2个字节，1个字母或数字等于1个字节)';
+            }
+            data.unit = unit;
             if (!data.current) {
                 template = this.initialTemplate;
             }
