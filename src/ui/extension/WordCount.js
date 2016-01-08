@@ -3,7 +3,7 @@
  * Copyright 2013 Baidu Inc. All rights reserved.
  *
  * @ignore
- * @file 计算文本框可输入字符的扩展
+ * @file 计算文本框可输入字符的扩展(包含字符数和字节数两种检查)
  * @author otakustay
  * @date $DATE$
  */
@@ -41,7 +41,7 @@ define(
          *
          * @type {string}
          */
-        WordCount.prototype.initialTemplate = '最多可输入${available}个字符';
+        WordCount.prototype.initialTemplate = '最多可输入${available}个${unit}';
 
         /**
          * 设置还可以输入字符时的提示信息模板，可用以下占位符：
@@ -52,7 +52,7 @@ define(
          *
          * @type {string}
          */
-        WordCount.prototype.remainingTemplate = '还可输入${available}个字符';
+        WordCount.prototype.remainingTemplate = '还可输入${available}个${unit}';
 
         /**
          * 设置已超出可输入字符限制时的提示信息模板，可用以下占位符：
@@ -63,7 +63,7 @@ define(
          *
          * @type {string}
          */
-        WordCount.prototype.exceededTemplate = '已超出${available}个字符';
+        WordCount.prototype.exceededTemplate = '已超出${available}个${unit}';
 
         /**
          * 获取提示信息
@@ -77,6 +77,11 @@ define(
          */
         WordCount.prototype.getHintMessage = function (data) {
             var template;
+            var unit = '字符';
+            if (this.target.get('maxByteLength')) {
+                unit = '字节(1个汉字等于2个字节，1个字母或数字等于1个字节)';
+            }
+            data.unit = unit;
             if (!data.current) {
                 template = this.initialTemplate;
             }
@@ -92,13 +97,27 @@ define(
         };
 
         /**
-         * 获取最大可输入字符数
+         * 获取最大可输入字符数(字节数)
+         * 当控件属性中有maxByteLength为字节数检查
+         * 当控件属性中有maxLength和length时为字符数检查
          *
          * @return {number}
          * @protected
          */
-        WordCount.prototype.getMaxLength = function () {
-            return this.target.get('maxLength') || this.target.get('length');
+        WordCount.prototype.getLengths = function () {
+            var target = this.target;
+            var maxLength = target.get('maxByteLength') || target.get('maxLength') || target.get('length');
+            var value = target.getValue();
+            var currentLength = value.length;
+            if (target.get('maxByteLength')) {
+                // 正则来源于esui中MaxByteLengthRule.js
+                // 获取当前字节数
+                currentLength = value.replace(/[^\x00-\xff]/g, 'xx').length;
+            }
+            return {
+                maxLength: maxLength,
+                currentLength: currentLength
+            };
         };
 
         /**
@@ -107,13 +126,12 @@ define(
          * @ignore
          */
         function checkLength() {
-            var maxLength = this.getMaxLength();
-            var currentLength = this.target.getValue().length;
+            var lengths = this.getLengths();
 
             var data = {
-                max: maxLength,
-                current: currentLength,
-                available: maxLength - currentLength
+                max: lengths.maxLength,
+                current: lengths.currentLength,
+                available: lengths.maxLength - lengths.currentLength
             };
 
             var validState = data.available < 0 ? 'error' : 'hint';
@@ -133,7 +151,7 @@ define(
          */
         WordCount.prototype.activate = function () {
             var target = this.target;
-            var maxLength = target.get('maxLength') || target.get('length');
+            var maxLength = target.get('maxByteLength') || target.get('maxLength') || target.get('length');
 
             if (maxLength) {
                 this.target.on('input', checkLength, this);
