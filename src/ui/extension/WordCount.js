@@ -79,7 +79,7 @@ define(
             var template;
             var unit = '字符';
             if (this.target.get('maxByteLength')) {
-                unit = '字节(1个汉字等于2个字节，1个字母或数字等于1个字节)';
+                unit = '字节';
             }
             data.unit = unit;
             if (!data.current) {
