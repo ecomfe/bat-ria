@@ -45,7 +45,8 @@ define(function (require) {
         }
 
         if (message) {
-            return u.template(message, result || {});
+            var compiled = u.template(message);
+            return compiled(result || {});
         }
         else {
             return '保存成功';
