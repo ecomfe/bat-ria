@@ -171,7 +171,7 @@ define(
          * @return {boolean} 返回是否能预览该扩展类型
          */
         Image.prototype.checkExtension = function () {
-            var match = /\.\w+$/.exec(this.url);
+            var match = /\.\w+?(?=\?|#|$)/.exec(this.url);
             if (!match) {
                 return false;
             }
