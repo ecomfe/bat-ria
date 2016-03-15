@@ -177,7 +177,7 @@ define(
             }
 
             var extension = match[0];
-            return !!this.extentionTypes[extension];
+            return !!this.extentionTypes[extension.toLowerCase()];
         };
 
         var imageTemplate = '<img src="${url}" id="${id}" alt="${alt}" />';
