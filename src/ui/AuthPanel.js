@@ -1,5 +1,5 @@
 /**
- * @file 锦囊进行权限验证的基础容器
+ * @file 进行权限验证的基础容器
  * @author Justineo(justice360@gmail.com)
  */
 
@@ -10,7 +10,7 @@ define(function (require) {
     var auth = require('../system/auth');
 
     /**
-     * 锦囊权限编辑器权限节点
+     * 权限编辑器权限节点
      *
      * @param {Object} [options] 初始化参数
      * @extends esui.Panel
