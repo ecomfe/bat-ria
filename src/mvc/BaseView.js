@@ -8,6 +8,7 @@ define(function (require) {
     var UIView = require('ef/UIView');
     var Deferred = require('er/Deferred');
     var Dialog = require('esui/Dialog');
+    var template = require('etpl');
 
     /**
      * 业务`View`基类
@@ -35,7 +36,6 @@ define(function (require) {
             throw new Error('Container not found when rendering ' + (url ? '"' + url + '"' : 'view'));
         }
 
-        var template = require('etpl');
         var html = template.render(this.getTemplateName(), this.getTemplateData());
         container.innerHTML = html;
 
@@ -56,7 +56,10 @@ define(function (require) {
 
         // 作为子Action嵌入页面时，模板使用`xxxMain`这个target
         if (this.model && this.model.get('isChildAction')) {
-            templateName += '_child';
+            var childName = templateName + '_child';
+            if (template.getRenderer(childName)) {
+                templateName = childName;
+            }
         }
 
         return templateName;
@@ -170,6 +173,8 @@ define(function (require) {
             dialog.fire(type);
             dialog.hide();
         }
+
+        options = options || {};
 
         // 使用默认foot时，改变显示文字
         if (options.needFoot || dialog.getFoot()) {
