@@ -412,5 +412,8 @@ define(function (require) {
         document.getElementById(formId).submit();
     };
 
+    // 扩展underscore
+    require('./extension/underscore').activate();
+    u.extend(util, u);
     return util;
 });

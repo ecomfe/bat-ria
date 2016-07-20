@@ -115,8 +115,6 @@ define(
         function start(riaConfig, requesters, callback) {
 
             config = riaConfig;
-
-            require('./extension/underscore').activate();
             require('./extension/hooks').activate(config.hooks);
             require('./extension/ui').activate();
 
