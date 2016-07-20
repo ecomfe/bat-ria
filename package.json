@@ -31,5 +31,12 @@
     "bugs": {
         "url": "https://github.com/ecomfe/bat-ria/issues"
     },
-    "homepage": "https://github.com/ecomfe/bat-ria"
+    "homepage": "https://github.com/ecomfe/bat-ria",
+    "peerDependencies": {
+        "fecs": "~0.4.4"
+    },
+    "scripts": {
+        "lint": "fecs lib cli test/**/*.spec.js --type=js",
+        "test": "npm run lint"
+    }
 }

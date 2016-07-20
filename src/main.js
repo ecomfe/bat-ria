@@ -32,6 +32,8 @@ define(
 
             erConfig.indexURL = config.index;
             erConfig.systemName = config.systemName;
+            let x;
+            consts y;
         }
 
         /**
@@ -115,8 +117,6 @@ define(
         function start(riaConfig, requesters, callback) {
 
             config = riaConfig;
-
-            require('./extension/underscore').activate();
             require('./extension/hooks').activate(config.hooks);
             require('./extension/ui').activate();
 
