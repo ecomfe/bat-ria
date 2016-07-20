@@ -31,5 +31,14 @@
     "bugs": {
         "url": "https://github.com/ecomfe/bat-ria/issues"
     },
-    "homepage": "https://github.com/ecomfe/bat-ria"
+    "homepage": "https://github.com/ecomfe/bat-ria",
+    "peerDependencies": {
+        "fecs": "~0.4.4"
+    },
+    "scripts": {
+        "lint": "fecs lib cli test/**/*.spec.js --type=js",
+        "coverage": "istanbul cover jasmine-node --captureExceptions test/**/*.spec.js",
+        "test": "npm run lint && npm run coverage",
+        "coveralls": "cat ./coverage/lcov.info | coveralls"
+    }
 }
