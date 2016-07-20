@@ -32,6 +32,7 @@ define(
 
             erConfig.indexURL = config.index;
             erConfig.systemName = config.systemName;
+            var x;
         }
 
         /**
