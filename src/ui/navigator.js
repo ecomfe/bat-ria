@@ -326,13 +326,17 @@ define(function (require) {
         if (isNew) {
             // 二级导航位置的计算，二级导航的长度默认为去除最右子元素的边距后的剩余长度
             // 然后将二级导航的垂直平分线与一级导航子元素对齐
-            var navOffset = lib.getOffset(main);
             var navItemOffset = lib.getOffset(navItems[index]);
             var subNavOffset = lib.getOffset(ul);
             var middleOfNavItem = navItemOffset.left + navItemOffset.width / 2;
             var marginLeft = (middleOfNavItem - subNavOffset.width / 2);
-            if (marginLeft < -navOffset.left + 10) {
-                marginLeft = -navOffset.left + 10;
+            var bodyWidth = lib.getOffset(document.body).width;
+            // 看下是不是超出最左边和最右边
+            if (marginLeft < 0) {
+                marginLeft = 10;
+            }
+            else if (marginLeft + navItemOffset.right > bodyWidth) {
+                marginLeft = bodyWidth - subNavOffset.width - 10;
             }
             ul.style.cssText = 'margin-left: ' + marginLeft + 'px';
         }
