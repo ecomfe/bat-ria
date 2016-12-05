@@ -60,6 +60,11 @@
 .list-batch {
     background-color: @bat-bg-blue;
     &:extend(.ui-row all);
+
+    .list-filter + & {
+        background-color: transparent;
+        border-top: 1px solid @bat-border-light-blue;
+    }
 }
 
 // 列表头部 > 列表操作列区域

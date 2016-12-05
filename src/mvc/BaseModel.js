@@ -45,7 +45,8 @@ define(function (require) {
             }
             // 默认数组 + 当前对象
             else {
-                datasource = defaultDatasource.push(datasource);
+                defaultDatasource.push(datasource);
+                datasource = defaultDatasource;
             }
         }
         else {

@@ -10,18 +10,31 @@ define(function (require) {
     var URI = require('urijs');
     var auth = require('./auth');
 
+    var DEFAULT_OPTIONS = {
+        selfKey: 'visitor',
+        userKey: 'adOwner',
+        idKey: 'aderId'
+    };
+
     /**
      * 用户信息模块
      */
     var exports = {
+        options: DEFAULT_OPTIONS,
+
+        mergeOptions: function (options) {
+            u.extend(this.options, options);
+        },
+
         init: function (session) {
-            if (session.visitor) {
-                this.visitor = session.visitor;
+            var options = this.options;
+            if (session[options.selfKey]) {
+                this.visitor = session[options.selfKey];
             }
-            if (session.adOwner) {
-                this.ader = session.adOwner;
+            if (session[options.userKey]) {
+                this.ader = session[options.userKey];
             }
-            if (!session.visitor && !session.adOwner) {
+            if (!session[options.selfKey] && !session[options.userKey]) {
                 this.visitor = session;
             }
 
@@ -47,9 +60,16 @@ define(function (require) {
         },
 
         getAderId: function () {
+            var idKey = this.options.idKey;
             return this.ader && this.ader.id
-                || URI.parseQuery(document.location.search).aderId
-                || this.visitor && this.visitor.id;
+                || URI.parseQuery(document.location.search)[idKey];
+        },
+
+        getAderArgMap: function () {
+            var id = this.getAderId();
+            var args = {};
+            args[this.options.idKey] = id;
+            return u.purify(args);
         },
 
         getAuthMap: function () {
