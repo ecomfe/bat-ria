@@ -194,8 +194,8 @@ define(function (require) {
 
             if (needAlert) {
                 Dialog.alert(u.purify({
-                    title: title,
-                    content: content,
+                    rawTitle: title,
+                    rawContent: content,
                     onok: onok
                 }));
             }
