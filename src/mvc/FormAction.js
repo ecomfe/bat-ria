@@ -63,7 +63,7 @@ define(function (require) {
     exports.handleSubmitResult = function (result) {
         var toast = this.getToastMessage(result);
         if (toast) {
-            this.view.showToast(toast);
+            this.view.showToast(toast, {messageType: 'success'});
         }
         if (typeof this.redirectAfterSubmit === 'function') {
             this.redirectAfterSubmit(result);
@@ -106,7 +106,7 @@ define(function (require) {
             this.view.notifyErrors(message.field);
             this.view.handleValidateInvalid();
         }
-        this.view.showToast('保存失败');
+        this.view.showToast('保存失败', {messageType: 'error'});
     };
 
     /**
