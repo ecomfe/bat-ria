@@ -23,7 +23,7 @@ define(
         /**
          * 初始化ER 配置
          *
-         * @param {Object} extraConfig
+         * @param {Object} extraConfig 配置
          * @ignore
          */
         function initErConfigs(extraConfig) {
@@ -71,7 +71,7 @@ define(
         function initData(session, constants) {
             // 初始化用户信息
             var user = require('./system/user');
-            user.init(session);
+            user.init(session, config.user);
 
             // 初始化系统常量
             var consts = require('./system/constants');

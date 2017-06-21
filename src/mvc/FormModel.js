@@ -44,6 +44,19 @@ define(function (require) {
     exports.defaultArgs = {};
 
     /**
+     * @override
+     */
+    exports.constructor = function () {
+        this.$super(arguments);
+
+        // 页面类型，三种取值： create、edit、detail
+        // 一个规范的表单页面命名应该是以 create、edit、detail 之一结尾的，此处将这种“结尾”取出来，作为pageType
+        var path = this.get('url').getPath();
+        var pageType = path.slice(path.lastIndexOf('/') + 1);
+        this.set('pageType', pageType);
+    };
+
+    /**
      * 获取默认请求参数，针对formData的请求发送，默认直接返回`this.defaultArgs`
      *
      * @protected

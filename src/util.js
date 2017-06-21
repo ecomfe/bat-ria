@@ -385,9 +385,7 @@ define(function (require) {
         function getUrlWithAderId() {
             var uri = require('urijs');
             var user = require('./system/user');
-            var aderId = user.ader && user.ader.id
-                || uri.parseQuery(document.location.search).aderId;
-            var query = aderId ? {aderId: aderId} : {};
+            var query = user.getAderArgMap();
             return uri(url).addQuery(query).toString();
         }
 
@@ -410,6 +408,22 @@ define(function (require) {
             iframeId: iframeId
         });
         document.getElementById(formId).submit();
+    };
+
+    /**
+     * 生成列表页的时间项
+     *
+     * @param  {string} time                                 时间
+     * @param  {string} [inputFormat=YYYYMMDDHHmmss]         输入格式
+     * @param  {string} [outputFormat=YYYY-MM-DD HH:mm:ss]   输出格式
+     * @param  {string} [fallbackText=-]                     没有时间参数或者格式不对的回退
+     * @return {string}                                      时间或者'-'
+     */
+    util.formatTime = function (time, inputFormat, outputFormat, fallbackText) {
+        time = moment(time, inputFormat || 'YYYYMMDDHHmmss');
+        return time.isValid()
+            ? time.format(outputFormat || 'YYYY-MM-DD HH:mm:ss')
+            : fallbackText || '-';
     };
 
     return util;

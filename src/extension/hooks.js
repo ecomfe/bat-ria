@@ -7,14 +7,7 @@ define(function (require) {
     var u = require('underscore');
     var uri = require('urijs');
     var loading = require('../ui/loading');
-
-    function getAderArgMap() {
-        var user = require('../system/user');
-        var aderId = user.getAderId();
-        return u.purify({
-            aderId: aderId
-        });
-    }
+    var user = require('../system/user');
 
     /**
      * 可用的钩子名称如下：
@@ -44,12 +37,12 @@ define(function (require) {
 
         if (hooks.ADD_ADER_ID) {
             io.hooks.filterIndexUrl = function (url) {
-                return uri(url).addQuery(getAderArgMap()).toString();
+                return uri(url).addQuery(user.getAderArgMap()).toString();
             };
 
             var Uploader = require('../ui/Uploader');
             Uploader.prototype.filterAction = function (action) {
-                var argMap = getAderArgMap();
+                var argMap = user.getAderArgMap();
                 if (argMap) {
                     action = uri(action).addQuery(argMap).toString();
                 }
@@ -60,7 +53,7 @@ define(function (require) {
         io.hooks.beforeRequest = function (options) {
             if (hooks.ADD_ADER_ID) {
                 var url = options.url;
-                var argMap = getAderArgMap();
+                var argMap = user.getAderArgMap();
                 if (argMap) {
                     options.url = uri(url).addQuery(argMap).toString();
                 }
