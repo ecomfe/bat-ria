@@ -173,7 +173,7 @@ define(
         Image.prototype.checkExtension = function () {
             var match = /\.\w+?(?=\?|#|$)/.exec(this.url);
             if (!match) {
-                return false;
+                return true;
             }
 
             var extension = match[0];
